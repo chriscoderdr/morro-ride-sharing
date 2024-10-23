@@ -15,6 +15,15 @@
     "sharedGlobals": ["{workspaceRoot}/.github/workflows/ci.yml"]
   },
   "nxCloudId": "671858fa3d5985007ee5f1ae",
+  "tasksRunnerOptions": {
+    "default": {
+      "runner": "@nrwl/nx-cloud",
+      "options": {
+        "cacheableOperations": ["build", "lint", "test", "e2e", "driver-app:build", "rider-app:build",
+      "api:test", "rider-app-build"]
+      }
+    }
+  },
   "plugins": [
     {
       "plugin": "@nx/expo/plugin",
