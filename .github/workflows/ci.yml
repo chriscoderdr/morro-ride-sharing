@@ -36,7 +36,7 @@ jobs:
       - uses: nrwl/nx-set-shas@v4
 
       # Install eas-cli globally
-      - run: npm install --save-dev eas-cli
+      - run: npm install --gobal eas-cli
 
       # Prepend any command with "nx-cloud record --" to record its logs to Nx Cloud
       # - run: npx nx-cloud record -- echo Hello World
