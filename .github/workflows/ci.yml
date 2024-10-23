@@ -10,6 +10,9 @@ permissions:
   actions: read
   contents: read
 
+env:
+  NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+
 jobs:
   main:
     runs-on: ubuntu-latest
@@ -32,7 +35,13 @@ jobs:
       - run: npm ci --legacy-peer-deps
       - uses: nrwl/nx-set-shas@v4
 
+      # Install eas-cli globally
+      - run: npm install --global eas-cli
+
       # Prepend any command with "nx-cloud record --" to record its logs to Nx Cloud
       # - run: npx nx-cloud record -- echo Hello World
       # Nx Affected runs only tasks affected by the changes in this PR/commit. Learn more: https://nx.dev/ci/features/affected
-      - run: npx nx affected -t lint test build e2e-ci
+      - run: npx nx affected --target=lint --parallel=2 --verbose
+      - run: npx nx affected --target=test --parallel=2 --verbose --passWithNoTests
+      - run: npx nx affected --target=build --parallel=2 --verbose
+      - run: npx nx affected --target=e2e-ci --parallel=2 --verbose
