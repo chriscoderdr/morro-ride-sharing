@@ -12,9 +12,18 @@
   },
   "tasksRunnerOptions": {
     "default": {
-      "options": {
-        "cacheableOperations": ["build", "lint", "test"]
-      }
+      "options": {}
+    }
+  },
+  "targetDefaults": {
+    "build": {
+      "cache": true
+    },
+    "lint": {
+      "cache": true
+    },
+    "test": {
+      "cache": true
     }
   }
 }
