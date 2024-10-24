@@ -10,7 +10,17 @@
     "nx": "20.0.3"
   },
   "workspaces": [
-    "packages/*",
     "apps/*"
-  ]
+  ],
+  "nohoist": [
+      "**/react",
+      "**/react/**",
+      "**/react-dom",
+      "**/react-dom/**",
+
+      "**/jest",
+      "**/jest/**",
+      "**/jest-expo",
+      "**/jest-expo/**"
+    ]
 }
