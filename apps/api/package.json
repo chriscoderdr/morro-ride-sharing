@@ -6,7 +6,8 @@
   "scripts": {
     "test": "mocha",
     "dev": "mocha --require=ts-node/esm 'test/**/*.{ts,js}'",
-    "start": "node index.js"
+    "start": "node index.js",
+    "link": "eslint --ext *.js src"
   },
   "keywords": [],
   "author": "",
@@ -14,7 +15,6 @@
   "description": "",
   "dependencies": {
     "@koa/router": "^13.1.0",
-    "dotenv": "^16.4.5",
     "koa": "^2.15.3",
     "koa-bodyparser": "^4.4.1"
   },
@@ -22,6 +22,8 @@
     "chai": "^5.1.2",
     "chokidar-cli": "^3.0.0",
     "mocha": "^10.7.3",
-    "supertest": "^7.0.0"
+    "supertest": "^7.0.0",
+    "dotenv": "^16.4.5",
+    "eslint": "^9.13.0"
   }
 }
