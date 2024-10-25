@@ -1,0 +1,40 @@
+appId: com.chriscoder.driverapp # This is an example app id. Replace it with your app id.
+---
+# - launchApp
+- runFlow: init.yaml
+
+- tapOn:
+    id: "signup-button"
+- assertVisible:
+    id: "email-input-error"
+- assertVisible:
+    id: "password-input-error"
+- tapOn:
+    id: "signup-button"
+- tapOn:
+    id: "email-input"
+- inputText: "email@gmail.com"
+- assertNotVisible:
+    id: "email-input-error"
+- tapOn:
+    id: "password-input"
+- inputText: "ThisIsAPassword"
+- assertNotVisible:
+    id: "password-input-error"
+- tapOn:
+    id: "confirm-password-input"
+- inputText: "ThisIsADiferentPassword"
+- assertVisible:
+    id: "confirm-password-input-error"
+- tapOn:
+    id: "confirm-password-input"
+- "eraseText"
+- inputText: "ThisIsAPassword"
+- assertNotVisible:
+    id: "confirm-password-input-error"
+- assertVisible:
+    text: "•••••••••••••••"
+    index: 1
+- assertVisible:
+    text: "•••••••••••••••"
+    index: 0
