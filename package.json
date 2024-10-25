@@ -1,5 +1,5 @@
 {
-  "name": "@morrotaxi/source",
+  "name": "my-workspace",
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {},
@@ -9,8 +9,49 @@
     "@nx/js": "20.0.3",
     "nx": "20.0.3"
   },
-  "workspaces": [
-    "packages/*",
-    "apps/*"
-  ]
+  "workspaces": {
+    "packages": [
+      "packages/*",
+      "apps/*"
+    ],
+    "nohoist": [
+"**/@expo",
+      "**/@expo/**",
+      "**/@expo-*",
+      "**/@expo-*/**",
+
+"**/expo",
+      "**/expo/**",
+      "**/expo-*",
+      "**/expo-*/**",
+
+
+
+      "**/eslint",
+      "**/eslint/**",
+      "**/eslint-*",
+      "**/eslint-*/**",
+      "**/@react",
+      "**/@react/**",
+      "**/@react-*",
+      "**/@react-*/**",
+      "**/react",
+      "**/react/**",
+      "**/react-*",
+      "**/react-*/**",
+      "**/jest",
+      "**/jest/**",
+      "**/jest-*",
+      "**/jest-*/**",
+      "**/@jest",
+      "**/@jest/**",
+      "**/@jest-*",
+      "**/@jest-*/**",
+      "**/scheduler",
+      "**/scheduler/**",
+      "**/react-native",
+      "**/react-native/**"
+    ]
+  },
+  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }
