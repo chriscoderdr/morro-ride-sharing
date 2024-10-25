@@ -2,6 +2,7 @@ const { getDefaultConfig } = require('expo/metro-config');
 const path = require('path');
 
 // Find the project and workspace directories
+/* eslint-disable no-undef */
 const projectRoot = __dirname;
 // This can be replaced with `find-yarn-workspace-root`
 const monorepoRoot = path.resolve(projectRoot, '../..');
