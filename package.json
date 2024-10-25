@@ -74,7 +74,7 @@
     "**/jest-worker",
     "**/jest-worker/**",
 
-    
+
     "**/react",
     "**/react/**",
     "**/react-dom",
@@ -106,6 +106,9 @@
     "**/react-shallow-renderer",
     "**/react-shallow-renderer/**",
     "**/react-test-renderer",
-    "**/react-test-renderer/**"
+    "**/react-test-renderer/**",
+
+    "**/@nestjs",
+    "**/@nestjs/**"
   ]
 }
