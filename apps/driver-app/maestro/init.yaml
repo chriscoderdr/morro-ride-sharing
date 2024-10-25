@@ -1,0 +1,19 @@
+appId: com.chriscoder.driverapp # This is an example app id. Replace it with your app id.
+---
+# - launchApp
+- runScript:
+    file: './scripts/what-are-we-testing.js'
+    env:
+       testEnv: ${testEnv}
+
+- launchApp: ${output.appIdUnderTest}
+- waitForAnimationToEnd:
+    timeout: 50000
+- runFlow:
+    when:
+      true: ${testEnv == 'expo'}
+    commands:
+      - waitForAnimationToEnd:
+          timeout: 50000
+      - openLink: 'exp://192.168.68.106:8081'
+
