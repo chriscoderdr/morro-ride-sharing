@@ -1,0 +1,24 @@
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: "postgres://morro_user:morro_pass@db:5432/morrotaxi"
+    volumes:
+      - .:/app
+      - /app/node_modules
+
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: morro_user
+      POSTGRES_PASSWORD: morro_pass
+      POSTGRES_DB: morrotaxi
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
