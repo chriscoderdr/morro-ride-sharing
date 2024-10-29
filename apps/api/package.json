@@ -5,9 +5,9 @@
   "type": "module",
   "scripts": {
     "test": "mocha",
-    "dev": "mocha --require=ts-node/esm 'test/**/*.{ts,js}'",
-    "start": "node index.js",
-    "link": "eslint --ext *.js src"
+    "build": "tsc",
+    "start": "node dist/start.js",
+    "dev": "concurrently \"yarn build\" \"nodemon dist/start.js\""
   },
   "keywords": [],
   "author": "",
@@ -16,14 +16,28 @@
   "dependencies": {
     "@koa/router": "^13.1.0",
     "koa": "^2.15.3",
-    "koa-bodyparser": "^4.4.1"
+    "koa-bodyparser": "^4.4.1",
+    "pg": "^8.13.1",
+    "pg-hstore": "^2.3.4",
+    "sequelize": "^6.37.5",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.6.3"
   },
   "devDependencies": {
+    "@types/chai": "^5.0.1",
+    "@types/koa": "^2.15.0",
+    "@types/koa__router": "^12.0.4",
+    "@types/mocha": "^10.0.9",
+    "@types/node": "^22.8.0",
+    "@types/sequelize": "types/sequelize",
+    "@types/supertest": "^6.0.2",
     "chai": "^5.1.2",
     "chokidar-cli": "^3.0.0",
-    "mocha": "^10.7.3",
-    "supertest": "^7.0.0",
+    "concurrently": "^9.0.1",
     "dotenv": "^16.4.5",
-    "eslint": "^9.13.0"
+    "eslint": "^9.13.0",
+    "mocha": "^10.7.3",
+    "nodemon": "^3.1.7",
+    "supertest": "^7.0.0"
   }
 }
