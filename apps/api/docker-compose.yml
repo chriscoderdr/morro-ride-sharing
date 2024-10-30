@@ -1,0 +1,29 @@
+services:
+  app:
+    build:
+      context: ../..   # Contexto del directorio raíz del monorepo
+      dockerfile: ./apps/api/Dockerfile
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: "postgres://morro_user:morro_pass@db:5432/morrotaxi"
+    volumes:
+      - .:/app
+      - /app/node_modules
+
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: morro_user
+      POSTGRES_PASSWORD: morro_pass
+      POSTGRES_DB: morrotaxi
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
+volumes:
+  postgres_data:
