@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Keyboard, Text, View } from "react-native";
+import { useRegisterDriver } from "../../hooks/api/use-register-driver";
 import Checkbox from "../checkbox";
 import InputTextField from "../input-text-field";
 import RoundedButton from "../rounded-button";
@@ -12,12 +13,10 @@ const SignUpForm: React.FC = () => {
   const [isChecked, setIsChecked] = useState(false);
 
   const [emailError, setEmailError] = useState<string | undefined>(undefined);
-  const [passwordError, setPasswordError] = useState<string | undefined>(
-    undefined
-  );
-  const [confirmPasswordError, setConfirmPasswordError] = useState<
-    string | undefined
-  >(undefined);
+  const [passwordError, setPasswordError] = useState<string | undefined>(undefined);
+  const [confirmPasswordError, setConfirmPasswordError] = useState<string | undefined>(undefined);
+
+  const { mutate, status, isError, error, isSuccess } = useRegisterDriver();
 
   const isValidEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -48,41 +47,25 @@ const SignUpForm: React.FC = () => {
       setConfirmPasswordError(undefined);
     }
 
-    if (isValid) {
-      console.log("Sign Up:", { email, password, confirmPassword });
+    if (isValid && isChecked) {
+      mutate({ email, password });
     }
   };
 
   const handleEmailChange = (text: string) => {
     setEmail(text);
-    if (!isValidEmail(text)) {
-      setEmailError("Please enter a valid email address");
-    } else {
-      setEmailError(undefined);
-    }
+    setEmailError(!isValidEmail(text) ? "Please enter a valid email address" : undefined);
   };
 
   const handlePasswordChange = (text: string) => {
     setPassword(text);
-    if (text.length < 8) {
-      setPasswordError("Password must be at least 8 characters");
-    } else {
-      setPasswordError(undefined);
-    }
-    if (confirmPassword && text !== confirmPassword) {
-      setConfirmPasswordError("Passwords do not match");
-    } else if (confirmPassword) {
-      setConfirmPasswordError(undefined);
-    }
+    setPasswordError(text.length < 8 ? "Password must be at least 8 characters" : undefined);
+    setConfirmPasswordError(confirmPassword && text !== confirmPassword ? "Passwords do not match" : undefined);
   };
 
   const handleConfirmPasswordChange = (text: string) => {
     setConfirmPassword(text);
-    if (text !== password) {
-      setConfirmPasswordError("Passwords do not match");
-    } else {
-      setConfirmPasswordError(undefined);
-    }
+    setConfirmPasswordError(text !== password ? "Passwords do not match" : undefined);
   };
 
   const handleSubmitEditing = () => {
@@ -145,16 +128,18 @@ const SignUpForm: React.FC = () => {
           checked={isChecked}
           onChange={(checked) => setIsChecked(checked)}
           label="I accept the terms and privacy policy"
-          linkUrl="https://raw.githubusercontent.com/ArthurGareginyan/privacy-policy-template/refs/heads/master/privacy-policy.txt"
+          linkUrl="https://example.com/terms"
         />
       </View>
 
       <View style={styles.buttonContainer}>
         <RoundedButton
-          text="Sign Up"
+          text={status === 'loading' ? "Signing Up..." : "Sign Up"}
           onPress={handleSignUp}
           testID="signup-button"
         />
+        {isError && <Text style={{ color: 'red' }}>{(error as Error).message}</Text>}
+        {isSuccess && <Text style={{ color: 'green' }}>Registration successful!</Text>}
       </View>
     </View>
   );

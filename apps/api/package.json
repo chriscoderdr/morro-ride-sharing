@@ -1,12 +1,12 @@
 {
   "name": "api",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "dist/src/start.js",
   "scripts": {
     "test": "mocha -r ts-node/register test/**/*.test.ts",
     "build": "tsc",
-    "start": "node dist/start.js",
-    "dev": "concurrently \"yarn build\" \"nodemon dist/start.js\""
+    "start": "node --es-module-specifier-resolution=node",
+    "dev": "concurrently \"yarn build\" \"nodemon --es-module-specifier-resolution=node\""
   },
   "keywords": [],
   "author": "",

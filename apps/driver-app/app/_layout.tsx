@@ -7,11 +7,14 @@ import {
   useFonts,
 } from "@expo-google-fonts/inter";
 import { Poppins_700Bold } from "@expo-google-fonts/poppins";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import SignUp from "./signup";
 
-export default function TabLayout() {
+const queryClient = new QueryClient();
+
+export default function HomeLayout() {
   const [fontsLoaded] = useFonts({
     Inter_400Regular,
     Inter_700Bold,
@@ -25,7 +28,9 @@ export default function TabLayout() {
   return (
     <GestureHandlerRootView>
       <KeyboardDismiss>
+        <QueryClientProvider client={queryClient}>
         <SignUp />
+        </QueryClientProvider>
       </KeyboardDismiss>
     </GestureHandlerRootView>
   );
