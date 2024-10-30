@@ -1,17 +1,14 @@
-FROM node:18-alpine
 
-WORKDIR /app
+FROM node:18-alpine
 
 RUN apk add --no-cache git
 
-COPY package.json ./
+WORKDIR /app
 
-RUN yarn install
+COPY ../../package.json ../../yarn.lock ./
 
 COPY . .
 
-RUN yarn build
-
 EXPOSE 3000
 
-CMD ["node", "dist/start.js"]
+CMD yarn install && yarn build && node dist/start.js

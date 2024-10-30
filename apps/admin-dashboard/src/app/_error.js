@@ -1,5 +1,3 @@
-// src/app/_error.js
-import React from 'react';
 
 function Error({ statusCode }) {
   return (

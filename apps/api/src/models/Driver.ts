@@ -1,21 +1,40 @@
-import bcrypt from 'bcrypt';
-import { DataTypes, Model } from 'sequelize';
-import sequelize from '../config/database';
+import bcrypt from "bcrypt";
+import { DataTypes, Model, Optional } from "sequelize";
+import sequelize from "../config/database";
 
-class Driver extends Model {
-  public id!: number;
-  public name!: string;
-  public email!: string;
-  public phone!: string;
-  public password!: string;
+const saltRounds = parseInt(process.env.BCRYPT_SALT_ROUNDS || "10", 10);
+
+interface DriverAttributes {
+  id: number;
+  name: string;
+  email: string;
+  phone: string;
+  password: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+  loginAt?: Date;
+}
+
+interface DriverCreationAttributes extends Optional<DriverAttributes, 'id'> {}
+
+
+class Driver extends Model<DriverAttributes, DriverCreationAttributes> {
+
+
+
 
   public async comparePassword(password: string): Promise<boolean> {
-    return bcrypt.compare(password, this.password);
+    return bcrypt.compare(password, this.dataValues.password);
   }
 }
 
 Driver.init(
   {
+    id: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
+    },
     name: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -35,15 +54,33 @@ Driver.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
+    createdAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW,
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW,
+    },
+    loginAt: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
   },
   {
     sequelize,
-    tableName: 'Driver',
+    tableName: "drivers",
     hooks: {
       beforeCreate: async (driver) => {
-        driver.password = await bcrypt.hash(driver.password, 10);
+        console.error('driver', driver)
+        console.error('password: ', driver.dataValues.password);
+        console.error('driver.salt', saltRounds);
+        driver.dataValues.password = await bcrypt.hash(driver.dataValues.password, saltRounds);
       },
     },
+    timestamps: true,
   }
 );
 
