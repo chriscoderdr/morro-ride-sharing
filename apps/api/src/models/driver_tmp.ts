@@ -19,10 +19,6 @@ interface DriverCreationAttributes extends Optional<DriverAttributes, 'id'> {}
 
 
 class Driver extends Model<DriverAttributes, DriverCreationAttributes> {
-
-
-
-
   public async comparePassword(password: string): Promise<boolean> {
     return bcrypt.compare(password, this.dataValues.password);
   }

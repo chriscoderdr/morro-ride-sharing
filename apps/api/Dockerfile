@@ -11,4 +11,4 @@ COPY . .
 
 EXPOSE 3000
 
-CMD yarn install && yarn build && node dist/start.js
+CMD yarn install && yarn dev

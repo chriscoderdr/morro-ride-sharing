@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import request from 'supertest';
 import app from '../src/app';
-import Driver from '../src/models/driver';
+import Driver from '../src/models/driver_tmp';
 
 describe("Driver Registration API Test", () => {
   let server: any;
