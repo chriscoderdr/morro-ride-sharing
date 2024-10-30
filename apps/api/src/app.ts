@@ -1,10 +1,11 @@
 import Koa from 'koa';
 import bodyParser from 'koa-bodyparser';
+import sequelize from './config/database';
 import driverRoutes from './routes';
 
 const app = new Koa();
 
-// sequelize.sync().then(() => console.log("Connected to PostgreSQL"));
+sequelize.sync().then(() => console.log("Connected to PostgreSQL"));
 
 app.use(bodyParser());
 

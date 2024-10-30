@@ -1,8 +1,8 @@
 import React from "react";
-import { View, TextInput, ViewStyle } from "react-native";
+import { TextInput, View, ViewStyle } from "react-native";
+import { TouchableOpacity } from "react-native-gesture-handler";
 import { IInputTextProps } from "./props";
 import { styles } from "./styles";
-import { TouchableOpacity } from "react-native-gesture-handler";
 
 const InputText: React.FC<IInputTextProps> = ({
   IconComponent,

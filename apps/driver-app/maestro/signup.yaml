@@ -1,40 +1,195 @@
-appId: com.chriscoder.driverapp # This is an example app id. Replace it with your app id.
+appId: com.chriscoder.driverapp # Replace with your app id
 ---
-# - launchApp
+# Initialize app and scroll to the top to find "name-input"
 - runFlow: init.yaml
 
+# Scroll up to ensure we're at the beginning of the form
+- scrollUntilVisible:
+    element:
+      id: "name-input"
+    direction: UP
+
+# Ensure the "Sign Up" button is initially disabled
+- scrollUntilVisible:
+    element:
+      id: "signup-button"
+    direction: DOWN
+- tapOn:
+    id: "signup-button"
+- assertNotVisible:
+    id: "email-input-error"
+- assertNotVisible:
+    id: "password-input-error"
+- assertNotVisible:
+    id: "confirm-password-input-error"
+- assertNotVisible:
+    id: "phone-input-error"
+- assertNotVisible:
+    id: "name-input-error"
+
+# Validate incorrect input handling for each field
+
+# Invalid name (less than 2 characters)
+- scrollUntilVisible:
+    element:
+      id: "name-input"
+    direction: UP
+- tapOn:
+    id: "name-input"
+- inputText: "J"
+- scrollUntilVisible:
+    element:
+      id: "signup-button"
+    direction: DOWN
+- tapOn:
+    id: "signup-button"
+- assertVisible:
+    id: "name-input-error"
+
+# Invalid email
+- scrollUntilVisible:
+    element:
+      id: "email-input"
+    direction: DOWN
+- tapOn:
+    id: "email-input"
+- inputText: "invalid-email"
+- scrollUntilVisible:
+    element:
+      id: "signup-button"
+    direction: DOWN
 - tapOn:
     id: "signup-button"
 - assertVisible:
     id: "email-input-error"
-- assertVisible:
-    id: "password-input-error"
+
+# Invalid phone (too short, no country code)
+- scrollUntilVisible:
+    element:
+      id: "phone-input"
+    direction: DOWN
+- tapOn:
+    id: "phone-input"
+- inputText: "123"
+- scrollUntilVisible:
+    element:
+      id: "signup-button"
+    direction: DOWN
 - tapOn:
     id: "signup-button"
+- assertVisible:
+    id: "phone-input-error"
+
+# Invalid password (less than 8 characters)
+- scrollUntilVisible:
+    element:
+      id: "password-input"
+    direction: DOWN
+- tapOn:
+    id: "password-input"
+- inputText: "short"
+- scrollUntilVisible:
+    element:
+      id: "signup-button"
+    direction: DOWN
+- tapOn:
+    id: "signup-button"
+- assertVisible:
+    id: "password-input-error"
+
+# Non-matching confirm password
+- scrollUntilVisible:
+    element:
+      id: "confirm-password-input"
+    direction: DOWN
+- tapOn:
+    id: "confirm-password-input"
+- inputText: "differentPassword"
+- scrollUntilVisible:
+    element:
+      id: "signup-button"
+    direction: DOWN
+- tapOn:
+    id: "signup-button"
+- assertVisible:
+    id: "confirm-password-input-error"
+
+# Enter valid data for each field and revalidate
+
+# Valid name
+- scrollUntilVisible:
+    element:
+      id: "name-input"
+    direction: UP
+- tapOn:
+    id: "name-input"
+- eraseText
+- inputText: "John Doe"
+- assertNotVisible:
+    id: "name-input-error"
+
+# Valid email
+- scrollUntilVisible:
+    element:
+      id: "email-input"
+    direction: DOWN
 - tapOn:
     id: "email-input"
+- eraseText
 - inputText: "email@gmail.com"
 - assertNotVisible:
     id: "email-input-error"
+
+# Valid phone number (no country code)
+- scrollUntilVisible:
+    element:
+      id: "phone-input"
+    direction: DOWN
+- tapOn:
+    id: "phone-input"
+- eraseText
+- inputText: "2345678902"
+- assertNotVisible:
+    id: "phone-input-error"
+
+# Valid password
+- scrollUntilVisible:
+    element:
+      id: "password-input"
+    direction: DOWN
 - tapOn:
     id: "password-input"
-- inputText: "ThisIsAPassword"
+- eraseText
+- inputText: "ValidPassword"
 - assertNotVisible:
     id: "password-input-error"
+
+# Matching confirm password
+- scrollUntilVisible:
+    element:
+      id: "confirm-password-input"
+    direction: DOWN
 - tapOn:
     id: "confirm-password-input"
-- inputText: "ThisIsADiferentPassword"
-- assertVisible:
-    id: "confirm-password-input-error"
-- tapOn:
-    id: "confirm-password-input"
-- "eraseText"
-- inputText: "ThisIsAPassword"
+- eraseText
+- inputText: "ValidPassword"
 - assertNotVisible:
     id: "confirm-password-input-error"
+
+# Scroll to Terms checkbox and check it
+- scrollUntilVisible:
+    element:
+      id: "terms-checkbox"
+    direction: DOWN
+- tapOn:
+    id: "terms-checkbox"
+
+# Submit with valid fields
+- scrollUntilVisible:
+    element:
+      id: "signup-button"
+    direction: DOWN
+- tapOn:
+    id: "signup-button"
 - assertVisible:
-    text: "•••••••••••••••"
-    index: 1
-- assertVisible:
-    text: "•••••••••••••••"
-    index: 0
+    text: "Registration successful!" # Adjust to match success message
