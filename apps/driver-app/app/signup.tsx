@@ -12,7 +12,7 @@ const SignUp: React.FC = () => {
 
 const styles = StyleSheet.create({
   container: {
-    paddingVertical: 48,
+    flex: 1
   },
 });
 

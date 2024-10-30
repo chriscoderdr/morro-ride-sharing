@@ -8,4 +8,5 @@ export interface IInputTextFieldProps extends IInputTextProps {
     securedEntry?: boolean;
     errorText?: string;
     errorTestId?: string;
+    phoneEntry?: boolean;
   }

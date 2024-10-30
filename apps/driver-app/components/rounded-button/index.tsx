@@ -1,3 +1,4 @@
+import React from "react";
 import { Text, TouchableOpacity, ViewStyle } from "react-native";
 import { styles } from "./styles";
 
@@ -11,6 +12,7 @@ interface IButtonProps {
   borderRadius?: number;
   type?: "primary" | "secondary";
   testID?: string;
+  disabled?: boolean;
 }
 
 const RoundedButton: React.FC<IButtonProps> = ({
@@ -22,7 +24,8 @@ const RoundedButton: React.FC<IButtonProps> = ({
   fullWidth = false,
   borderRadius = 10,
   type = "primary",
-  testID
+  testID,
+  disabled = false,
 }) => {
   const buttonBackgroundColor =
     backgroundColor ?? (type === "primary" ? "#000000" : "#FFFFFF");
@@ -38,6 +41,7 @@ const RoundedButton: React.FC<IButtonProps> = ({
       ? styles.large
       : styles.medium;
   const fullWidthStyle: ViewStyle = fullWidth ? { alignSelf: "stretch" } : {};
+  const opacityStyle = disabled ? { opacity: 0.5 } : {};
 
   return (
     <TouchableOpacity
@@ -46,10 +50,12 @@ const RoundedButton: React.FC<IButtonProps> = ({
         buttonSizeStyle,
         fullWidthStyle,
         borderStyle,
+        opacityStyle,
         { backgroundColor: buttonBackgroundColor, borderRadius },
       ]}
-      onPress={onPress}
+      onPress={!disabled ? onPress : undefined}
       testID={testID}
+      disabled={disabled}
     >
       <Text style={[styles.text, { color: buttonTextColor }]}>{text}</Text>
     </TouchableOpacity>
