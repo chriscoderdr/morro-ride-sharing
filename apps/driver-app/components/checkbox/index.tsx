@@ -1,12 +1,21 @@
 import { MaterialIcons } from "@expo/vector-icons";
 import React, { useState } from "react";
-import { Linking, StyleSheet, Text, TextStyle, TouchableOpacity, View, ViewStyle } from "react-native";
+import {
+  Linking,
+  StyleSheet,
+  Text,
+  TextStyle,
+  TouchableOpacity,
+  View,
+  ViewStyle,
+} from "react-native";
 
 interface ICheckboxProps {
   checked?: boolean;
   onChange?: (checked: boolean) => void;
   label?: string;
   linkUrl?: string;
+  testID?: string;
 }
 
 interface ICheckboxStyles {
@@ -15,10 +24,16 @@ interface ICheckboxStyles {
   label: TextStyle;
 }
 
-const Checkbox: React.FC<ICheckboxProps> = ({ checked = false, onChange, label, linkUrl }) => {
+const Checkbox: React.FC<ICheckboxProps> = ({
+  checked = false,
+  onChange,
+  label,
+  linkUrl,
+  testID,
+}) => {
   const [isChecked, setIsChecked] = useState(checked);
 
-  const handlePress = () => {
+  const handleCheckboxPress = () => {
     setIsChecked(!isChecked);
     if (onChange) {
       onChange(!isChecked);
@@ -27,21 +42,27 @@ const Checkbox: React.FC<ICheckboxProps> = ({ checked = false, onChange, label, 
 
   const handleLabelPress = () => {
     if (linkUrl) {
-      Linking.openURL(linkUrl).catch((err) => console.error("Failed to open URL:", err));
+      Linking.openURL(linkUrl).catch((err) =>
+        console.error("Failed to open URL:", err)
+      );
     }
   };
 
   return (
-    <TouchableOpacity onPress={handlePress} style={styles.container}>
-      <View style={styles.checkbox}>
+    <View style={styles.container}>
+      <TouchableOpacity
+        onPress={handleCheckboxPress}
+        style={styles.checkbox}
+        testID={testID}
+      >
         {isChecked && <MaterialIcons name="check" size={16} color="#FFFFFF" />}
-      </View>
+      </TouchableOpacity>
       {label && (
-        <Text style={styles.label} onPress={handleLabelPress}>
-          {label}
-        </Text>
+        <TouchableOpacity onPress={handleLabelPress}>
+          <Text style={styles.label}>{label}</Text>
+        </TouchableOpacity>
       )}
-    </TouchableOpacity>
+    </View>
   );
 };
 

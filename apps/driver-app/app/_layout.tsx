@@ -8,9 +8,22 @@ import {
 } from "@expo-google-fonts/inter";
 import { Poppins_700Bold } from "@expo-google-fonts/poppins";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { View } from "react-native";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
+import {
+  KeyboardAvoidingView,
+  LogBox,
+  Platform,
+  SafeAreaView,
+  View,
+} from "react-native";
+import {
+  GestureHandlerRootView,
+  ScrollView,
+} from "react-native-gesture-handler";
 import SignUp from "./signup";
+
+LogBox.ignoreLogs([
+  "Warning: CountryModal: Support for defaultProps will be removed from function components",
+]);
 
 const queryClient = new QueryClient();
 
@@ -27,11 +40,24 @@ export default function HomeLayout() {
 
   return (
     <GestureHandlerRootView>
-      <KeyboardDismiss>
-        <QueryClientProvider client={queryClient}>
-        <SignUp />
-        </QueryClientProvider>
-      </KeyboardDismiss>
+      <QueryClientProvider client={queryClient}>
+        <SafeAreaView style={{ flex: 1 }}>
+          <KeyboardAvoidingView
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
+            style={{ flex: 1 }}
+          >
+            <ScrollView
+              contentContainerStyle={{
+                flexGrow: 1,
+              }}
+            >
+              <KeyboardDismiss>
+                <SignUp />
+              </KeyboardDismiss>
+            </ScrollView>
+          </KeyboardAvoidingView>
+        </SafeAreaView>
+      </QueryClientProvider>
     </GestureHandlerRootView>
   );
 }

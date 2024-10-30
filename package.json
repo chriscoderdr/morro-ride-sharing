@@ -15,18 +15,18 @@
       "apps/*"
     ],
     "nohoist": [
-"**/@expo",
+      "**/twilio",
+      "**/@twilio",
+      "**/twilio/**",
+      "**/@twilio-*",
+      "**/@expo",
       "**/@expo/**",
       "**/@expo-*",
       "**/@expo-*/**",
-
-"**/expo",
+      "**/expo",
       "**/expo/**",
       "**/expo-*",
       "**/expo-*/**",
-
-
-
       "**/eslint",
       "**/eslint/**",
       "**/eslint-*",
