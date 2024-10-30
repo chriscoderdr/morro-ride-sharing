@@ -15,6 +15,10 @@
       "apps/*"
     ],
     "nohoist": [
+      "**/rnmapbox-*/**",
+      "**/rnmapbox-*",
+      "**/rnmapbox/**",
+      "**/rnmapbox",
       "**/twilio",
       "**/@twilio",
       "**/twilio/**",
