@@ -1,4 +1,4 @@
-import { ApiResponse, DriverData } from "./models";
+import { ApiResponse, DriverData } from "@/api/models";
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_MORRO_API_BASE_URL;
 

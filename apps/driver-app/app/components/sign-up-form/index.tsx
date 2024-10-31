@@ -1,10 +1,10 @@
+import Checkbox from "@/components/checkbox";
+import InputTextField from "@/components/input-text-field";
+import RoundedButton from "@/components/rounded-button";
+import { useRegisterDriver } from "@/hooks/api/use-register-driver";
 import React, { useRef, useState } from "react";
 import { Keyboard, Text, View } from "react-native";
 import PhoneInput from "react-native-phone-number-input";
-import { useRegisterDriver } from "../../hooks/api/use-register-driver";
-import Checkbox from "../checkbox";
-import InputTextField from "../input-text-field";
-import RoundedButton from "../rounded-button";
 import { styles } from "./styles";
 
 const SignUpForm: React.FC = () => {

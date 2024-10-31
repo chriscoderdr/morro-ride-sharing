@@ -1,11 +1,11 @@
+import { MQTT_BROKER_URL, MQTT_PORT, MQTT_TOPIC } from "@/config/mqtt-config";
 import { Client, Message } from "paho-mqtt";
-import { MQTT_BROKER_URL, MQTT_PORT, MQTT_TOPIC } from "../config/mqtt-config";
 
-class MQTTClient {
+class MQTTClientService {
   private client: Client;
 
   constructor(clientId: string) {
-    // console.log(`connection info ${MQTT_BROKER_URL} ${MQTT_PORT} ${clientId}`);
+    console.log(`connection info ${MQTT_BROKER_URL} ${MQTT_PORT} ${clientId}`);
     this.client = new Client(MQTT_BROKER_URL, Number(MQTT_PORT), clientId);
 
     this.client.onConnectionLost = this.onConnectionLost;
@@ -58,6 +58,10 @@ class MQTTClient {
       console.log("Disconnected from MQTT broker");
     }
   };
+
+  isConnected = () => {
+    return this.client.isConnected();
+  }
 }
 
-export default MQTTClient;
+export default MQTTClientService;
