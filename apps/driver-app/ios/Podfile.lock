@@ -276,6 +276,9 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
+  - EXTaskManager (11.8.2):
+    - ExpoModulesCore
+    - UMAppLoader
   - EXUpdatesInterface (0.16.2):
     - ExpoModulesCore
   - FBLazyVector (0.74.5)
@@ -1529,6 +1532,7 @@ PODS:
     - React-Core
   - SocketRocket (0.7.0)
   - Turf (2.8.0)
+  - UMAppLoader (4.6.0)
   - Yoga (0.0.0)
 
 DEPENDENCIES:
@@ -1552,6 +1556,7 @@ DEPENDENCIES:
   - ExpoSystemUI (from `../node_modules/expo-system-ui/ios`)
   - ExpoWebBrowser (from `../node_modules/expo-web-browser/ios`)
   - EXSplashScreen (from `../node_modules/expo-splash-screen/ios`)
+  - EXTaskManager (from `../node_modules/expo-task-manager/ios`)
   - EXUpdatesInterface (from `../node_modules/expo-updates-interface/ios`)
   - FBLazyVector (from `../node_modules/react-native/Libraries/FBLazyVector`)
   - fmt (from `../node_modules/react-native/third-party-podspecs/fmt.podspec`)
@@ -1612,6 +1617,7 @@ DEPENDENCIES:
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../node_modules/react-native-screens`)
   - RNSVG (from `../node_modules/react-native-svg`)
+  - UMAppLoader (from `../node_modules/unimodules-app-loader/ios`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
@@ -1663,6 +1669,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/expo-web-browser/ios"
   EXSplashScreen:
     :path: "../node_modules/expo-splash-screen/ios"
+  EXTaskManager:
+    :path: "../node_modules/expo-task-manager/ios"
   EXUpdatesInterface:
     :path: "../node_modules/expo-updates-interface/ios"
   FBLazyVector:
@@ -1780,6 +1788,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-screens"
   RNSVG:
     :path: "../node_modules/react-native-svg"
+  UMAppLoader:
+    :path: "../node_modules/unimodules-app-loader/ios"
   Yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
@@ -1804,6 +1814,7 @@ SPEC CHECKSUMS:
   ExpoSystemUI: d4f065a016cae6721b324eb659cdee4d4cf0cb26
   ExpoWebBrowser: 7595ccac6938eb65b076385fd23d035db9ecdc8e
   EXSplashScreen: 17a656c08a0095be15b620c52e61dfdb665863d2
+  EXTaskManager: 9c3520305c3aa1b4a12a7c6d1e3f85f2779c06e9
   EXUpdatesInterface: 996527fd7d1a5d271eb523258d603f8f92038f24
   FBLazyVector: ac12dc084d1c8ec4cc4d7b3cf1b0ebda6dab85af
   fmt: 4c2741a687cc09f0634a2e2c72a838b99f1ff120
@@ -1867,6 +1878,7 @@ SPEC CHECKSUMS:
   RNSVG: 8b1a777d54096b8c2a0fd38fc9d5a454332bbb4d
   SocketRocket: abac6f5de4d4d62d24e11868d7a2f427e0ef940d
   Turf: aa2ede4298009639d10db36aba1a7ebaad072a5e
+  UMAppLoader: f17a5ee8e85b536ace0fc254b447a37ed198d57e
   Yoga: 950bbfd7e6f04790fdb51149ed51df41f329fcc8
 
 PODFILE CHECKSUM: b038e9c978f80fcf39e812937f1b1500cce1815a

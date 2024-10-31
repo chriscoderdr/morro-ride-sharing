@@ -1,29 +1,21 @@
+import useLocation from "@/hooks/use-location-tracking"; // Assuming useLocation hook is in /hooks
 import { Ionicons } from "@expo/vector-icons";
 import Mapbox from "@rnmapbox/maps";
 import * as Location from "expo-location";
 import React, { useEffect, useRef, useState } from "react";
 import { Alert, StyleSheet, TouchableOpacity, View } from "react-native";
-import MQTTClient from "../services/mqtt-client";
 
 const MapScreen: React.FC = () => {
-  const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
+  const [userLocation, setUserLocation] = useState<[number, number] | null>(
+    null
+  );
   const cameraRef = useRef<Mapbox.Camera>(null);
-  const mqttClient = useRef(new MQTTClient("driver-location-client")).current;
 
-  // Connect to MQTT broker on mount and disconnect on unmount
-  useEffect(() => {
-    mqttClient.connect(
-      () => console.log("Connected to MQTT broker"),
-      (error) => console.error("Failed to connect to MQTT broker:", error)
-    );
+  // Use custom useLocation hook
+  const { isConnected, publishLocation } = useLocation();
 
-    return () => {
-      mqttClient.disconnect();
-    };
-  }, [mqttClient]);
-
-  // Fetch location and publish to MQTT
-  const fetchAndPublishLocation = async () => {
+  // Fetch location and update userLocation state
+  const fetchUserLocation = async () => {
     const { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== "granted") {
       Alert.alert("Permission denied", "Location permission is required.");
@@ -31,10 +23,14 @@ const MapScreen: React.FC = () => {
     }
 
     const location = await Location.getCurrentPositionAsync({});
-    const coords = [location.coords.longitude, location.coords.latitude];
+    const coords: [number, number] = [
+      location.coords.longitude,
+      location.coords.latitude,
+    ];
     setUserLocation(coords);
 
-    mqttClient.publishLocation(coords[1], coords[0]); // Publish latitude and longitude to MQTT
+    // Publish the location manually
+    publishLocation(coords[1], coords[0]); // latitude, longitude
   };
 
   // Zoom into the user's current location
@@ -49,7 +45,7 @@ const MapScreen: React.FC = () => {
   // Set interval to update location periodically
   useEffect(() => {
     const locationInterval = setInterval(() => {
-      fetchAndPublishLocation();
+      fetchUserLocation();
     }, 10000); // Adjust interval as needed (10s in this example)
 
     return () => clearInterval(locationInterval);
@@ -61,14 +57,14 @@ const MapScreen: React.FC = () => {
         <Mapbox.Camera
           ref={cameraRef}
           zoomLevel={16}
-          centerCoordinate={userLocation || [-122.400021, 37.789085]} // Default to fallback location
+          // centerCoordinate={userLocation || [-122.400021, 37.789085]} // Default to fallback location
           animationMode="flyTo"
           animationDuration={2000}
         />
         <Mapbox.UserLocation
           visible
           onUpdate={(location) => {
-            const coords = [
+            const coords: [number, number] = [
               location.coords.longitude,
               location.coords.latitude,
             ];
@@ -77,7 +73,10 @@ const MapScreen: React.FC = () => {
         />
       </Mapbox.MapView>
 
-      <TouchableOpacity style={styles.button} onPress={handleZoomToUserLocation}>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={handleZoomToUserLocation}
+      >
         <Ionicons name="locate" size={24} color="white" />
       </TouchableOpacity>
     </View>

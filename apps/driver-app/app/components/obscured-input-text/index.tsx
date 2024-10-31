@@ -1,7 +1,7 @@
+import InputText from "@/components/input-text";
+import { IInputTextProps } from "@/components/input-text/props";
 import { AntDesign } from "@expo/vector-icons";
 import React, { useState } from "react";
-import InputText from "../input-text";
-import { IInputTextProps } from "../input-text/props";
 
 interface IObscuredInputTextProps extends IInputTextProps {}
 
