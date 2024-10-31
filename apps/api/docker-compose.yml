@@ -1,17 +1,20 @@
 services:
   app:
     build:
-      context: ../..   # Contexto del directorio raíz del monorepo
+      context: ../..
       dockerfile: ./apps/api/Dockerfile
     ports:
       - "3000:3000"
     depends_on:
       - db
       - redis
+      - mqtt
     environment:
       DATABASE_URL: "postgres://morro_user:morro_pass@db:5432/morrotaxi"
       REDIS_HOST: redis
       REDIS_PORT: 6379
+      MQTT_HOST: mqtt
+      MQTT_PORT: 1883
     volumes:
       - .:/app
 
@@ -34,6 +37,22 @@ services:
     volumes:
       - redis_data:/data
 
+  mqtt:
+    image: eclipse-mosquitto
+    ports:
+      - "1883:1883"
+      - "8883:8883"
+      - "9001:9001"
+    volumes:
+      - ./mosquitto.conf:/mosquitto/config/mosquitto.conf
+      - mqtt_data:/mosquitto/data
+      - mqtt_logs:/mosquitto/log
+    environment:
+      - LOG_DEST=file
+      - LOG_TYPE=all
+
 volumes:
   postgres_data:
   redis_data:
+  mqtt_data:
+  mqtt_logs:
