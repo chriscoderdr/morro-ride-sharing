@@ -1,31 +1,59 @@
 import { Ionicons } from "@expo/vector-icons";
 import Mapbox from "@rnmapbox/maps";
-import React, { useRef, useState } from "react";
-import {
-    Alert,
-    Platform,
-    StyleSheet,
-    TouchableOpacity,
-    View,
-} from "react-native";
+import * as Location from "expo-location";
+import React, { useEffect, useRef, useState } from "react";
+import { Alert, StyleSheet, TouchableOpacity, View } from "react-native";
+import MQTTClient from "../services/mqtt-client";
 
+const MapScreen: React.FC = () => {
+  const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
+  const cameraRef = useRef<Mapbox.Camera>(null);
+  const mqttClient = useRef(new MQTTClient("driver-location-client")).current;
 
-const MapScreen = () => {
-  const SF_OFFICE_LOCATION = [-122.400021, 37.789085];
-  const [userLocation, setUserLocation] = useState(SF_OFFICE_LOCATION);
-  const cameraRef = useRef(null);
+  // Connect to MQTT broker on mount and disconnect on unmount
+  useEffect(() => {
+    mqttClient.connect(
+      () => console.log("Connected to MQTT broker"),
+      (error) => console.error("Failed to connect to MQTT broker:", error)
+    );
 
-  const zoomToUserLocation = () => {
-    if (
-      userLocation &&
-      Array.isArray(userLocation) &&
-      userLocation.length === 2
-    ) {
-      cameraRef.current?.moveTo(userLocation); // FlyTo animation to user location
+    return () => {
+      mqttClient.disconnect();
+    };
+  }, [mqttClient]);
+
+  // Fetch location and publish to MQTT
+  const fetchAndPublishLocation = async () => {
+    const { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== "granted") {
+      Alert.alert("Permission denied", "Location permission is required.");
+      return;
+    }
+
+    const location = await Location.getCurrentPositionAsync({});
+    const coords = [location.coords.longitude, location.coords.latitude];
+    setUserLocation(coords);
+
+    mqttClient.publishLocation(coords[1], coords[0]); // Publish latitude and longitude to MQTT
+  };
+
+  // Zoom into the user's current location
+  const handleZoomToUserLocation = () => {
+    if (userLocation) {
+      cameraRef.current?.flyTo(userLocation, 2000);
     } else {
       Alert.alert("Location Error", "Unable to retrieve user location.");
     }
   };
+
+  // Set interval to update location periodically
+  useEffect(() => {
+    const locationInterval = setInterval(() => {
+      fetchAndPublishLocation();
+    }, 10000); // Adjust interval as needed (10s in this example)
+
+    return () => clearInterval(locationInterval);
+  }, []);
 
   return (
     <View style={{ flex: 1 }}>
@@ -33,25 +61,23 @@ const MapScreen = () => {
         <Mapbox.Camera
           ref={cameraRef}
           zoomLevel={16}
-          animationMode="moveTo"
+          centerCoordinate={userLocation || [-122.400021, 37.789085]} // Default to fallback location
+          animationMode="flyTo"
+          animationDuration={2000}
         />
-        {Platform.OS !== "web" && (
-          <>
-            <Mapbox.UserLocation
-              visible
-              onUpdate={(location) => {
-                const coords = [
-                  location.coords.longitude,
-                  location.coords.latitude,
-                ];
-                setUserLocation(coords);
-              }}
-            />
-          </>
-        )}
+        <Mapbox.UserLocation
+          visible
+          onUpdate={(location) => {
+            const coords = [
+              location.coords.longitude,
+              location.coords.latitude,
+            ];
+            setUserLocation(coords);
+          }}
+        />
       </Mapbox.MapView>
 
-      <TouchableOpacity style={styles.button} onPress={zoomToUserLocation}>
+      <TouchableOpacity style={styles.button} onPress={handleZoomToUserLocation}>
         <Ionicons name="locate" size={24} color="white" />
       </TouchableOpacity>
     </View>
