@@ -46,7 +46,7 @@ class MQTTClientService {
       const message = new Message(payload);
       message.destinationName = MQTT_TOPIC;
       this.client.send(message);
-      console.log("Published location:", payload);
+      console.log("Published location to MQTT:", payload);
     } else {
       console.error("Cannot publish: MQTT client is not connected");
     }
