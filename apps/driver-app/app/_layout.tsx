@@ -1,31 +1,25 @@
 import React from "react";
 
-import KeyboardDismiss from "@/components/keyboard-dismiss";
 import {
   Inter_400Regular,
   Inter_700Bold,
   useFonts,
 } from "@expo-google-fonts/inter";
 import { Poppins_700Bold } from "@expo-google-fonts/poppins";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import {
-  KeyboardAvoidingView,
-  LogBox,
-  Platform,
-  SafeAreaView,
-  View,
-} from "react-native";
-import {
-  GestureHandlerRootView,
-  ScrollView,
-} from "react-native-gesture-handler";
-import SignUp from "./signup";
+import Mapbox from "@rnmapbox/maps";
+import { QueryClient } from "@tanstack/react-query";
+import { LogBox, View } from "react-native";
+import MapScreen from "./map-screen";
 
 LogBox.ignoreLogs([
   "Warning: CountryModal: Support for defaultProps will be removed from function components",
 ]);
 
 const queryClient = new QueryClient();
+
+Mapbox.setAccessToken(
+  "sk.eyJ1IjoiY2dvbWV6bWVuZGV6IiwiYSI6ImNtMndhbDAwZjAzMXQyanNkMHF2NjR3bmUifQ.f6E28fydW9bkhLBP7L_lCQ"
+);
 
 export default function HomeLayout() {
   const [fontsLoaded] = useFonts({
@@ -39,25 +33,8 @@ export default function HomeLayout() {
   }
 
   return (
-    <GestureHandlerRootView>
-      <QueryClientProvider client={queryClient}>
-        <SafeAreaView style={{ flex: 1 }}>
-          <KeyboardAvoidingView
-            behavior={Platform.OS === "ios" ? "padding" : "height"}
-            style={{ flex: 1 }}
-          >
-            <ScrollView
-              contentContainerStyle={{
-                flexGrow: 1,
-              }}
-            >
-              <KeyboardDismiss>
-                <SignUp />
-              </KeyboardDismiss>
-            </ScrollView>
-          </KeyboardAvoidingView>
-        </SafeAreaView>
-      </QueryClientProvider>
-    </GestureHandlerRootView>
+    <>
+      <MapScreen />
+    </>
   );
 }
