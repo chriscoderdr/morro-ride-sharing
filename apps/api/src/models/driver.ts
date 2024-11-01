@@ -5,11 +5,12 @@ import sequelize from '../config/database';
 const saltRounds = parseInt(process.env.BCRYPT_SALT_ROUNDS || '10', 10);
 
 interface DriverAttributes {
-  id: number;
+  id: string; // Change `id` to a string to store UUIDs
   name: string;
   email: string;
   phone: string;
   password: string;
+  refreshToken?: string; // Field for storing refresh token
   createdAt?: Date;
   updatedAt?: Date;
   loginAt?: Date;
@@ -30,8 +31,8 @@ class Driver extends Model<DriverAttributes, DriverCreationAttributes> {
 Driver.init(
   {
     id: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
+      type: DataTypes.UUID,              // Set data type to UUID
+      defaultValue: DataTypes.UUIDV4,     // Automatically generate a UUID v4
       primaryKey: true
     },
     name: {
@@ -52,6 +53,10 @@ Driver.init(
     password: {
       type: DataTypes.STRING,
       allowNull: false
+    },
+    refreshToken: {
+      type: DataTypes.STRING,
+      allowNull: true
     },
     createdAt: {
       type: DataTypes.DATE,
@@ -90,10 +95,7 @@ Driver.init(
     tableName: 'drivers',
     hooks: {
       beforeCreate: async (driver) => {
-        driver.dataValues.password = await bcrypt.hash(
-          driver.dataValues.password,
-          saltRounds
-        );
+        driver.dataValues.password = await bcrypt.hash(driver.dataValues.password, saltRounds);
       }
     },
     timestamps: true

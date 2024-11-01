@@ -42,9 +42,9 @@ class MQTTClientService {
 
   publishLocation = (latitude: number, longitude: number) => {
     if (this.client.isConnected()) {
-      const payload = JSON.stringify({ latitude, longitude });
+      const payload = JSON.stringify({ latitude, longitude, isAvailable: true, timestamp: new Date().getTime() });
       const message = new Message(payload);
-      message.destinationName = MQTT_TOPIC;
+      message.destinationName = MQTT_TOPIC.replaceAll("${driver_id}", '3b5a05ce-c7cf-464b-8665-47bf054caa57');
       this.client.send(message);
       console.log("Published location to MQTT:", payload);
     } else {
