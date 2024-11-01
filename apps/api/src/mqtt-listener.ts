@@ -1,3 +1,4 @@
+import jwt from 'jsonwebtoken';
 import mqtt from 'mqtt';
 import Driver from './models/driver';
 import logger from './utils/logger';
@@ -50,7 +51,12 @@ mqttClient.on('reconnect', () => {
 mqttClient.on('message', async (topic, message) => {
   logger.info(`Received message on topic ${topic}: ${message.toString()}`);
   try {
-    const driverId = topic.split('/')[2];
+    const driverAccessToken = topic.split('/')[2];
+    const ACCESS_TOKEN_SECRET =
+      process.env.ACCESS_TOKEN_SECRET || 'access-secret';
+    const decoded = jwt.verify(driverAccessToken, ACCESS_TOKEN_SECRET) as {
+      driverId: number;
+    };
     const payload = JSON.parse(message.toString());
     const { latitude, longitude, isAvailable } = payload;
 
@@ -62,11 +68,11 @@ mqttClient.on('message', async (topic, message) => {
         isAvailable: isAvailable
       },
       {
-        where: { id: driverId }
+        where: { id: decoded.driverId }
       }
     );
 
-    logger.info(`Updated location for driver ${driverId}`);
+    logger.info(`Updated location for driver ${decoded.driverId}`);
   } catch (error: any) {
     logger.error('Error processing message: ' + error.message);
   }

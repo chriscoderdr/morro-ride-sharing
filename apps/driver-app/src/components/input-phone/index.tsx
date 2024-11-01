@@ -1,18 +1,18 @@
-import React, { forwardRef, useState } from "react";
+import { forwardRef, useState } from "react";
 import { View } from "react-native";
 import PhoneInput from "react-native-phone-number-input";
 import { IInputPhoneProps } from "./props";
 import { styles } from "./styles";
 
 const InputPhone = forwardRef<PhoneInput, IInputPhoneProps>(
-  ({ defaultCode = "US" as any, onChangeText, testID }, ref) => {
+  ({ defaultCode = "US" as any, onChangeText, testID, defaultValue }, ref) => {
     const [phoneNumber, setPhoneNumber] = useState("");
 
     return (
       <View style={styles.container}>
         <PhoneInput
           ref={ref}
-          defaultValue={phoneNumber}
+          defaultValue={defaultValue}
           defaultCode={defaultCode}
           layout="first"
           onChangeFormattedText={(text) => {
