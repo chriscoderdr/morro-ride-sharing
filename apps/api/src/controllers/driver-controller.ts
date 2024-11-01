@@ -1,6 +1,7 @@
 import { Context } from 'koa';
 import { Op } from 'sequelize';
-import Driver from '../models/driver_tmp';
+import Driver from '../models/driver';
+import logger from '../utils/logger';
 
 export const registerDriver = async (ctx: Context) => {
   const { name, email, phone, password } = ctx.request.body as {
@@ -9,10 +10,10 @@ export const registerDriver = async (ctx: Context) => {
     phone: string;
     password: string;
   };
-  console.log('registerDriver', name, email, phone, password);
+  logger.info('registerDriver', name, email, phone, password);
 
   if (!name || !email || !phone || !password) {
-    console.log(`registerDriver: ${name}, ${email}, ${phone}, ${password}`);
+    logger.info(`registerDriver: ${name}, ${email}, ${phone}, ${password}`);
     ctx.status = 400;
     ctx.body = { error: `registerDriver: ${name}, ${email}, ${phone}, ${password}`};
     return;

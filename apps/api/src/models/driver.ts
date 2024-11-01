@@ -1,8 +1,8 @@
-import bcrypt from "bcrypt";
-import { DataTypes, Model, Optional } from "sequelize";
-import sequelize from "../config/database";
+import bcrypt from 'bcrypt';
+import { DataTypes, Model, Optional } from 'sequelize';
+import sequelize from '../config/database';
 
-const saltRounds = parseInt(process.env.BCRYPT_SALT_ROUNDS || "10", 10);
+const saltRounds = parseInt(process.env.BCRYPT_SALT_ROUNDS || '10', 10);
 
 interface DriverAttributes {
   id: number;
@@ -13,10 +13,13 @@ interface DriverAttributes {
   createdAt?: Date;
   updatedAt?: Date;
   loginAt?: Date;
+  lastLocationLatitude?: number;
+  lastLocationLongitude?: number;
+  lastLocationUpdatedAt?: Date;
+  isAvailable?: boolean;
 }
 
 interface DriverCreationAttributes extends Optional<DriverAttributes, 'id'> {}
-
 
 class Driver extends Model<DriverAttributes, DriverCreationAttributes> {
   public async comparePassword(password: string): Promise<boolean> {
@@ -29,54 +32,71 @@ Driver.init(
     id: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
-      primaryKey: true,
+      primaryKey: true
     },
     name: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: false
     },
     email: {
       type: DataTypes.STRING,
       allowNull: false,
       unique: true,
-      validate: { isEmail: true },
+      validate: { isEmail: true }
     },
     phone: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique: true,
+      unique: true
     },
     password: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: false
     },
     createdAt: {
       type: DataTypes.DATE,
       allowNull: false,
-      defaultValue: DataTypes.NOW,
+      defaultValue: DataTypes.NOW
     },
     updatedAt: {
       type: DataTypes.DATE,
       allowNull: false,
-      defaultValue: DataTypes.NOW,
+      defaultValue: DataTypes.NOW
     },
     loginAt: {
       type: DataTypes.DATE,
-      allowNull: true,
+      allowNull: true
     },
+    lastLocationLatitude: {
+      type: DataTypes.FLOAT,
+      allowNull: true
+    },
+    lastLocationLongitude: {
+      type: DataTypes.FLOAT,
+      allowNull: true
+    },
+    lastLocationUpdatedAt: {
+      type: DataTypes.DATE,
+      allowNull: true
+    },
+    isAvailable: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: true
+    }
   },
   {
     sequelize,
-    tableName: "drivers",
+    tableName: 'drivers',
     hooks: {
       beforeCreate: async (driver) => {
-        console.error('driver', driver)
-        console.error('password: ', driver.dataValues.password);
-        console.error('driver.salt', saltRounds);
-        driver.dataValues.password = await bcrypt.hash(driver.dataValues.password, saltRounds);
-      },
+        driver.dataValues.password = await bcrypt.hash(
+          driver.dataValues.password,
+          saltRounds
+        );
+      }
     },
-    timestamps: true,
+    timestamps: true
   }
 );
 
