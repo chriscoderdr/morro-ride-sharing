@@ -15,14 +15,11 @@ interface RideRequestAttributes {
     longitude: number;
     address: string;
   };
-  estimatedPrice: string;
-  pickupTimeDistance: string;
-  tripTimeDistance: string;
   status: 'pending' | 'accepted' | 'declined' | 'expired' | 'canceled';
   createdAt?: Date;
   updatedAt?: Date;
   driverId?: string | null;
-  riderId?: string; // New field for rider ID
+  riderId?: string;
 }
 
 interface RideRequestCreationAttributes
@@ -43,9 +40,6 @@ class RideRequest
     longitude: number;
     address: string;
   };
-  public estimatedPrice!: string;
-  public pickupTimeDistance!: string;
-  public tripTimeDistance!: string;
   public status!: 'pending' | 'accepted' | 'declined' | 'expired' | 'canceled';
   public createdAt!: Date;
   public updatedAt!: Date;
@@ -91,18 +85,6 @@ RideRequest.init(
           }
         }
       }
-    },
-    estimatedPrice: {
-      type: DataTypes.STRING,
-      allowNull: false
-    },
-    pickupTimeDistance: {
-      type: DataTypes.STRING,
-      allowNull: false
-    },
-    tripTimeDistance: {
-      type: DataTypes.STRING,
-      allowNull: false
     },
     status: {
       type: DataTypes.ENUM('pending', 'accepted', 'declined', 'expired', 'canceled'),

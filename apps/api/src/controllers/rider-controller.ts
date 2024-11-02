@@ -1,9 +1,13 @@
+import { queueService } from '@/services';
 import { Context } from 'koa';
 import { Op } from 'sequelize';
 import RideRequest from '../models/ride-request';
 import Rider from '../models/rider';
 import logger from '../utils/logger';
-import { generateAccessToken, generateRefreshToken } from '../utils/token-utils';
+import {
+  generateAccessToken,
+  generateRefreshToken
+} from '../utils/token-utils';
 
 export const registerRider = async (ctx: Context) => {
   const { name, email, phone, password } = ctx.request.body as {
@@ -59,14 +63,7 @@ export const registerRider = async (ctx: Context) => {
 };
 
 export const createRideRequest = async (ctx: Context) => {
-  const {
-    riderId,
-    pickupLocation,
-    dropOffLocation,
-    estimatedPrice,
-    pickupTimeDistance,
-    tripTimeDistance
-  } = ctx.request.body as {
+  const { riderId, pickupLocation, dropOffLocation } = ctx.request.body as {
     riderId: string;
     pickupLocation: {
       latitude: number;
@@ -78,21 +75,14 @@ export const createRideRequest = async (ctx: Context) => {
       longitude: number;
       address: string;
     };
-    estimatedPrice: string;
-    pickupTimeDistance: string;
-    tripTimeDistance: string;
   };
 
-  if (
-    !riderId ||
-    !pickupLocation ||
-    !dropOffLocation ||
-    !estimatedPrice ||
-    !pickupTimeDistance ||
-    !tripTimeDistance
-  ) {
+  if (!riderId || !pickupLocation || !dropOffLocation) {
     ctx.status = 400;
-    ctx.body = { error: 'All fields are required for a ride request.' };
+    ctx.body = {
+      error:
+        'Rider ID, pickup location, and drop-off location are required for a ride request.'
+    };
     return;
   }
 
@@ -101,15 +91,15 @@ export const createRideRequest = async (ctx: Context) => {
       riderId,
       pickupLocation,
       dropOffLocation,
-      estimatedPrice,
-      pickupTimeDistance,
-      tripTimeDistance,
       status: 'pending'
     });
 
+    // Add the ride request to the queue
+    await queueService.addRideRequestToQueue(newRideRequest);
+
     ctx.status = 201;
     ctx.body = {
-      message: 'Ride request created successfully.',
+      message: 'Ride request created successfully and added to the queue.',
       rideRequestId: newRideRequest.dataValues.id
     };
   } catch (error) {
