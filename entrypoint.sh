@@ -17,12 +17,12 @@ case "$SERVICE_NAME" in
     ;;
   "mqtt-listener")
     echo "Starting the MQTT listener..."
-    /app/wait-for-it.sh app:3000 -- echo "App is up"
+    /app/wait-for-it.sh -t 1600 app:3000 -- echo "App is up"
     yarn start-mqtt
     ;;
   "queue-processor")
     echo "Starting the queue processor..."
-    /app/wait-for-it.sh app:3000 -- echo "App is up"
+    /app/wait-for-it.sh -t 1600 app:3000 -- echo "App is up"
     yarn start-queue-processor
     ;;
   *)

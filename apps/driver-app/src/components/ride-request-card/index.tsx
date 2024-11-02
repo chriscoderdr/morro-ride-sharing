@@ -12,14 +12,20 @@ const RideRequestCard: React.FC<RideRequestCardProps> = ({
       <Text style={styles.priceText}>{rideRequest.estimatedPrice}</Text>
 
       <View style={styles.infoContainer}>
-        <Text style={styles.infoText}>{rideRequest.pickupTimeDistance}</Text>
+        <Text style={styles.infoText}>
+          {rideRequest.pickupTimeDistance?.time} (
+          {rideRequest.pickupTimeDistance?.distance}) away
+        </Text>
         <Text style={styles.locationText}>
           {rideRequest.pickupLocation?.address}
         </Text>
       </View>
 
       <View style={styles.infoContainer}>
-        <Text style={styles.infoText}>{rideRequest.tripTimeDistance}</Text>
+        <Text style={styles.infoText}>
+          {rideRequest.tripTimeDistance?.time} (
+          {rideRequest.tripTimeDistance?.distance}) trip
+        </Text>
         <Text style={styles.locationText}>
           {rideRequest.tripLocation?.address}
         </Text>

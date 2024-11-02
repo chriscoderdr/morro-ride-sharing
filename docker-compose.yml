@@ -91,7 +91,7 @@ services:
       - ./yarn-logs:/app/yarn-logs
 
   db:
-    image: postgres:15
+    image: postgis/postgis:15-3.3
     environment:
       POSTGRES_USER: morro_user
       POSTGRES_PASSWORD: morro_pass

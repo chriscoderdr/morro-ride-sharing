@@ -40,7 +40,7 @@ class MQTTClientService {
     if (!this.isSuscribed && accessToken.length > 0) {
       const topic = MQTT_TOPIC_RIDE_REQUESTS.replaceAll(
         '${driver_id}',
-        accessToken
+        "a6cada43-f80e-4291-880d-b6f857831d75"
       );
       this.isSuscribed = true;
       this.client.subscribe(topic, {

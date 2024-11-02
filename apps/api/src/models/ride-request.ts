@@ -6,15 +6,15 @@ import Rider from './rider';
 interface RideRequestAttributes {
   id: string;
   pickupLocation: {
-    latitude: number;
-    longitude: number;
-    address: string;
+    type: 'Point';
+    coordinates: [number, number]; // [longitude, latitude]
   };
+  pickupAddress: string;
   dropOffLocation: {
-    latitude: number;
-    longitude: number;
-    address: string;
+    type: 'Point';
+    coordinates: [number, number];
   };
+  dropOffAddress: string;
   status: 'pending' | 'accepted' | 'declined' | 'expired' | 'canceled';
   createdAt?: Date;
   updatedAt?: Date;
@@ -31,15 +31,15 @@ class RideRequest
 {
   public id!: string;
   public pickupLocation!: {
-    latitude: number;
-    longitude: number;
-    address: string;
+    type: 'Point';
+    coordinates: [number, number];
   };
+  public pickupAddress!: string;
   public dropOffLocation!: {
-    latitude: number;
-    longitude: number;
-    address: string;
+    type: 'Point';
+    coordinates: [number, number];
   };
+  public dropOffAddress!: string;
   public status!: 'pending' | 'accepted' | 'declined' | 'expired' | 'canceled';
   public createdAt!: Date;
   public updatedAt!: Date;
@@ -52,61 +52,45 @@ RideRequest.init(
     id: {
       type: DataTypes.UUID,
       defaultValue: DataTypes.UUIDV4,
-      primaryKey: true
+      primaryKey: true,
     },
     pickupLocation: {
-      type: DataTypes.JSON,
+      type: DataTypes.GEOGRAPHY('POINT', 4326),
       allowNull: false,
-      validate: {
-        isLocationValid(value: any) {
-          if (
-            typeof value !== 'object' ||
-            typeof value.latitude !== 'number' ||
-            typeof value.longitude !== 'number' ||
-            typeof value.address !== 'string'
-          ) {
-            throw new Error('Invalid pickup location format');
-          }
-        }
-      }
+    },
+    pickupAddress: {
+      type: DataTypes.STRING,
+      allowNull: false,
     },
     dropOffLocation: {
-      type: DataTypes.JSON,
+      type: DataTypes.GEOGRAPHY('POINT', 4326),
       allowNull: false,
-      validate: {
-        isLocationValid(value: any) {
-          if (
-            typeof value !== 'object' ||
-            typeof value.latitude !== 'number' ||
-            typeof value.longitude !== 'number' ||
-            typeof value.address !== 'string'
-          ) {
-            throw new Error('Invalid drop-off location format');
-          }
-        }
-      }
+    },
+    dropOffAddress: {
+      type: DataTypes.STRING,
+      allowNull: false,
     },
     status: {
       type: DataTypes.ENUM('pending', 'accepted', 'declined', 'expired', 'canceled'),
       defaultValue: 'pending',
-      allowNull: false
+      allowNull: false,
     },
     driverId: {
       type: DataTypes.UUID,
       allowNull: true,
       references: {
         model: Driver,
-        key: 'id'
-      }
+        key: 'id',
+      },
     },
     riderId: {
       type: DataTypes.UUID,
       allowNull: false,
       references: {
         model: Rider,
-        key: 'id'
-      }
-    }
+        key: 'id',
+      },
+    },
   },
   {
     sequelize,
@@ -117,8 +101,8 @@ RideRequest.init(
         if (!rideRequest.status) {
           rideRequest.status = 'pending';
         }
-      }
-    }
+      },
+    },
   }
 );
 

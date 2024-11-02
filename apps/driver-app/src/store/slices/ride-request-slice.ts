@@ -6,12 +6,17 @@ interface Location {
   address: string;
 }
 
+interface TimeDistance {
+  distance: string;
+  time: string;
+}
+
 export interface RideRequestState {
   rideRequestId: string | null;
   estimatedPrice: string | null;
-  pickupTimeDistance: string | null;
+  pickupTimeDistance: TimeDistance | null;
   pickupLocation: Location | null;
-  tripTimeDistance: string | null;
+  tripTimeDistance: TimeDistance | null;
   tripLocation: Location | null;
   isActive: boolean;
 }
@@ -23,7 +28,7 @@ const initialState: RideRequestState = {
   pickupLocation: null,
   tripTimeDistance: null,
   tripLocation: null,
-  isActive: false,
+  isActive: false
 };
 
 const rideRequestSlice = createSlice({
@@ -35,13 +40,20 @@ const rideRequestSlice = createSlice({
       action: PayloadAction<{
         rideRequestId: string;
         estimatedPrice: string;
-        pickupTimeDistance: string;
+        pickupTimeDistance: TimeDistance;
         pickupLocation: Location;
-        tripTimeDistance: string;
+        tripTimeDistance: TimeDistance;
         tripLocation: Location;
       }>
     ) => {
-      const { rideRequestId, estimatedPrice, pickupTimeDistance, pickupLocation, tripTimeDistance, tripLocation } = action.payload;
+      const {
+        rideRequestId,
+        estimatedPrice,
+        pickupTimeDistance,
+        pickupLocation,
+        tripTimeDistance,
+        tripLocation
+      } = action.payload;
       state.rideRequestId = rideRequestId;
       state.estimatedPrice = estimatedPrice;
       state.pickupTimeDistance = pickupTimeDistance;
@@ -50,8 +62,8 @@ const rideRequestSlice = createSlice({
       state.tripLocation = tripLocation;
       state.isActive = true;
     },
-    clearRideRequest: () => Object.assign(initialState),
-  },
+    clearRideRequest: () => Object.assign(initialState)
+  }
 });
 
 export const { setRideRequest, clearRideRequest } = rideRequestSlice.actions;

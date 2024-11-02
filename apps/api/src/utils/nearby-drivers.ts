@@ -1,25 +1,50 @@
 import { Op } from 'sequelize';
+import sequelize from '../config/database';
 import Driver from '../models/driver';
+import logger from './logger';
 
-async function findNearbyAvailableDrivers(
-  lat: number,
-  lon: number,
-  maxDistance: number
-) {
-  const nearbyDrivers = await Driver.findAll({
+export const findNearbyDrivers = async (
+  longitude: number,
+  latitude: number,
+  radiusInMeters: number
+) => {
+  logger.info(`Finding drivers near location: ${longitude}, ${latitude}`);
+  const drivers = await Driver.findAll({
     where: {
-      isAvailable: true,
-      lastLocationUpdatedAt: {
-        [Op.gte]: new Date(Date.now() - 5 * 60 * 1000)
+      location: {
+        [Op.ne]: null,
       },
-      lastLocationLatitude: {
-        [Op.between]: [lat - maxDistance, lat + maxDistance]
-      },
-      lastLocationLongitude: {
-        [Op.between]: [lon - maxDistance, lon + maxDistance]
-      }
-    }
+      // isAvailable: true,
+      [Op.and]: sequelize.where(
+        sequelize.literal(
+          `ST_DWithin(
+            location,
+            ST_SetSRID(ST_MakePoint(:longitude, :latitude), 4326)::geography,
+            :radiusInMeters
+          )`
+        ),
+        true
+      ),
+    },
+    order: [
+      [
+        sequelize.literal(
+          `ST_Distance(
+            location,
+            ST_SetSRID(ST_MakePoint(:longitude, :latitude), 4326)::geography
+          )`
+        ),
+        'ASC',
+      ],
+    ],
+    limit: 10,
+    // Use 'replacements' or 'bind' for parameter binding
+    replacements: {
+      longitude,
+      latitude,
+      radiusInMeters,
+    },
   });
 
-  return nearbyDrivers;
-}
+  return drivers;
+};
