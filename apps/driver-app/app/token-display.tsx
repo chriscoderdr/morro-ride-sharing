@@ -1,13 +1,16 @@
+import useNotificationPermissions from '@/src/hooks/use-notifications-permissions';
 import { RootState } from '@/src/store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useEffect } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Button, StyleSheet, Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
 
 
 const TokenDisplayScreen: React.FC = () => {
   const accessToken = useSelector((state: RootState) => state.auth.accessToken);
   const refreshToken = useSelector((state: RootState) => state.auth.refreshToken);
+  const { permissionStatus, requestPermissions } = useNotificationPermissions();
+
 
   useEffect(() => {
     AsyncStorage.setItem('test', 'testValue')
@@ -27,6 +30,13 @@ const TokenDisplayScreen: React.FC = () => {
       <Text style={styles.token}>
         {refreshToken || 'No refresh token available'}
       </Text>
+      <View>
+      <Text>Notification Permission Status: {permissionStatus}</Text>
+      <Button
+        title="Request Permissions"
+        onPress={requestPermissions}
+      />
+    </View>
     </View>
   );
 };
