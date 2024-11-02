@@ -42,7 +42,7 @@ export const registerRider = async (ctx: Context) => {
     const newRider = await Rider.create({ name, email, phone, password });
 
     // Generate tokens
-    const accessToken = generateAccessToken(newRider.dataValues.id);
+    const accessToken = generateAccessToken(newRider.dataValues.id, 'rider');
     const refreshToken = generateRefreshToken();
 
     // Store the refresh token in the database
@@ -63,8 +63,7 @@ export const registerRider = async (ctx: Context) => {
 };
 
 export const createRideRequest = async (ctx: Context) => {
-  const { riderId, pickupLocation, dropOffLocation } = ctx.request.body as {
-    riderId: string;
+  const { pickupLocation, dropOffLocation } = ctx.request.body as {
     pickupLocation: {
       latitude: number;
       longitude: number;
@@ -77,11 +76,13 @@ export const createRideRequest = async (ctx: Context) => {
     };
   };
 
-  if (!riderId || !pickupLocation || !dropOffLocation) {
+  const riderId = ctx.state.user.dataValues.id;
+
+  if (!pickupLocation || !dropOffLocation) {
     ctx.status = 400;
     ctx.body = {
       error:
-        'Rider ID, pickup location, and drop-off location are required for a ride request.'
+        'Pickup location and drop-off location are required for a ride request.'
     };
     return;
   }
