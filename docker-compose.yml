@@ -2,7 +2,8 @@ services:
   app:
     build:
       context: .
-      dockerfile: Dockerfile.api
+      dockerfile: Dockerfile
+    entrypoint: ['/bin/bash', '/app/entrypoint.sh']
     ports:
       - '3000:3000'
     depends_on:
@@ -18,17 +19,22 @@ services:
       YARN_CACHE_FOLDER: /yarn-cache
       YARN_ENABLE_INLINE_BUILDS: true
       YARN_ERROR_LOG_FILE: '/yarn-logs'
+      SERVICE_NAME: 'app'
     volumes:
       - .:/app:ro
       - yarn-cache:/yarn-cache
-      - app-node-modules:/app/node_modules
+      - root-node-modules:/app/node_modules
       - api-node-modules:/app/apps/api/node_modules
+      - driver-node-modules:/app/apps/driver-app/node_modules
+      - rider-node-modules:/app/apps/rider-app/node_modules
+      - admin-node-modules:/app/apps/admin-dashboard/node_modules
       - ./yarn-logs:/app/yarn-logs
 
   mqtt-listener:
     build:
       context: .
-      dockerfile: Dockerfile.mqtt
+      dockerfile: Dockerfile
+    entrypoint: ['/bin/bash', '/app/entrypoint.sh']
     depends_on:
       - app
       - db
@@ -43,11 +49,45 @@ services:
       YARN_CACHE_FOLDER: /yarn-cache
       YARN_ENABLE_INLINE_BUILDS: true
       YARN_ERROR_LOG_FILE: '/yarn-logs'
+      SERVICE_NAME: 'mqtt-listener'
     volumes:
       - .:/app:ro
       - yarn-cache:/yarn-cache
-      - app-node-modules:/app/node_modules
+      - root-node-modules:/app/node_modules
       - api-node-modules:/app/apps/api/node_modules
+      - driver-node-modules:/app/apps/driver-app/node_modules
+      - rider-node-modules:/app/apps/rider-app/node_modules
+      - admin-node-modules:/app/apps/admin-dashboard/node_modules
+      - ./yarn-logs:/app/yarn-logs
+
+  queue-processor:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    entrypoint: ['/bin/bash', '/app/entrypoint.sh']
+    depends_on:
+      - app
+      - db
+      - redis
+      - mqtt
+    environment:
+      DATABASE_URL: 'postgres://morro_user:morro_pass@db:5432/morrotaxi'
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      MQTT_HOST: mqtt
+      MQTT_PORT: 1883
+      YARN_CACHE_FOLDER: /yarn-cache
+      YARN_ENABLE_INLINE_BUILDS: true
+      YARN_ERROR_LOG_FILE: '/yarn-logs'
+      SERVICE_NAME: 'queue-processor'
+    volumes:
+      - .:/app:ro
+      - yarn-cache:/yarn-cache
+      - root-node-modules:/app/node_modules
+      - api-node-modules:/app/apps/api/node_modules
+      - driver-node-modules:/app/apps/driver-app/node_modules
+      - rider-node-modules:/app/apps/rider-app/node_modules
+      - admin-node-modules:/app/apps/admin-dashboard/node_modules
       - ./yarn-logs:/app/yarn-logs
 
   db:
@@ -85,8 +125,11 @@ services:
 
 volumes:
   yarn-cache:
-  app-node-modules:
+  root-node-modules:
   api-node-modules:
+  driver-node-modules:
+  rider-node-modules:
+  admin-node-modules:
   postgres_data:
   redis_data:
   mqtt_data:

@@ -1,9 +1,0 @@
-# syntax = edrevo/dockerfile-plus
-
-INCLUDE+ Dockerfile.base
-
-EXPOSE 3000
-
-WORKDIR /app/apps/api
-
-CMD ["/wait-for-it.sh", "db:5432", "--", "/wait-for-it.sh", "redis:6379", "--", "yarn", "dev"]

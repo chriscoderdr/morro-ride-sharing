@@ -6,8 +6,9 @@
     "test": "mocha -r ts-node/register test/**/*.test.ts",
     "build": "tsc",
     "start": "node --es-module-specifier-resolution=node",
-    "dev": "tsx watch src/start.ts",
-    "start-mqtt": "tsx watch src/start-mqtt.ts"
+    "dev": "npx tsx watch src/start.ts",
+    "start-mqtt": "npx tsx watch src/start-mqtt.ts",
+    "start-queue-processor": "npx tsx watch src/ride-request-processor.ts"
   },
   "keywords": [],
   "author": "",
@@ -30,7 +31,9 @@
     "twilio": "^5.3.5",
     "typescript": "^5.6.3",
     "uuid": "^11.0.2",
-    "winston": "^3.15.0"
+    "winston": "^3.15.0",
+    "tsx": "^4.19.2",
+    "dotenv": "^16.4.5"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
@@ -46,12 +49,8 @@
     "@types/supertest": "^6.0.2",
     "chai": "^5.1.2",
     "chokidar-cli": "^3.0.0",
-    "concurrently": "^9.0.1",
-    "dotenv": "^16.4.5",
     "eslint": "^9.13.0",
     "mocha": "^10.7.3",
-    "nodemon": "^3.1.7",
-    "supertest": "^7.0.0",
-    "tsx": "^4.19.2"
+    "supertest": "^7.0.0"
   }
 }
