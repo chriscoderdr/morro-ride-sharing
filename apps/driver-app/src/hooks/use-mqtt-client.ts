@@ -1,4 +1,4 @@
-import getMQTTClient from "@/src/utils/mqtt-client"; // Adjust the path as necessary
+import getMQTTClient from "@/src/utils/mqtt-client";
 import { useEffect, useState } from "react";
 
 const useMQTTClient = () => {

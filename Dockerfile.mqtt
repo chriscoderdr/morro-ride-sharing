@@ -1,0 +1,9 @@
+# syntax = edrevo/dockerfile-plus
+
+INCLUDE+ Dockerfile.base
+
+EXPOSE 1883
+
+WORKDIR /app/apps/api
+
+CMD ["yarn", "start-mqtt"]

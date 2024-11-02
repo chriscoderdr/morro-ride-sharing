@@ -1,10 +1,14 @@
-import MQTTClient from "@/src/services/mqtt-client-service";
+import MQTTClient from '@/src/services/mqtt-client-service';
 
 let mqttClientInstance: MQTTClient | null = null;
 
+const generateUniqueClientId = () => {
+  return `driver-app-${new Date().getTime()}`;
+};
+
 const getMQTTClient = () => {
   if (!mqttClientInstance) {
-    mqttClientInstance = new MQTTClient("unique-client-id"); // TODO: Change this to a JWT token
+    mqttClientInstance = new MQTTClient(generateUniqueClientId());
   }
   return mqttClientInstance;
 };
