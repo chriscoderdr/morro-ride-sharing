@@ -1,7 +1,9 @@
 import Checkbox from "@/src/components/checkbox";
 import InputTextField from "@/src/components/input-text-field";
 import RoundedButton from "@/src/components/rounded-button";
-import { useRegisterDriver } from "@/src/hooks/api/use-register-driver";
+import { useAppDispatch } from "@/src/hooks/use-app-dispatch";
+import { useRegisterDriverMutation } from "@/src/store/slices/api-slice";
+import { setTokens } from "@/src/store/slices/auth-slice";
 import React, { useRef, useState } from "react";
 import { Keyboard, Text, View } from "react-native";
 import PhoneInput from "react-native-phone-number-input";
@@ -18,25 +20,20 @@ const SignUpForm: React.FC = () => {
   const [nameError, setNameError] = useState<string | undefined>(undefined);
   const [emailError, setEmailError] = useState<string | undefined>(undefined);
   const [phoneError, setPhoneError] = useState<string | undefined>(undefined);
-  const [passwordError, setPasswordError] = useState<string | undefined>(
-    undefined
-  );
-  const [confirmPasswordError, setConfirmPasswordError] = useState<
-    string | undefined
-  >(undefined);
+  const [passwordError, setPasswordError] = useState<string | undefined>(undefined);
+  const [confirmPasswordError, setConfirmPasswordError] = useState<string | undefined>(undefined);
+  const [registrationError, setRegistrationError] = useState<string | null>(null);
 
   const phoneInputRef = useRef<PhoneInput>(null);
+  const dispatch = useAppDispatch();
 
-  const { mutate, isPending, isError, error, isSuccess } = useRegisterDriver();
+  const [registerDriver, { isLoading, isError, error, isSuccess }] = useRegisterDriverMutation();
 
-  const isValidEmail = (email: string) =>
-    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const isValidEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   const isValidName = (name: string) => name.trim().length >= 2;
-  const isValidPhone = (phone: string) => {
-    return phoneInputRef.current?.isValidNumber(phone);
-  };
+  const isValidPhone = (phone: string) => phoneInputRef.current?.isValidNumber(phone);
 
-  const handleSignUp = () => {
+  const handleSignUp = async () => {
     let isValid = true;
 
     if (!isValidName(name)) {
@@ -75,8 +72,16 @@ const SignUpForm: React.FC = () => {
     }
 
     if (isValid && isChecked) {
-      console.log(`Signing up with ${name}, ${email}, ${phone}, ${password}`);
-      mutate({ name, email, phone, password });
+      setRegistrationError(null);
+      try {
+        const result = await registerDriver({ name, email, phone, password }).unwrap();
+        console.log(`Registration successful: ${result.driverId}`);
+        dispatch(setTokens({ accessToken: result.accessToken, refreshToken: result.refreshToken }));
+      } catch (err: any) {
+        const errorMessage = err?.data?.error || "Registration failed. Please try again.";
+        setRegistrationError(errorMessage);
+        console.error("Registration failed:", errorMessage);
+      }
     }
   };
 
@@ -124,7 +129,7 @@ const SignUpForm: React.FC = () => {
 
   const isButtonDisabled = () => {
     return (
-      isPending ||
+      isLoading ||
       !isChecked ||
       Boolean(
         nameError ||
@@ -224,8 +229,8 @@ const SignUpForm: React.FC = () => {
 
       <View style={styles.buttonContainer}>
         <View style={styles.feedbackContainer}>
-          {isError && (
-            <Text style={styles.feedbackError}>{(error as Error).message}</Text>
+          {registrationError && (
+            <Text style={styles.feedbackError}>{registrationError}</Text>
           )}
           {isSuccess && (
             <Text style={styles.feedbackSuccess}>Registration successful!</Text>
@@ -233,7 +238,7 @@ const SignUpForm: React.FC = () => {
         </View>
         <RoundedButton
           disabled={isButtonDisabled()}
-          text={isPending ? "Signing Up..." : "Sign Up"}
+          text={isLoading ? "Signing Up..." : "Sign Up"}
           onPress={handleSignUp}
           testID="signup-button"
         />

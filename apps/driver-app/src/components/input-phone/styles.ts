@@ -14,7 +14,7 @@ export const styles = StyleSheet.create<IInputPhoneStyles>({
     flex: 1,
   },
   phoneContainer: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: 'transparent',
     width: "100%",
     shadowColor: 'transparent'
   },
@@ -28,7 +28,7 @@ export const styles = StyleSheet.create<IInputPhoneStyles>({
     borderRadius: 10,
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "transparent",
   },
   countryPickerButton: {
     position: "absolute",

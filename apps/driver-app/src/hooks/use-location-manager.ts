@@ -4,28 +4,31 @@ import { Alert } from "react-native";
 
 const useLocationManager = (isBackground = false, interval = 60000) => {
   const [location, setLocation] = useState<[number, number] | null>(null);
-  const requestPermissions = async () => {
-    const { status } = await Location.requestForegroundPermissionsAsync();
-    if (status !== "granted") {
-      Alert.alert("Permission denied", "Location permission is required.");
-      return false;
+
+  const checkPermissions = async () => {
+    const { status } = await Location.getForegroundPermissionsAsync();
+    if (status !== Location.PermissionStatus.GRANTED) {
+      const { status: requestStatus } = await Location.requestForegroundPermissionsAsync();
+      if (requestStatus !== Location.PermissionStatus.GRANTED) {
+        Alert.alert("Permission denied", "Location permission is required.");
+        return false;
+      }
     }
     if (isBackground) {
-      const { status: backgroundStatus } =
-        await Location.requestBackgroundPermissionsAsync();
-      if (backgroundStatus !== "granted") {
-        Alert.alert(
-          "Permission denied",
-          "Background location permission is required."
-        );
-        return false;
+      const { status: backgroundStatus } = await Location.getBackgroundPermissionsAsync();
+      if (backgroundStatus !== Location.PermissionStatus.GRANTED) {
+        const { status: backgroundRequestStatus } = await Location.requestBackgroundPermissionsAsync();
+        if (backgroundRequestStatus !== Location.PermissionStatus.GRANTED) {
+          Alert.alert("Permission denied", "Background location permission is required.");
+          return false;
+        }
       }
     }
     return true;
   };
 
   const fetchUserLocation = async () => {
-    if (await requestPermissions()) {
+    if (await checkPermissions()) {
       const userLocation = await Location.getCurrentPositionAsync({});
       const coords: [number, number] = [
         userLocation.coords.longitude,
@@ -38,7 +41,7 @@ const useLocationManager = (isBackground = false, interval = 60000) => {
   };
 
   const startLocationUpdates = async (taskName: string) => {
-    if ((await requestPermissions()) && isBackground) {
+    if ((await checkPermissions()) && isBackground) {
       await Location.startLocationUpdatesAsync(taskName, {
         accuracy: Location.Accuracy.High,
         timeInterval: interval,

@@ -1,0 +1,93 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    ports:
+      - '3000:3000'
+    depends_on:
+      - db
+      - redis
+      - mqtt
+    environment:
+      DATABASE_URL: 'postgres://morro_user:morro_pass@db:5432/morrotaxi'
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      MQTT_HOST: mqtt
+      MQTT_PORT: 1883
+      YARN_CACHE_FOLDER: /yarn-cache
+      YARN_ENABLE_INLINE_BUILDS: true
+      YARN_ERROR_LOG_FILE: '/yarn-logs'
+    volumes:
+      - .:/app:ro
+      - yarn-cache:/yarn-cache
+      - app-node-modules:/app/node_modules
+      - api-node-modules:/app/apps/api/node_modules
+      - ./yarn-logs:/app/yarn-logs
+
+  mqtt-listener:
+    build:
+      context: .
+      dockerfile: Dockerfile.mqtt
+    depends_on:
+      - app
+      - db
+      - redis
+      - mqtt
+    environment:
+      DATABASE_URL: 'postgres://morro_user:morro_pass@db:5432/morrotaxi'
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      MQTT_HOST: mqtt
+      MQTT_PORT: 1883
+      YARN_CACHE_FOLDER: /yarn-cache
+      YARN_ENABLE_INLINE_BUILDS: true
+      YARN_ERROR_LOG_FILE: '/yarn-logs'
+    volumes:
+      - .:/app:ro
+      - yarn-cache:/yarn-cache
+      - app-node-modules:/app/node_modules
+      - api-node-modules:/app/apps/api/node_modules
+      - ./yarn-logs:/app/yarn-logs
+
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: morro_user
+      POSTGRES_PASSWORD: morro_pass
+      POSTGRES_DB: morrotaxi
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/apps/api/init.sql
+
+  redis:
+    image: redis:7.0
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis_data:/data
+
+  mqtt:
+    image: eclipse-mosquitto
+    ports:
+      - '1883:1883'
+      - '8883:8883'
+      - '9001:9001'
+    volumes:
+      - ./apps/api/mosquitto.conf:/mosquitto/config/mosquitto.conf
+      - mqtt_data:/mosquitto/data
+      - mqtt_logs:/mosquitto/log
+    environment:
+      - LOG_DEST=file
+      - LOG_TYPE=all
+
+volumes:
+  yarn-cache:
+  app-node-modules:
+  api-node-modules:
+  postgres_data:
+  redis_data:
+  mqtt_data:
+  mqtt_logs:
