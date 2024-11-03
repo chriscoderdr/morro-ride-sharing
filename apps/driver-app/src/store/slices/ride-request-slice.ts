@@ -45,7 +45,7 @@ const initialState: RideRequestState = {
   requests: []
 };
 
-// Thunk to accept a ride request
+
 export const acceptRideRequest = createAsyncThunk<
   AcceptRequestResponse,
   AcceptRequestData,
@@ -73,7 +73,7 @@ export const acceptRideRequest = createAsyncThunk<
   }
 );
 
-// Thunk to start a ride request
+
 export const startRideRequest = createAsyncThunk<
   StartRequestResponse,
   StartRequestData,
@@ -99,7 +99,7 @@ export const startRideRequest = createAsyncThunk<
   }
 );
 
-// Thunk to handle timeout for a specific pending ride request
+
 export const setRideRequestWithTimeout = createAsyncThunk(
   'rideRequest/setRideRequestWithTimeout',
   async (
@@ -122,13 +122,13 @@ export const setRideRequestWithTimeout = createAsyncThunk(
           })
         );
       }
-    }, 15000); // 15 seconds
+    }, 15000); 
   }
 );
 
 export const pickUpRideRequest = createAsyncThunk<
-  StartRequestResponse, // Assuming the response structure is similar to StartRequestResponse
-  StartRequestData, // Assuming we use similar data structure as StartRequestData
+  StartRequestResponse, 
+  StartRequestData, 
   { state: RootState }
 >(
   'rideRequest/pickUpRideRequest',
@@ -194,7 +194,7 @@ const rideRequestSlice = createSlice({
       }
     },
     clearRideRequests: (state) => {
-      state.requests = []; // Clear all requests
+      state.requests = [];
     },
     removeRideRequest: (state, action: PayloadAction<string>) => {
       state.requests = state.requests.filter(

@@ -13,13 +13,11 @@ const TripStartCard = ({
 }) => {
   return (
     <View style={styles.container}>
-      {/* Time and Distance to Pickup Point */}
       <Text style={styles.timeDistanceText}>
         {rideRequest.pickupTimeDistance?.time} •{' '}
         {rideRequest.tripTimeDistance?.distance} away
       </Text>
 
-      {/* Rider's Information */}
       <View style={styles.riderInfoContainer}>
         <View style={styles.riderDetails}>
           <Text style={styles.riderName}>Rider: {rideRequest.riderName}</Text>
@@ -29,14 +27,12 @@ const TripStartCard = ({
           </TouchableOpacity>
         </View>
 
-        {/* Rider Icon */}
         <Image
-          source={{ uri: 'https://placekitten.com/50/50' }} // Replace with rider's image URL if available
+          source={{ uri: 'https://placekitten.com/50/50' }}
           style={styles.riderIcon}
         />
       </View>
 
-      {/* Start Trip Button */}
       <TouchableOpacity style={styles.startButton} onPress={onStartTrip}>
         <Text style={styles.startButtonText}>Start Trip</Text>
       </TouchableOpacity>

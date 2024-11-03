@@ -1,39 +1,20 @@
+import RideRequestDashboard from '@/src/components/ride-request-dashboard';
+import useForegroundLocation from '@/src/hooks/use-foreground-location';
+import useNotificationPermissions from '@/src/hooks/use-notifications-permissions';
 import useUserLocation from '@/src/hooks/use-user-location';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import Mapbox from '@rnmapbox/maps';
 import { useEffect, useRef, useState } from 'react';
-import {
-  Alert,
-  Linking,
-  Platform,
-  StyleSheet,
-  TouchableOpacity,
-  View
-} from 'react-native';
-import { useSelector } from 'react-redux';
-
-import RideRequestCard from '@/src/components/ride-request-card';
-import TripCompleteCard from '@/src/components/trip-complete-card';
-import TripInProgressCard from '@/src/components/trip-in-progress-card';
-import TripStartCard from '@/src/components/trip-start-card';
-import { useAppDispatch } from '@/src/hooks/use-app-dispatch';
-import {
-  acceptRideRequest,
-  completeRideRequest,
-  pickUpRideRequest,
-  RideRequest,
-  startRideRequest
-} from '@/src/store/slices/ride-request-slice';
+import { Alert, StyleSheet, TouchableOpacity, View } from 'react-native';
 
 export default function Map() {
-  const dispatch = useAppDispatch();
+  // useBackgroundLocation(); // TODO: Implement useBackgroundLocation hook
+  useForegroundLocation();
 
-  const { location: userLocation, fetchUserLocation } = useUserLocation();
+  const { location: userLocation } = useUserLocation();
   const [isMapInitialized, setIsMapInitialized] = useState(false);
+  const notification = useNotificationPermissions();
   const cameraRef = useRef<Mapbox.Camera>(null);
-  const rideRequests = useSelector(
-    (state: any) => state.rideRequest.requests
-  ) as RideRequest[];
 
   useEffect(() => {
     if (userLocation && !isMapInitialized) {
@@ -43,6 +24,7 @@ export default function Map() {
         animationDuration: 2000
       });
       setIsMapInitialized(true);
+      notification.requestPermissions();
     }
   }, [userLocation, isMapInitialized]);
 
@@ -56,80 +38,6 @@ export default function Map() {
     } else {
       Alert.alert('Location Error', 'Unable to retrieve user location.');
     }
-  };
-
-  const handleConfirmPickup = (rideRequestId: string) => {
-    const data = async () => {
-      try {
-        await dispatch(pickUpRideRequest({ rideRequestId })).unwrap();
-      } catch (error) {
-        Alert.alert('Error', 'Failed to confirm rider pickup.');
-      }
-    };
-    data().catch(() => console.error('Error confirming pickup'));
-  };
-
-  const handleAcceptRide = (rideRequestId: string) => {
-    const data = async () => {
-      console.log(`Accepting ride request: ${rideRequestId}`);
-      try {
-        await dispatch(acceptRideRequest({ rideRequestId })).unwrap();
-      } catch (error) {
-        Alert.alert('Error', 'Failed to accept the ride request.');
-      }
-    };
-    data().catch(() => {
-      console.error('Error accepting ride request');
-    });
-  };
-
-  const handleStartTrip = (rideRequestId: string) => {
-    const data = async () => {
-      console.log(`Starting trip for request: ${rideRequestId}`);
-      try {
-        await dispatch(startRideRequest({ rideRequestId })).unwrap();
-      } catch (error) {
-        Alert.alert('Error', 'Failed to start the trip.');
-      }
-    };
-    data().catch(() => {
-      console.error('Error starting trip');
-    });
-  };
-
-  const handleCallRider = (riderPhone: string) => {
-    const phoneNumber = `tel:${riderPhone}`;
-
-    if (Platform.OS === 'ios' || Platform.OS === 'android') {
-      Linking.canOpenURL(phoneNumber)
-        .then((supported) => {
-          if (!supported) {
-            Alert.alert(
-              'Error',
-              'Unable to make the call. This feature works only on a real device.'
-            );
-          } else {
-            Linking.openURL(phoneNumber);
-          }
-        })
-        .catch((err) => console.error('Error checking phone URL:', err));
-    } else {
-      Alert.alert(
-        'Error',
-        'Unable to make the call. This feature works only on a real device.'
-      );
-    }
-  };
-
-  const handleCompleteTrip = (rideRequestId: string) => {
-    const data = async () => {
-      try {
-        await dispatch(completeRideRequest({ rideRequestId })).unwrap();
-      } catch (error) {
-        Alert.alert('Error', 'Failed to complete the trip.');
-      }
-    };
-    data().catch(() => console.error('Error completing trip'));
   };
 
   return (
@@ -173,51 +81,7 @@ export default function Map() {
         <Ionicons name="locate" size={24} color="white" />
       </TouchableOpacity>
 
-      {/* Display RideRequestCard for each request with status 'pending' */}
-      {rideRequests
-        .filter((request) => request.status === 'pending')
-        .map((request) => (
-          <RideRequestCard
-            key={request.rideRequestId}
-            rideRequest={request}
-            onAccept={() => handleAcceptRide(request.rideRequestId)}
-          />
-        ))}
-
-      {/* Display TripStartCard for each request with status 'accepted' */}
-      {rideRequests
-        .filter((request) => request.status === 'accepted')
-        .map((request) => (
-          <TripStartCard
-            key={request.rideRequestId}
-            rideRequest={request}
-            onCallRider={() => handleCallRider(request.riderPhone || '')}
-            onStartTrip={() => handleStartTrip(request.rideRequestId)}
-          />
-        ))}
-
-      {/* Display TripInProgressCard for each request with status 'started' */}
-      {rideRequests
-        .filter((request) => request.status === 'started')
-        .map((request) => (
-          <TripInProgressCard
-            key={request.rideRequestId}
-            rideRequest={request}
-            onCallRider={() => handleCallRider(request.riderPhone || '')}
-            onPickUpRider={() => handleConfirmPickup(request.rideRequestId)}
-          />
-        ))}
-
-      {/* Display TripInProgressCard for each request with status 'started' */}
-      {rideRequests
-        .filter((request) => request.status === 'picked-up')
-        .map((request) => (
-          <TripCompleteCard
-            key={request.rideRequestId}
-            rideRequest={request}
-            onCompleteTrip={() => handleCompleteTrip(request.rideRequestId)}
-          />
-        ))}
+      <RideRequestDashboard />
     </View>
   );
 }

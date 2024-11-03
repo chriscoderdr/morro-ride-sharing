@@ -8,7 +8,7 @@ import {
   StartRequestData,
   StartRequestResponse
 } from '@/src/api/models';
-import { RootState } from '@/src/store'; // Ensure you have the correct import path for your store
+import { RootState } from '@/src/store';
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_MORRO_API_BASE_URL;
@@ -61,7 +61,7 @@ export const apiSlice = createApi({
     pickUpRideRequest: builder.mutation<StartRequestResponse, StartRequestData>(
       {
         query: (data) => ({
-          url: '/drivers/pickUpRequest', // Adjust the endpoint URL as needed
+          url: '/drivers/pickUpRequest', 
           method: 'POST',
           body: data
         })

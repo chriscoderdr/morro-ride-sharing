@@ -3,7 +3,7 @@ import { Context } from 'koa';
 import { Op } from 'sequelize';
 import Driver from '../models/driver';
 import RideRequest from '../models/ride-request';
-import Rider from '../models/rider'; // Import the Rider model
+import Rider from '../models/rider';
 import logger from '../utils/logger';
 import {
   generateAccessToken,
@@ -39,14 +39,11 @@ export const registerDriver = async (ctx: Context) => {
       return;
     }
 
-    // Create the new driver
     const newDriver = await Driver.create({ name, email, phone, password });
 
-    // Generate tokens
     const accessToken = generateAccessToken(newDriver.dataValues.id, 'driver');
     const refreshToken = generateRefreshToken();
 
-    // Store the refresh token in the database
     await newDriver.update({ refreshToken });
 
     ctx.status = 201;
@@ -84,11 +81,9 @@ export const loginDriver = async (ctx: Context) => {
       return;
     }
 
-    // Generate tokens
     const accessToken = generateAccessToken(driver.dataValues.id, 'driver');
     const refreshToken = generateRefreshToken();
 
-    // Store the new refresh token in the database
     await driver.update({ refreshToken });
 
     ctx.status = 200;
@@ -117,12 +112,10 @@ export const acceptRideRequest = async (ctx: Context) => {
   }
 
   try {
-    // Fetch the ride request
     const rideRequest = await RideRequest.findOne({
       where: { id: rideRequestId }
     });
 
-    // Validate the ride request status
     if (!rideRequest) {
       ctx.status = 404;
       ctx.body = { error: 'Ride request not found.' };
@@ -134,7 +127,6 @@ export const acceptRideRequest = async (ctx: Context) => {
       return;
     }
 
-    // Fetch the associated rider information
     const rider = await Rider.findOne({ where: { id: rideRequest.riderId } });
     if (!rider) {
       ctx.status = 404;
@@ -142,7 +134,6 @@ export const acceptRideRequest = async (ctx: Context) => {
       return;
     }
 
-    // Update the ride request to accepted
     rideRequest.status = 'accepted';
     rideRequest.driverId = driverId;
     await rideRequest.save();
@@ -153,8 +144,8 @@ export const acceptRideRequest = async (ctx: Context) => {
     ctx.body = {
       message: 'Ride request accepted successfully.',
       rideRequestId: rideRequest.id,
-      riderName: rider.dataValues.name, // Retrieved from Rider model
-      riderPhone: rider.dataValues.phone, // Retrieved from Rider model
+      riderName: rider.dataValues.name,
+      riderPhone: rider.dataValues.phone,
       pickupLocation: rideRequest.pickupLocation,
       dropOffLocation: rideRequest.dropOffLocation
     };
@@ -177,12 +168,10 @@ export const startRideRequest = async (ctx: Context) => {
   }
 
   try {
-    // Fetch the ride request
     const rideRequest = await RideRequest.findOne({
-      where: { id: rideRequestId, driverId: driverId } // Ensure the driver is assigned to this ride
+      where: { id: rideRequestId, driverId: driverId }
     });
 
-    // Validate the ride request status
     if (!rideRequest) {
       ctx.status = 404;
       ctx.body = { error: 'Ride request not found.' };
@@ -196,7 +185,6 @@ export const startRideRequest = async (ctx: Context) => {
       return;
     }
 
-    // Update the ride request to started
     rideRequest.status = 'started';
     await rideRequest.save();
 
@@ -230,12 +218,10 @@ export const pickUpRideRequest = async (ctx: Context) => {
   }
 
   try {
-    // Fetch the ride request
     const rideRequest = await RideRequest.findOne({
-      where: { id: rideRequestId, driverId: driverId } // Ensure the driver is assigned to this ride
+      where: { id: rideRequestId, driverId: driverId }
     });
 
-    // Validate the ride request status
     if (!rideRequest) {
       ctx.status = 404;
       ctx.body = { error: 'Ride request not found.' };
@@ -250,7 +236,6 @@ export const pickUpRideRequest = async (ctx: Context) => {
       return;
     }
 
-    // Update the ride request to picked-up
     rideRequest.status = 'picked-up';
     await rideRequest.save();
 
@@ -284,12 +269,10 @@ export const completeRideRequest = async (ctx: Context) => {
   }
 
   try {
-    // Fetch the ride request
     const rideRequest = await RideRequest.findOne({
-      where: { id: rideRequestId, driverId: driverId } // Ensure the driver is assigned to this ride
+      where: { id: rideRequestId, driverId: driverId }
     });
 
-    // Validate the ride request status
     if (!rideRequest) {
       ctx.status = 404;
       ctx.body = { error: 'Ride request not found.' };
@@ -297,15 +280,19 @@ export const completeRideRequest = async (ctx: Context) => {
     }
     if (rideRequest.status !== 'picked-up') {
       ctx.status = 400;
-      ctx.body = { error: 'The ride request must be in picked-up status to complete the ride.' };
+      ctx.body = {
+        error:
+          'The ride request must be in picked-up status to complete the ride.'
+      };
       return;
     }
 
-    // Update the ride request to dropped-off
     rideRequest.status = 'dropped-off';
     await rideRequest.save();
 
-    logger.info(`Ride request ${rideRequestId} completed by driver ${driverId}`);
+    logger.info(
+      `Ride request ${rideRequestId} completed by driver ${driverId}`
+    );
 
     ctx.status = 200;
     ctx.body = {

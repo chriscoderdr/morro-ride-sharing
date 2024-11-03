@@ -14,19 +14,21 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 
-
 const queryClient = new QueryClient();
 
-Mapbox.setAccessToken(
-  process.env.MAPBOX_ACCESS_TOKEN || ''
-);
+const MAPBOX_ACCESS_TOKEN = process.env.EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN;
+console.log('Mapbox Access Token:', MAPBOX_ACCESS_TOKEN);
+
+
+Mapbox.setAccessToken(MAPBOX_ACCESS_TOKEN || '');
+
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,
     shouldPlaySound: false,
-    shouldSetBadge: false,
-  }),
+    shouldSetBadge: false
+  })
 });
 
 const App = () => {

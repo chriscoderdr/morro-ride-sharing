@@ -1,5 +1,6 @@
 import { apiSlice } from '@/src/store/slices/api-slice';
 import authReducer from '@/src/store/slices/auth-slice';
+import mqttReducer from '@/src/store/slices/mqtt-slice';
 import rideRequestReducer from '@/src/store/slices/ride-request-slice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
@@ -13,7 +14,8 @@ const persistConfig = {
 const reducer = combineReducers({
   [apiSlice.reducerPath]: apiSlice.reducer,
   auth: authReducer,
-  rideRequest: rideRequestReducer
+  rideRequest: rideRequestReducer,
+  mqtt: mqttReducer
 });
 
 const persistedReducer = persistReducer(persistConfig, reducer);
