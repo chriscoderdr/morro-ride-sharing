@@ -2,18 +2,18 @@ import { RideRequest } from '@/src/store/slices/ride-request-slice';
 import { Ionicons } from '@expo/vector-icons';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-const TripStartCard = ({
+const TripInProgressCard = ({
   rideRequest,
-  onStartTrip,
+  onPickUpRider,
   onCallRider
 }: {
   rideRequest: RideRequest;
-  onStartTrip: () => void;
+  onPickUpRider: () => void;
   onCallRider: () => void;
 }) => {
   return (
     <View style={styles.container}>
-      {/* Time and Distance to Pickup Point */}
+      {/* Time and Distance Information */}
       <Text style={styles.timeDistanceText}>
         {rideRequest.pickupTimeDistance?.time} •{' '}
         {rideRequest.tripTimeDistance?.distance} away
@@ -36,9 +36,9 @@ const TripStartCard = ({
         />
       </View>
 
-      {/* Start Trip Button */}
-      <TouchableOpacity style={styles.startButton} onPress={onStartTrip}>
-        <Text style={styles.startButtonText}>Start Trip</Text>
+      {/* Pick Up Rider Button */}
+      <TouchableOpacity style={styles.startButton} onPress={onPickUpRider}>
+        <Text style={styles.startButtonText}>Pick Up Rider</Text>
       </TouchableOpacity>
     </View>
   );
@@ -96,12 +96,6 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     backgroundColor: '#ddd'
   },
-  distanceRestrictionText: {
-    fontSize: 14,
-    color: '#666',
-    textAlign: 'center',
-    marginVertical: 10
-  },
   startButton: {
     marginTop: 20,
     backgroundColor: '#007AFF',
@@ -116,4 +110,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default TripStartCard;
+export default TripInProgressCard;

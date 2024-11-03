@@ -76,7 +76,7 @@ const SignUpForm: React.FC = () => {
       try {
         const result = await registerDriver({ name, email, phone, password }).unwrap();
         console.log(`Registration successful: ${result.driverId}`);
-        dispatch(setTokens({ accessToken: result.accessToken, refreshToken: result.refreshToken }));
+        dispatch(setTokens({ accessToken: result.accessToken, refreshToken: result.refreshToken, driverId: result.driverId }));
       } catch (err: any) {
         const errorMessage = err?.data?.error || "Registration failed. Please try again.";
         setRegistrationError(errorMessage);

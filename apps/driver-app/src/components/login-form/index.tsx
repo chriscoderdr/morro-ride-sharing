@@ -49,6 +49,7 @@ const LoginForm: React.FC = () => {
           setTokens({
             accessToken: result.accessToken,
             refreshToken: result.refreshToken,
+            driverId: result.driverId
           })
         );
       } catch (err: any) {
