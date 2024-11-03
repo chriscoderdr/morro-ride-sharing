@@ -3,6 +3,7 @@ import RoundedButton from '@/src/components/rounded-button';
 import { useAppDispatch } from '@/src/hooks/use-app-dispatch';
 import { useLoginDriverMutation } from '@/src/store/slices/api-slice';
 import { setTokens } from '@/src/store/slices/auth-slice';
+import { Link } from 'expo-router';
 import React, { useState } from 'react';
 import { Keyboard, Text, View } from 'react-native';
 import { styles } from './styles';
@@ -130,6 +131,11 @@ const LoginForm: React.FC = () => {
           onPress={handleLogin}
           testID="login-button"
         />
+        <View style={styles.dontHaveAnAccount}>
+          <Link href="/signup" style={styles.dontHaveAnAccountText}>
+            <Text>Don't have an account? Sign up</Text>
+          </Link>
+        </View>
       </View>
     </View>
   );

@@ -18,8 +18,9 @@ import { PersistGate } from 'redux-persist/integration/react';
 const queryClient = new QueryClient();
 
 Mapbox.setAccessToken(
-  'sk.eyJ1IjoiY2dvbWV6bWVuZGV6IiwiYSI6ImNtMndhbDAwZjAzMXQyanNkMHF2NjR3bmUifQ.f6E28fydW9bkhLBP7L_lCQ'
+  process.env.MAPBOX_ACCESS_TOKEN || ''
 );
+
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,

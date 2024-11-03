@@ -8,6 +8,7 @@ export const Setup = () => {
   return (
     <Stack initialRouteName="signup">
       <Stack.Screen name="signup" options={{ headerShown: false }} />
+      <Stack.Screen name="login" options={{ headerShown: false }} />
     </Stack>
   );
 };
