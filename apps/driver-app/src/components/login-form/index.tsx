@@ -3,9 +3,10 @@ import RoundedButton from '@/src/components/rounded-button';
 import { useAppDispatch } from '@/src/hooks/use-app-dispatch';
 import { useLoginDriverMutation } from '@/src/store/slices/api-slice';
 import { setTokens } from '@/src/store/slices/auth-slice';
-import { Link } from 'expo-router';
+import { isValidEmail, isValidPassword } from '@/src/utils/validators';
+import { Link, useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { Keyboard, Text, View } from 'react-native';
+import { Alert, Keyboard, Text, View } from 'react-native';
 import { styles } from './styles';
 
 const LoginForm: React.FC = () => {
@@ -16,14 +17,11 @@ const LoginForm: React.FC = () => {
   const [passwordError, setPasswordError] = useState<string | undefined>(
     undefined
   );
-  const [loginError, setLoginError] = useState<string | null>(null);
+
+  const router = useRouter();
 
   const dispatch = useAppDispatch();
-  const [login, { isLoading, isError, error, isSuccess }] =
-    useLoginDriverMutation();
-
-  const isValidEmail = (email: string) =>
-    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const [login, { isLoading, isSuccess }] = useLoginDriverMutation();
 
   const handleLogin = async () => {
     let isValid = true;
@@ -35,7 +33,7 @@ const LoginForm: React.FC = () => {
       setEmailError(undefined);
     }
 
-    if (password.length < 8) {
+    if (!isValidPassword(password)) {
       setPasswordError('Password must be at least 8 characters');
       isValid = false;
     } else {
@@ -43,7 +41,6 @@ const LoginForm: React.FC = () => {
     }
 
     if (isValid) {
-      setLoginError(null);
       try {
         const result = await login({ email, password }).unwrap();
         dispatch(
@@ -53,11 +50,11 @@ const LoginForm: React.FC = () => {
             driverId: result.driverId
           })
         );
+        router.push('/map');
       } catch (err: any) {
         const errorMessage =
           err?.data?.error || 'Login failed. Please try again.';
-        setLoginError(errorMessage);
-        console.error('Login failed:', errorMessage);
+        Alert.alert('Login Error', errorMessage);
       }
     }
   };
@@ -119,12 +116,6 @@ const LoginForm: React.FC = () => {
       </View>
 
       <View style={styles.buttonContainer}>
-        <View style={styles.feedbackContainer}>
-          {loginError && <Text style={styles.feedbackError}>{loginError}</Text>}
-          {isSuccess && (
-            <Text style={styles.feedbackSuccess}>Login successful!</Text>
-          )}
-        </View>
         <RoundedButton
           disabled={isButtonDisabled()}
           text={isLoading ? 'Logging in...' : 'Login'}

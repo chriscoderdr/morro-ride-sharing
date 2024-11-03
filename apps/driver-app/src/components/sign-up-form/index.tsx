@@ -4,9 +4,15 @@ import RoundedButton from '@/src/components/rounded-button';
 import { useAppDispatch } from '@/src/hooks/use-app-dispatch';
 import { useRegisterDriverMutation } from '@/src/store/slices/api-slice';
 import { setTokens } from '@/src/store/slices/auth-slice';
-import { Link } from 'expo-router';
+import {
+  isValidEmail,
+  isValidName,
+  isValidPassword,
+  isValidPhone
+} from '@/src/utils/validators';
+import { Link, useRouter } from 'expo-router';
 import React, { useRef, useState } from 'react';
-import { Keyboard, Text, View } from 'react-native';
+import { Alert, Keyboard, Text, View } from 'react-native';
 import PhoneInput from 'react-native-phone-number-input';
 import { styles } from './styles';
 
@@ -27,21 +33,13 @@ const SignUpForm: React.FC = () => {
   const [confirmPasswordError, setConfirmPasswordError] = useState<
     string | undefined
   >(undefined);
-  const [registrationError, setRegistrationError] = useState<string | null>(
-    null
-  );
 
   const phoneInputRef = useRef<PhoneInput>(null);
   const dispatch = useAppDispatch();
 
-  const [registerDriver, { isLoading, isError, error, isSuccess }] =
-    useRegisterDriverMutation();
+  const [registerDriver, { isLoading }] = useRegisterDriverMutation();
 
-  const isValidEmail = (email: string) =>
-    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  const isValidName = (name: string) => name.trim().length >= 2;
-  const isValidPhone = (phone: string) =>
-    phoneInputRef.current?.isValidNumber(phone);
+  const router = useRouter();
 
   const handleSignUp = async () => {
     let isValid = true;
@@ -60,14 +58,14 @@ const SignUpForm: React.FC = () => {
       setEmailError(undefined);
     }
 
-    if (!isValidPhone(phone)) {
+    if (!isValidPhone(phone, phoneInputRef as any)) {
       setPhoneError('Please enter a valid phone number');
       isValid = false;
     } else {
       setPhoneError(undefined);
     }
 
-    if (password.length < 8) {
+    if (!isValidPassword(password)) {
       setPasswordError('Password must be at least 8 characters');
       isValid = false;
     } else {
@@ -82,7 +80,6 @@ const SignUpForm: React.FC = () => {
     }
 
     if (isValid && isChecked) {
-      setRegistrationError(null);
       try {
         const result = await registerDriver({
           name,
@@ -90,7 +87,6 @@ const SignUpForm: React.FC = () => {
           phone,
           password
         }).unwrap();
-        console.log(`Registration successful: ${result.driverId}`);
         dispatch(
           setTokens({
             accessToken: result.accessToken,
@@ -98,11 +94,11 @@ const SignUpForm: React.FC = () => {
             driverId: result.driverId
           })
         );
+        router.push('/map');
       } catch (err: any) {
         const errorMessage =
           err?.data?.error || 'Registration failed. Please try again.';
-        setRegistrationError(errorMessage);
-        console.error('Registration failed:', errorMessage);
+        Alert.alert('Sign up Error', errorMessage);
       }
     }
   };
@@ -122,7 +118,9 @@ const SignUpForm: React.FC = () => {
   const handlePhoneChange = (text: string) => {
     setPhone(text);
     setPhoneError(
-      !isValidPhone(text) ? 'Please enter a valid phone number' : undefined
+      !isValidPhone(text, phoneInputRef as any)
+        ? 'Please enter a valid phone number'
+        : undefined
     );
   };
 
@@ -250,14 +248,6 @@ const SignUpForm: React.FC = () => {
       </View>
 
       <View style={styles.buttonContainer}>
-        <View style={styles.feedbackContainer}>
-          {registrationError && (
-            <Text style={styles.feedbackError}>{registrationError}</Text>
-          )}
-          {isSuccess && (
-            <Text style={styles.feedbackSuccess}>Registration successful!</Text>
-          )}
-        </View>
         <View style={styles.alreadyHaveAnAccount}>
           <Link href="/login" style={styles.alredayHaveAnAccountText}>
             <Text>Alreday have an account? Sign in</Text>
