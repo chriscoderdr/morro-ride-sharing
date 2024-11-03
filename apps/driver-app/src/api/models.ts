@@ -1,3 +1,7 @@
+export interface ApiResponse {
+  message: string;
+}
+
 export interface DriverData {
   name: string;
   email: string;
@@ -11,8 +15,14 @@ export interface RegisterResponse extends ApiResponse {
   refreshToken: string;
 }
 
-export interface ApiResponse {
-  message: string;
+export interface LoginData {
+  email: string;
+  password: string;
+}
+
+export interface LoginResponse extends ApiResponse {
+  accessToken: string;
+  refreshToken: string;
 }
 
 

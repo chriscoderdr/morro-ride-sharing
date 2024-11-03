@@ -1,8 +1,12 @@
+import bcrypt from 'bcrypt';
 import { Context } from 'koa';
 import { Op } from 'sequelize';
 import Driver from '../models/driver';
 import logger from '../utils/logger';
-import { generateAccessToken, generateRefreshToken } from '../utils/token-utils';
+import {
+  generateAccessToken,
+  generateRefreshToken
+} from '../utils/token-utils';
 
 export const registerDriver = async (ctx: Context) => {
   const { name, email, phone, password } = ctx.request.body as {
@@ -47,6 +51,48 @@ export const registerDriver = async (ctx: Context) => {
     ctx.body = {
       message: 'Driver registered successfully.',
       driverId: newDriver.dataValues.id,
+      accessToken,
+      refreshToken
+    };
+  } catch (error) {
+    logger.error(error);
+    ctx.status = 500;
+    ctx.body = { error: 'Server error. Please try again later.' };
+  }
+};
+
+export const loginDriver = async (ctx: Context) => {
+  const { email, password } = ctx.request.body as {
+    email: string;
+    password: string;
+  };
+
+  if (!email || !password) {
+    ctx.status = 400;
+    ctx.body = { error: 'Email and password are required.' };
+    return;
+  }
+
+  try {
+    const driver = await Driver.findOne({ where: { email } });
+
+    if (!driver || !(await bcrypt.compare(password, driver.password))) {
+      ctx.status = 401;
+      ctx.body = { error: 'Invalid email or password.' };
+      return;
+    }
+
+    // Generate tokens
+    const accessToken = generateAccessToken(driver.dataValues.id, 'driver');
+    const refreshToken = generateRefreshToken();
+
+    // Store the new refresh token in the database
+    await driver.update({ refreshToken });
+
+    ctx.status = 200;
+    ctx.body = {
+      message: 'Login successful.',
+      driverId: driver.dataValues.id,
       accessToken,
       refreshToken
     };
