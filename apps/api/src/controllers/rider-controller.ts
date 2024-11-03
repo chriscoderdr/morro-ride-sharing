@@ -104,6 +104,8 @@ export const createRideRequest = async (ctx: Context) => {
       status: 'pending'
     });
 
+    logger.info(`Ride request created: ${newRideRequest.pickupAddress}`);
+
     // Add the ride request to the queue
     await queueService.addRideRequestToQueue(newRideRequest);
 

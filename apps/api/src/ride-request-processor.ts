@@ -37,23 +37,26 @@ interface RideRequestData {
   pickupLocation: {
     latitude: number;
     longitude: number;
-    address: string;
   };
   dropOffLocation: {
     latitude: number;
     longitude: number;
-    address: string;
   };
+  pickupAddress: string;
+  dropOffAddress: string;
 }
 
 const processRideRequest = async (job: Job<RideRequestData>) => {
-  const { id, riderId, pickupLocation, dropOffLocation } = job.data;
+  const { id, riderId, pickupLocation, dropOffLocation, pickupAddress, dropOffAddress } = job.data;
+  logger.info(`data json: ${JSON.stringify(job.data)}`);
 
   const rideRequest = {
     id,
     riderId,
     pickupLocation,
-    dropOffLocation
+    dropOffLocation,
+    pickupAddress,
+    dropOffAddress
   };
 
   const topic = 'drivers/ride-requests';

@@ -19,7 +19,9 @@ class QueueService {
         id: rideRequest.id,
         riderId: rideRequest.riderId,
         pickupLocation: rideRequest.pickupLocation,
-        dropOffLocation: rideRequest.dropOffLocation
+        dropOffLocation: rideRequest.dropOffLocation,
+        pickupAddress: rideRequest.pickupAddress,
+        dropOffAddress: rideRequest.dropOffAddress
       });
     } catch (error) {
       throw new Error('Failed to add ride request to the queue');

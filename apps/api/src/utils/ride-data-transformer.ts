@@ -1,9 +1,11 @@
-import sequelize from '../config/database';
+import mapbox from '@mapbox/mapbox-sdk';
+import Directions from '@mapbox/mapbox-sdk/services/directions';
 import Driver from '../models/driver';
 import RideRequest from '../models/ride-request';
+import logger from './logger';
 
 /**
- * Transforms ride request data by calculating distances and estimated times.
+ * Transforms ride request data by calculating distances and estimated times using Mapbox API.
  *
  * @param driver - The driver object with at least the 'id' and 'location' properties.
  * @param rideRequest - The ride request object with necessary properties.
@@ -18,83 +20,109 @@ export async function transformRideData(
     throw new Error('Driver or driver location not provided.');
   }
 
-  if (!rideRequest || !rideRequest.pickupLocation || !rideRequest.dropOffLocation) {
+  if (
+    !rideRequest ||
+    !rideRequest.pickupLocation ||
+    !rideRequest.dropOffLocation
+  ) {
     throw new Error('Ride request or locations not provided.');
   }
 
   // Extract coordinates
-  const driverCoordinates = driver.location.coordinates;
-  const driverLongitude = driverCoordinates[0];
-  const driverLatitude = driverCoordinates[1];
+  const driverCoordinates = driver.location.coordinates; // [longitude, latitude]
+  const pickupCoordinates = rideRequest.pickupLocation.coordinates; // [longitude, latitude]
+  const dropOffCoordinates = rideRequest.dropOffLocation.coordinates; // [longitude, latitude]
 
-  const pickupCoordinates = rideRequest.pickupLocation.coordinates;
-  const pickupLongitude = pickupCoordinates[0];
-  const pickupLatitude = pickupCoordinates[1];
+  // Initialize Mapbox client
+  const mapboxAccessToken =
+    process.env.MAPBOX_ACCESS_TOKEN ||
+    'sk.eyJ1IjoiY2dvbWV6bWVuZGV6IiwiYSI6ImNtMndhbDAwZjAzMXQyanNkMHF2NjR3bmUifQ.f6E28fydW9bkhLBP7L_lCQ';
+  if (!mapboxAccessToken) {
+    throw new Error('Mapbox access token not provided.');
+  }
 
-  const dropOffCoordinates = rideRequest.dropOffLocation.coordinates;
-  const dropOffLongitude = dropOffCoordinates[0];
-  const dropOffLatitude = dropOffCoordinates[1];
+  const mapboxClient = mapbox({ accessToken: mapboxAccessToken });
+  const directionsService = Directions(mapboxClient);
 
-  // Calculate distances using PostGIS functions
-  const distanceResults = await sequelize.query(
-    `
-    SELECT
-      ST_Distance(
-        ST_SetSRID(ST_MakePoint(:driverLongitude, :driverLatitude), 4326)::geography,
-        ST_SetSRID(ST_MakePoint(:pickupLongitude, :pickupLatitude), 4326)::geography
-      ) AS "pickupDistance",
-      ST_Distance(
-        ST_SetSRID(ST_MakePoint(:pickupLongitude, :pickupLatitude), 4326)::geography,
-        ST_SetSRID(ST_MakePoint(:dropOffLongitude, :dropOffLatitude), 4326)::geography
-      ) AS "tripDistance"
-    `,
-    {
-      type: sequelize.QueryTypes.SELECT,
-      replacements: {
-        driverLongitude,
-        driverLatitude,
-        pickupLongitude,
-        pickupLatitude,
-        dropOffLongitude,
-        dropOffLatitude,
-      },
-    }
+  // Calculate route from driver to pickup location
+  const pickupRoute = await getRoute(
+    directionsService,
+    driverCoordinates,
+    pickupCoordinates
   );
 
-  const pickupDistance = distanceResults[0].pickupDistance; // in meters
-  const tripDistance = distanceResults[0].tripDistance;     // in meters
-
-  // Estimate travel times
-  const averageSpeed = 11.11; // meters per second (approximately 40 km/h)
-
-  const pickupTimeInSeconds = pickupDistance / averageSpeed;
-  const tripTimeInSeconds = tripDistance / averageSpeed;
+  // Calculate route from pickup to drop-off location
+  const tripRoute = await getRoute(
+    directionsService,
+    pickupCoordinates,
+    dropOffCoordinates
+  );
 
   // Prepare display data
   const displayData = {
     rideRequestId: rideRequest.id,
-    estimatedPrice: 90, // or rideRequest.estimatedPrice if available
+    estimatedPrice: Math.floor(tripRoute.distance / 1000) * 30, // Use rideRequest.estimatedPrice if available
     pickupTimeDistance: {
-      distance: formatDistance(pickupDistance),
-      time: formatTime(pickupTimeInSeconds),
+      distance: formatDistance(pickupRoute.distance),
+      time: formatTime(pickupRoute.duration)
     },
     pickupLocation: {
-      latitude: pickupLatitude,
-      longitude: pickupLongitude,
-      address: rideRequest.pickupAddress,
+      latitude: pickupCoordinates[1],
+      longitude: pickupCoordinates[0],
+      address: rideRequest.pickupAddress
     },
     tripTimeDistance: {
-      distance: formatDistance(tripDistance),
-      time: formatTime(tripTimeInSeconds),
+      distance: formatDistance(tripRoute.distance),
+      time: formatTime(tripRoute.duration)
     },
     tripLocation: {
-      latitude: dropOffLatitude,
-      longitude: dropOffLongitude,
-      address: rideRequest.dropOffAddress,
-    },
+      latitude: dropOffCoordinates[1],
+      longitude: dropOffCoordinates[0],
+      address: rideRequest.dropOffAddress
+    }
   };
 
   return displayData;
+}
+
+/**
+ * Helper function to get route information between two points using Mapbox Directions API.
+ *
+ * @param directionsService - The Mapbox Directions service instance.
+ * @param origin - The origin coordinates [longitude, latitude].
+ * @param destination - The destination coordinates [longitude, latitude].
+ * @returns An object containing distance (meters) and duration (seconds).
+ */
+async function getRoute(
+  directionsService: ReturnType<typeof Directions>,
+  origin: number[],
+  destination: number[]
+): Promise<{ distance: number; duration: number }> {
+  try {
+    logger.info(`Fetching route from Mapbox API: ${origin} to ${destination}`);
+    const response = await directionsService
+      .getDirections({
+        profile: 'driving',
+        waypoints: [{ coordinates: origin }, { coordinates: destination }],
+        geometries: 'geojson',
+        overview: 'simplified'
+      })
+      .send();
+
+    const routes = response.body.routes;
+    if (routes && routes.length > 0) {
+      const route = routes[0];
+      return {
+        distance: route.distance, // in meters
+        duration: route.duration // in seconds
+      };
+    } else {
+      throw new Error('No routes found between the provided locations.');
+    }
+  } catch (error) {
+    logger.error(`Error fetching route from Mapbox API: ${error.message}`);
+    throw new Error('Failed to calculate route.');
+  }
 }
 
 /**
@@ -120,11 +148,12 @@ function formatDistance(meters: number): string {
 function formatTime(seconds: number): string {
   if (seconds >= 3600) {
     const hours = Math.floor(seconds / 3600);
-    return hours + ' hour(s)';
+    const minutes = Math.round((seconds % 3600) / 60);
+    return `${hours} hr ${minutes} min`;
   } else if (seconds >= 60) {
     const minutes = Math.round(seconds / 60);
-    return minutes + ' minute(s)';
+    return minutes + ' min';
   } else {
-    return Math.round(seconds) + ' seconds';
+    return Math.round(seconds) + ' sec';
   }
 }

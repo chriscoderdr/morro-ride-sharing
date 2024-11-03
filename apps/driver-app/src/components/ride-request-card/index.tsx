@@ -9,7 +9,7 @@ const RideRequestCard: React.FC<RideRequestCardProps> = ({
 }) => {
   return (
     <View style={styles.container}>
-      <Text style={styles.priceText}>{rideRequest.estimatedPrice}</Text>
+      <Text style={styles.priceText}>${rideRequest.estimatedPrice}</Text>
 
       <View style={styles.infoContainer}>
         <Text style={styles.infoText}>
