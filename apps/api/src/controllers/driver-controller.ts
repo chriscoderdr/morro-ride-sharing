@@ -37,7 +37,7 @@ export const registerDriver = async (ctx: Context) => {
     const newDriver = await Driver.create({ name, email, phone, password });
 
     // Generate tokens
-    const accessToken = generateAccessToken(newDriver.dataValues.id);
+    const accessToken = generateAccessToken(newDriver.dataValues.id, 'driver');
     const refreshToken = generateRefreshToken();
 
     // Store the refresh token in the database
