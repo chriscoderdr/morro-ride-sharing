@@ -23,6 +23,7 @@ export interface LoginData {
 export interface LoginResponse extends ApiResponse {
   accessToken: string;
   refreshToken: string;
+  driverId: string;
 }
 
 

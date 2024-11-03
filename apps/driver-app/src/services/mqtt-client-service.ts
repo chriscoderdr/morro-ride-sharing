@@ -41,7 +41,7 @@ class MQTTClientService {
     if (!this.isSuscribed && accessToken.length > 0) {
       const topic = MQTT_TOPIC_RIDE_REQUESTS.replaceAll(
         '${driver_id}',
-        'ca141235-d138-4645-a9bf-9f8887a893b7'
+        store.getState().auth.driverId as string
       );
       this.isSuscribed = true;
       this.client.subscribe(topic, {
@@ -68,7 +68,6 @@ class MQTTClientService {
     console.log('Message received:', message.payloadString);
     const rideRequest = JSON.parse(message.payloadString);
 
-
     Notifications.setNotificationChannelAsync('new-ride-request', {
       name: 'New Ride Request',
       importance: Notifications.AndroidImportance.HIGH
@@ -85,7 +84,7 @@ class MQTTClientService {
       content: {
         title: 'You got a new ride requests',
         body: `Pickup location: ${rideRequest.pickupLocation.address}`,
-        sound:  Platform.OS == 'android' ? undefined : 'default'
+        sound: Platform.OS == 'android' ? undefined : 'default'
         // sound: 'mySoundFile.wav', // Provide ONLY the base filename
       },
       trigger: {
@@ -99,7 +98,7 @@ class MQTTClientService {
         console.error(error);
       });
     // store.dispatch(clearRideRequest());
-    
+
     store.dispatch(
       setRideRequest({
         rideRequestId: rideRequest.rideRequestId,
@@ -139,7 +138,7 @@ class MQTTClientService {
       const message = new Message(payload);
       message.destinationName = MQTT_TOPIC.replaceAll(
         '${driver_id}',
-        'ca141235-d138-4645-a9bf-9f8887a893b7'
+        store.getState().auth.accessToken as string
       );
       this.client.send(message);
       console.log('Published location to MQTT:', payload);
