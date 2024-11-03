@@ -22,7 +22,8 @@ export interface RideRequest {
   tripTimeDistance: TimeDistance | null;
   tripLocation: Location | null;
   status: 'pending' | 'accepted' | 'declined' | 'started' | 'picked-up' | 'dropped-off';
-  riderName: string | null;
+  riderName?: string | null;
+  riderPhone?: string | null;
 }
 
 interface RideRequestState {
@@ -46,7 +47,8 @@ export const acceptRideRequest = createAsyncThunk<
     dispatch(updateRideRequestStatus({
       rideRequestId: data.rideRequestId,
       status: 'accepted',
-      riderName: response.riderName
+      riderName: response.riderName,
+      riderPhone: response.riderPhone
     }));
     return response;
   } catch (error) {
@@ -123,13 +125,14 @@ const rideRequestSlice = createSlice({
     },
     updateRideRequestStatus: (
       state,
-      action: PayloadAction<{ rideRequestId: string; status: RideRequest['status']; riderName?: string }>
+      action: PayloadAction<{ rideRequestId: string; status: RideRequest['status']; riderName?: string; riderPhone?: string; }>
     ) => {
       const request = state.requests.find((req) => req.rideRequestId === action.payload.rideRequestId);
       if (request) {
         request.status = action.payload.status;
         if (action.payload.riderName) {
           request.riderName = action.payload.riderName;
+          request.riderPhone = action.payload.riderPhone;
         }
       }
     },

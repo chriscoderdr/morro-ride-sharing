@@ -2,7 +2,14 @@ import useUserLocation from '@/src/hooks/use-user-location';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import Mapbox from '@rnmapbox/maps';
 import { useEffect, useRef, useState } from 'react';
-import { Alert, StyleSheet, TouchableOpacity, View } from 'react-native';
+import {
+  Alert,
+  Linking,
+  Platform,
+  StyleSheet,
+  TouchableOpacity,
+  View
+} from 'react-native';
 import { useSelector } from 'react-redux';
 
 import RideRequestCard from '@/src/components/ride-request-card';
@@ -75,6 +82,32 @@ export default function Map() {
     });
   };
 
+  
+
+  const handleCallRider = (riderPhone: string) => {
+    const phoneNumber = `tel:${riderPhone}`;
+
+    if (Platform.OS === 'ios' || Platform.OS === 'android') {
+      Linking.canOpenURL(phoneNumber)
+        .then((supported) => {
+          if (!supported) {
+            Alert.alert(
+              'Error',
+              'Unable to make the call. This feature works only on a real device.'
+            );
+          } else {
+            Linking.openURL(phoneNumber);
+          }
+        })
+        .catch((err) => console.error('Error checking phone URL:', err));
+    } else {
+      Alert.alert(
+        'Error',
+        'Unable to make the call. This feature works only on a real device.'
+      );
+    }
+  };
+
   return (
     <View style={{ flex: 1 }}>
       <Mapbox.MapView style={{ flex: 1 }}>
@@ -134,7 +167,7 @@ export default function Map() {
           <TripStartCard
             key={request.rideRequestId}
             rideRequest={request}
-            onCallRider={() => console.log('Calling rider')}
+            onCallRider={() => handleCallRider(request.riderPhone || '')}
             onStartTrip={() => handleStartTrip(request.rideRequestId)}
           />
         ))}

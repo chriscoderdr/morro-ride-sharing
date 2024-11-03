@@ -154,6 +154,7 @@ export const acceptRideRequest = async (ctx: Context) => {
       message: 'Ride request accepted successfully.',
       rideRequestId: rideRequest.id,
       riderName: rider.dataValues.name, // Retrieved from Rider model
+      riderPhone: rider.dataValues.phone, // Retrieved from Rider model
       pickupLocation: rideRequest.pickupLocation,
       dropOffLocation: rideRequest.dropOffLocation
     };

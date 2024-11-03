@@ -33,6 +33,7 @@ export interface AcceptRequestData {
 export interface AcceptRequestResponse extends ApiResponse {
   rideRequestId: string;
   riderName: string;
+  riderPhone: string;
   pickupLocation: {
     type: 'Point';
     coordinates: [number, number];
