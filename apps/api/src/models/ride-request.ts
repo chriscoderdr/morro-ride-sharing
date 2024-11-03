@@ -15,7 +15,7 @@ interface RideRequestAttributes {
     coordinates: [number, number];
   };
   dropOffAddress: string;
-  status: 'pending' | 'accepted' | 'declined' | 'expired' | 'canceled';
+  status: 'pending' | 'accepted' | 'declined' | 'started' | 'picked-up' | 'dropped-off';
   createdAt?: Date;
   updatedAt?: Date;
   driverId?: string | null;
@@ -40,7 +40,7 @@ class RideRequest
     coordinates: [number, number];
   };
   public dropOffAddress!: string;
-  public status!: 'pending' | 'accepted' | 'declined' | 'expired' | 'canceled';
+  status!: 'pending' | 'accepted' | 'declined' | 'started' | 'picked-up' | 'dropped-off';
   public createdAt!: Date;
   public updatedAt!: Date;
   public driverId!: string | null;
@@ -71,7 +71,7 @@ RideRequest.init(
       allowNull: false,
     },
     status: {
-      type: DataTypes.ENUM('pending', 'accepted', 'declined', 'expired', 'canceled'),
+      type: DataTypes.ENUM('pending', 'accepted', 'declined', 'started', 'picked-up', 'dropped-off'),
       defaultValue: 'pending',
       allowNull: false,
     },
