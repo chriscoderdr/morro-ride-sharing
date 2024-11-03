@@ -6,8 +6,13 @@ import { Alert, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
 
 import RideRequestCard from '@/src/components/ride-request-card';
+import TripStartCard from '@/src/components/trip-start-card';
 import { useAppDispatch } from '@/src/hooks/use-app-dispatch';
-import { acceptRideRequest, RideRequestState } from '@/src/store/slices/ride-request-slice';
+import {
+  acceptRideRequest,
+  RideRequest,
+  startRideRequest
+} from '@/src/store/slices/ride-request-slice';
 
 export default function Map() {
   const dispatch = useAppDispatch();
@@ -15,7 +20,9 @@ export default function Map() {
   const { location: userLocation, fetchUserLocation } = useUserLocation();
   const [isMapInitialized, setIsMapInitialized] = useState(false);
   const cameraRef = useRef<Mapbox.Camera>(null);
-  const rideRequest = useSelector((state: any) => state.rideRequest) as RideRequestState;
+  const rideRequests = useSelector(
+    (state: any) => state.rideRequest.requests
+  ) as RideRequest[];
 
   useEffect(() => {
     if (userLocation && !isMapInitialized) {
@@ -40,14 +47,32 @@ export default function Map() {
     }
   };
 
-  const handleAcceptRide = async () => {
-    if (rideRequest.rideRequestId) {
+  const handleAcceptRide = (rideRequestId: string) => {
+    const data = async () => {
+      console.log(`Accepting ride request: ${rideRequestId}`);
       try {
-        await dispatch(acceptRideRequest({ rideRequestId: rideRequest.rideRequestId })).unwrap();
+        await dispatch(acceptRideRequest({ rideRequestId })).unwrap();
       } catch (error) {
         Alert.alert('Error', 'Failed to accept the ride request.');
       }
-    }
+    };
+    data().catch(() => {
+      console.error('Error accepting ride request');
+    });
+  };
+
+  const handleStartTrip = (rideRequestId: string) => {
+    const data = async () => {
+      console.log(`Starting trip for request: ${rideRequestId}`);
+      try {
+        await dispatch(startRideRequest({ rideRequestId })).unwrap();
+      } catch (error) {
+        Alert.alert('Error', 'Failed to start the trip.');
+      }
+    };
+    data().catch(() => {
+      console.error('Error starting trip');
+    });
   };
 
   return (
@@ -91,12 +116,28 @@ export default function Map() {
         <Ionicons name="locate" size={24} color="white" />
       </TouchableOpacity>
 
-      {rideRequest.status === 'pending' && (
-        <RideRequestCard
-          rideRequest={rideRequest}
-          onAccept={handleAcceptRide}
-        />
-      )}
+      {/* Display RideRequestCard for each request with status 'pending' */}
+      {rideRequests
+        .filter((request) => request.status === 'pending')
+        .map((request) => (
+          <RideRequestCard
+            key={request.rideRequestId}
+            rideRequest={request}
+            onAccept={() => handleAcceptRide(request.rideRequestId)}
+          />
+        ))}
+
+      {/* Display TripStartCard for each request with status 'accepted' */}
+      {rideRequests
+        .filter((request) => request.status === 'accepted')
+        .map((request) => (
+          <TripStartCard
+            key={request.rideRequestId}
+            rideRequest={request}
+            onCallRider={() => console.log('Calling rider')}
+            onStartTrip={() => handleStartTrip(request.rideRequestId)}
+          />
+        ))}
     </View>
   );
 }

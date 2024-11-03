@@ -97,10 +97,11 @@ class MQTTClientService {
       .catch((error) => {
         console.error(error);
       });
-    // store.dispatch(clearRideRequest());
 
+    // setTimeout(() => {
     store.dispatch(
       setRideRequestWithTimeout({
+        riderName: '',
         rideRequestId: rideRequest.rideRequestId,
         estimatedPrice: rideRequest.estimatedPrice,
         pickupTimeDistance: rideRequest.pickupTimeDistance,
@@ -117,6 +118,7 @@ class MQTTClientService {
         }
       })
     );
+    // }, 1000);
   };
 
   publishLocation = (

@@ -1,3 +1,4 @@
+import { authenticateToken } from '@/middleware/auth';
 import Router from '@koa/router';
 import {
     acceptRideRequest,
@@ -9,6 +10,6 @@ const router = new Router();
 
 router.post('/register', registerDriver);
 router.post('/login', loginDriver);
-router.post('/drivers/acceptRequest', acceptRideRequest);
+router.post('/acceptRequest', authenticateToken, acceptRideRequest);
 
 export default router;

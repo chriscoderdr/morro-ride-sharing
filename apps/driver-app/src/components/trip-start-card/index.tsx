@@ -15,13 +15,13 @@ const TripStartCard = ({
     <View style={styles.container}>
       {/* Time and Distance to Pickup Point */}
       <Text style={styles.timeDistanceText}>
-        {rideRequest.pickupTimeDistance} • {rideRequest.tripTimeDistance} away
+        {rideRequest.pickupTimeDistance.time} • {rideRequest.tripTimeDistance.distance} away
       </Text>
 
       {/* Rider's Information */}
       <View style={styles.riderInfoContainer}>
         <View style={styles.riderDetails}>
-          <Text style={styles.riderName}>Rider: Juan</Text>
+          <Text style={styles.riderName}>Rider: {rideRequest.riderName}</Text>
           <TouchableOpacity style={styles.callButton} onPress={onCallRider}>
             <Ionicons name="call-outline" size={24} color="#007AFF" />
             <Text style={styles.callButtonText}>Call</Text>

@@ -14,17 +14,24 @@ const TripCompleteCard = ({
       <Text style={styles.timeToDestinationText}>
         {rideRequest.tripTimeDistance} to destination
       </Text>
-      
+
       <View style={styles.riderInfoContainer}>
-        <MaterialIcons name="person" size={30} color="#333" style={styles.icon} />
-        <Text style={styles.riderNameText}>Juan: </Text>
+        <MaterialIcons
+          name="person"
+          size={30}
+          color="#333"
+          style={styles.icon}
+        />
+        <Text style={styles.riderNameText}>{rideRequest.riderName} </Text>
       </View>
-      
+
       <View style={styles.destinationInfoContainer}>
         <Text style={styles.infoText}>Destination</Text>
-        <Text style={styles.locationText}>{rideRequest.tripLocation?.address}</Text>
+        <Text style={styles.locationText}>
+          {rideRequest.tripLocation?.address}
+        </Text>
       </View>
-      
+
       <TouchableOpacity style={styles.completeButton} onPress={onCompleteTrip}>
         <Text style={styles.completeButtonText}>Complete Trip</Text>
       </TouchableOpacity>

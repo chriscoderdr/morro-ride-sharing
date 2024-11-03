@@ -6,6 +6,7 @@ import {
   LoginResponse,
   RegisterResponse
 } from '@/src/api/models';
+import { RootState } from '@/src/store'; // Ensure you have the correct import path for your store
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_MORRO_API_BASE_URL;
@@ -13,7 +14,14 @@ const API_BASE_URL = process.env.EXPO_PUBLIC_MORRO_API_BASE_URL;
 export const apiSlice = createApi({
   reducerPath: 'api',
   baseQuery: fetchBaseQuery({
-    baseUrl: API_BASE_URL
+    baseUrl: API_BASE_URL,
+    prepareHeaders: (headers, { getState }) => {
+      const token = (getState() as RootState).auth.accessToken;
+      if (token) {
+        headers.set('Authorization', `Bearer ${token}`);
+      }
+      return headers;
+    }
   }),
   endpoints: (builder) => ({
     registerDriver: builder.mutation<RegisterResponse, DriverData>({
@@ -30,10 +38,7 @@ export const apiSlice = createApi({
         body: data
       })
     }),
-    acceptRideRequest: builder.mutation<
-      AcceptRequestResponse,
-      AcceptRequestData
-    >({
+    acceptRideRequest: builder.mutation<AcceptRequestResponse, AcceptRequestData>({
       query: (data) => ({
         url: '/drivers/acceptRequest',
         method: 'POST',
@@ -43,4 +48,4 @@ export const apiSlice = createApi({
   })
 });
 
-export const { useRegisterDriverMutation, useLoginDriverMutation } = apiSlice;
+export const { useRegisterDriverMutation, useLoginDriverMutation, useAcceptRideRequestMutation } = apiSlice;

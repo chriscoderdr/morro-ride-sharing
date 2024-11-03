@@ -108,6 +108,7 @@ export const loginDriver = async (ctx: Context) => {
 export const acceptRideRequest = async (ctx: Context) => {
   const driverId = ctx.state.user.id;
   const { rideRequestId } = ctx.request.body as { rideRequestId: string };
+  logger.info(`Driver ${driverId} accepting ride request ${rideRequestId}`);
 
   if (!rideRequestId) {
     ctx.status = 400;
