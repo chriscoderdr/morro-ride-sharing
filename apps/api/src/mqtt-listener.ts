@@ -13,9 +13,13 @@ process.on('unhandledRejection', (reason, promise) => {
   process.exit(1);
 });
 
-const mqttClient = mqtt.connect('mqtt://192.168.68.106:1883', {
-  rejectUnauthorized: false
+const MQTT_BROKER_URL = process.env.MQTT_BROKER_URL || 'mqtt://192.168.68.106:1883';
+const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET || 'access-secret';
+
+const mqttClient = mqtt.connect(MQTT_BROKER_URL, {
+  rejectUnauthorized: false,
 });
+
 logger.info('Connecting to MQTT broker');
 
 mqttClient.on('connect', () => {
@@ -52,27 +56,39 @@ mqttClient.on('message', async (topic, message) => {
   logger.info(`Received message on topic ${topic}: ${message.toString()}`);
   try {
     const driverAccessToken = topic.split('/')[2];
-    const ACCESS_TOKEN_SECRET =
-      process.env.ACCESS_TOKEN_SECRET || 'access-secret';
     const decoded = jwt.verify(driverAccessToken, ACCESS_TOKEN_SECRET) as {
-      driverId: number;
+      driverId: string;
     };
+
     const payload = JSON.parse(message.toString());
     const { latitude, longitude, isAvailable } = payload;
 
+    if (
+      typeof latitude !== 'number' ||
+      typeof longitude !== 'number' ||
+      latitude < -90 ||
+      latitude > 90 ||
+      longitude < -180 ||
+      longitude > 180
+    ) {
+      throw new Error('Invalid latitude or longitude values');
+    }
+
     await Driver.update(
       {
-        lastLocationLatitude: latitude,
-        lastLocationLongitude: longitude,
+        location: {
+          type: 'Point',
+          coordinates: [longitude, latitude],
+        },
         lastLocationUpdatedAt: new Date(),
-        isAvailable: isAvailable
+        isAvailable: isAvailable,
       },
       {
-        where: { id: decoded.driverId }
+        where: { id: decoded.userId },
       }
     );
 
-    logger.info(`Updated location for driver ${decoded.driverId}`);
+    logger.info(`Updated location for driver ${decoded.userId}`);
   } catch (error: any) {
     logger.error('Error processing message: ' + error.message);
   }

@@ -4,3 +4,7 @@ node_modules
 .yarnrc.yml
 dist
 .git
+packages/driver-app
+apps/driver-app
+apps/admin-dashboard
+apps/rider-app

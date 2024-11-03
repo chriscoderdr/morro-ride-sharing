@@ -5,17 +5,19 @@ import sequelize from '../config/database';
 const saltRounds = parseInt(process.env.BCRYPT_SALT_ROUNDS || '10', 10);
 
 interface DriverAttributes {
-  id: string; // Change `id` to a string to store UUIDs
+  id: string;
   name: string;
   email: string;
   phone: string;
   password: string;
-  refreshToken?: string; // Field for storing refresh token
+  refreshToken?: string;
   createdAt?: Date;
   updatedAt?: Date;
   loginAt?: Date;
-  lastLocationLatitude?: number;
-  lastLocationLongitude?: number;
+  location?: {
+    type: 'Point';
+    coordinates: [number, number]; // [longitude, latitude]
+  };
   lastLocationUpdatedAt?: Date;
   isAvailable?: boolean;
 }
@@ -23,82 +25,84 @@ interface DriverAttributes {
 interface DriverCreationAttributes extends Optional<DriverAttributes, 'id'> {}
 
 class Driver extends Model<DriverAttributes, DriverCreationAttributes> {
+  public id!: string;
+  public name!: string;
+  public email!: string;
+  public phone!: string;
+  public password!: string;
+  public refreshToken?: string;
+  public createdAt!: Date;
+  public updatedAt!: Date;
+  public loginAt?: Date;
+  public location?: {
+    type: 'Point';
+    coordinates: [number, number];
+  };
+  public lastLocationUpdatedAt?: Date;
+  public isAvailable!: boolean;
+
   public async comparePassword(password: string): Promise<boolean> {
-    return bcrypt.compare(password, this.dataValues.password);
+    return bcrypt.compare(password, this.password);
   }
 }
 
 Driver.init(
   {
     id: {
-      type: DataTypes.UUID,              // Set data type to UUID
-      defaultValue: DataTypes.UUIDV4,     // Automatically generate a UUID v4
-      primaryKey: true
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
+      primaryKey: true,
     },
     name: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: false,
     },
     email: {
       type: DataTypes.STRING,
       allowNull: false,
       unique: true,
-      validate: { isEmail: true }
+      validate: { isEmail: true },
     },
     phone: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique: true
+      unique: true,
     },
     password: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: false,
     },
     refreshToken: {
       type: DataTypes.STRING,
-      allowNull: true
-    },
-    createdAt: {
-      type: DataTypes.DATE,
-      allowNull: false,
-      defaultValue: DataTypes.NOW
-    },
-    updatedAt: {
-      type: DataTypes.DATE,
-      allowNull: false,
-      defaultValue: DataTypes.NOW
+      allowNull: true,
     },
     loginAt: {
       type: DataTypes.DATE,
-      allowNull: true
+      allowNull: true,
     },
-    lastLocationLatitude: {
-      type: DataTypes.FLOAT,
-      allowNull: true
-    },
-    lastLocationLongitude: {
-      type: DataTypes.FLOAT,
-      allowNull: true
+    location: {
+      type: DataTypes.GEOGRAPHY('POINT', 4326),
+      allowNull: true,
     },
     lastLocationUpdatedAt: {
       type: DataTypes.DATE,
-      allowNull: true
+      allowNull: true,
     },
     isAvailable: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
-      defaultValue: true
-    }
+      defaultValue: true,
+    },
   },
   {
     sequelize,
     tableName: 'drivers',
     hooks: {
       beforeCreate: async (driver) => {
-        driver.dataValues.password = await bcrypt.hash(driver.dataValues.password, saltRounds);
-      }
+        driver.password = await bcrypt.hash(driver.password, saltRounds);
+      },
     },
-    timestamps: true
+    timestamps: true,
   }
 );
 

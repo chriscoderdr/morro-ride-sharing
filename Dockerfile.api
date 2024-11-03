@@ -1,9 +1,0 @@
-# syntax = edrevo/dockerfile-plus
-
-INCLUDE+ Dockerfile.base
-
-EXPOSE 3000
-
-WORKDIR /app/apps/api
-
-CMD ["yarn", "dev"]
