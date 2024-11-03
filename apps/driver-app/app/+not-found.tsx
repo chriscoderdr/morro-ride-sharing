@@ -14,6 +14,9 @@ export default function NotFoundScreen() {
         <Link href="/signup" style={styles.link}>
           <Text>Go to SignUp!</Text>
         </Link>
+        <Link href="/login" style={styles.link}>
+          <Text>Go to Login!</Text>
+        </Link>
         <Link href="/token-display" style={styles.link}>
           <Text>Test tokens!</Text>
         </Link>

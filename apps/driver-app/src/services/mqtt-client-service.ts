@@ -89,7 +89,6 @@ class MQTTClientService {
         // sound: 'mySoundFile.wav', // Provide ONLY the base filename
       },
       trigger: {
-        seconds: 2,
         channelId: 'new-ride-request'
       }
     })
