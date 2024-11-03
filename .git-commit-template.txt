@@ -1,0 +1,7 @@
+<type>(#<issue-number>): <short description>
+
+- <bullet point for main change>
+- <bullet point for another change>
+
+# Type options: feat, fix, docs, style, refactor, test, chore
+# Replace <type>, <issue-number>, and descriptions as needed.
