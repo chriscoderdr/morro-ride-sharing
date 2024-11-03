@@ -13,11 +13,13 @@ import {
 import { useSelector } from 'react-redux';
 
 import RideRequestCard from '@/src/components/ride-request-card';
+import TripCompleteCard from '@/src/components/trip-complete-card';
 import TripInProgressCard from '@/src/components/trip-in-progress-card';
 import TripStartCard from '@/src/components/trip-start-card';
 import { useAppDispatch } from '@/src/hooks/use-app-dispatch';
 import {
   acceptRideRequest,
+  completeRideRequest,
   pickUpRideRequest,
   RideRequest,
   startRideRequest
@@ -55,7 +57,7 @@ export default function Map() {
       Alert.alert('Location Error', 'Unable to retrieve user location.');
     }
   };
-  
+
   const handleConfirmPickup = (rideRequestId: string) => {
     const data = async () => {
       try {
@@ -95,8 +97,6 @@ export default function Map() {
     });
   };
 
-  
-
   const handleCallRider = (riderPhone: string) => {
     const phoneNumber = `tel:${riderPhone}`;
 
@@ -119,6 +119,17 @@ export default function Map() {
         'Unable to make the call. This feature works only on a real device.'
       );
     }
+  };
+
+  const handleCompleteTrip = (rideRequestId: string) => {
+    const data = async () => {
+      try {
+        await dispatch(completeRideRequest({ rideRequestId })).unwrap();
+      } catch (error) {
+        Alert.alert('Error', 'Failed to complete the trip.');
+      }
+    };
+    data().catch(() => console.error('Error completing trip'));
   };
 
   return (
@@ -194,6 +205,17 @@ export default function Map() {
             rideRequest={request}
             onCallRider={() => handleCallRider(request.riderPhone || '')}
             onPickUpRider={() => handleConfirmPickup(request.rideRequestId)}
+          />
+        ))}
+
+      {/* Display TripInProgressCard for each request with status 'started' */}
+      {rideRequests
+        .filter((request) => request.status === 'picked-up')
+        .map((request) => (
+          <TripCompleteCard
+            key={request.rideRequestId}
+            rideRequest={request}
+            onCompleteTrip={() => handleCompleteTrip(request.rideRequestId)}
           />
         ))}
     </View>

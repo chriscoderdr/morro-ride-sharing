@@ -66,7 +66,14 @@ export const apiSlice = createApi({
           body: data
         })
       }
-    )
+    ),
+    completeRideRequest: builder.mutation<void, { rideRequestId: string }>({
+      query: (data) => ({
+        url: '/drivers/completeRequest',
+        method: 'POST',
+        body: data
+      })
+    })
   })
 });
 

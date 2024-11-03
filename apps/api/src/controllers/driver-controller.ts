@@ -213,3 +213,54 @@ export const startRideRequest = async (ctx: Context) => {
     ctx.body = { error: 'Server error. Please try again later.' };
   }
 };
+
+
+export const pickUpRideRequest = async (ctx: Context) => {
+  const driverId = ctx.state.user.id;
+  const { rideRequestId } = ctx.request.body as { rideRequestId: string };
+  logger.info(`Driver ${driverId} picking up rider for request ${rideRequestId}`);
+
+  if (!rideRequestId) {
+    ctx.status = 400;
+    ctx.body = { error: 'Ride request ID is required.' };
+    return;
+  }
+
+  try {
+    // Fetch the ride request
+    const rideRequest = await RideRequest.findOne({
+      where: { id: rideRequestId, driverId: driverId } // Ensure the driver is assigned to this ride
+    });
+
+    // Validate the ride request status
+    if (!rideRequest) {
+      ctx.status = 404;
+      ctx.body = { error: 'Ride request not found.' };
+      return;
+    }
+    if (rideRequest.status !== 'started') {
+      ctx.status = 400;
+      ctx.body = { error: 'The ride request must be in started status to pick up the rider.' };
+      return;
+    }
+
+    // Update the ride request to picked-up
+    rideRequest.status = 'picked-up';
+    await rideRequest.save();
+
+    logger.info(`Ride request ${rideRequestId} picked up by driver ${driverId}`);
+
+    ctx.status = 200;
+    ctx.body = {
+      message: 'Rider picked up successfully.',
+      rideRequestId: rideRequest.id,
+      pickupLocation: rideRequest.pickupLocation,
+      dropOffLocation: rideRequest.dropOffLocation
+    };
+  } catch (error) {
+    logger.error(error);
+    ctx.status = 500;
+    ctx.body = { error: 'Server error. Please try again later.' };
+  }
+};
+

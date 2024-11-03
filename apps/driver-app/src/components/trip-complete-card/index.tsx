@@ -11,7 +11,7 @@ const TripCompleteCard = ({
   return (
     <View style={styles.container}>
       <Text style={styles.timeToDestinationText}>
-        {rideRequest.tripTimeDistance} to destination
+        {rideRequest.tripTimeDistance.time} to destination
       </Text>
 
       <View style={styles.riderInfoContainer}>

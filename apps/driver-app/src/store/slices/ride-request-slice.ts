@@ -151,6 +151,21 @@ export const pickUpRideRequest = createAsyncThunk<
   }
 );
 
+export const completeRideRequest = createAsyncThunk<
+  void,
+  { rideRequestId: string },
+  { state: RootState }
+>('rideRequest/completeRideRequest', async ({ rideRequestId }, { dispatch, rejectWithValue }) => {
+  try {
+    const response = await dispatch(apiSlice.endpoints.completeRideRequest.initiate({ rideRequestId })).unwrap();
+    dispatch(updateRideRequestStatus({ rideRequestId, status: 'dropped-off' }));
+    return response;
+  } catch (error) {
+    console.error('Error completing ride request:', error);
+    return rejectWithValue(error);
+  }
+});
+
 const rideRequestSlice = createSlice({
   name: 'rideRequest',
   initialState,
