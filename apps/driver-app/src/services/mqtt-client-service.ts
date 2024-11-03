@@ -8,7 +8,7 @@ import * as Notifications from 'expo-notifications';
 import { Client, Message } from 'paho-mqtt';
 import { Platform } from 'react-native';
 import store from '../store';
-import { setRideRequest } from '../store/slices/ride-request-slice';
+import { setRideRequestWithTimeout } from '../store/slices/ride-request-slice';
 
 class MQTTClientService {
   private client: Client;
@@ -100,7 +100,7 @@ class MQTTClientService {
     // store.dispatch(clearRideRequest());
 
     store.dispatch(
-      setRideRequest({
+      setRideRequestWithTimeout({
         rideRequestId: rideRequest.rideRequestId,
         estimatedPrice: rideRequest.estimatedPrice,
         pickupTimeDistance: rideRequest.pickupTimeDistance,

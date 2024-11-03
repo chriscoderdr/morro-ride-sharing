@@ -1,4 +1,6 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+// ride-request-slice.ts
+
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface Location {
   latitude: number;
@@ -28,8 +30,21 @@ const initialState: RideRequestState = {
   pickupLocation: null,
   tripTimeDistance: null,
   tripLocation: null,
-  isActive: false
+  isActive: false,
 };
+
+// Async thunk to handle timeout
+export const setRideRequestWithTimeout = createAsyncThunk(
+  'rideRequest/setRideRequestWithTimeout',
+  async (rideRequestData: Omit<RideRequestState, 'isActive'>, { dispatch }) => {
+    dispatch(setRideRequest(rideRequestData));
+
+    // Set a timeout to automatically deactivate the ride request
+    setTimeout(() => {
+      dispatch(clearRideRequest());
+    }, 15000); // 15 seconds
+  }
+);
 
 const rideRequestSlice = createSlice({
   name: 'rideRequest',
@@ -62,7 +77,7 @@ const rideRequestSlice = createSlice({
       state.tripLocation = tripLocation;
       state.isActive = true;
     },
-    clearRideRequest: () => Object.assign(initialState)
+    clearRideRequest: () => initialState
   }
 });
 
