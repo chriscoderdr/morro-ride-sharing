@@ -4,7 +4,9 @@ import {
   DriverData,
   LoginData,
   LoginResponse,
-  RegisterResponse
+  RegisterResponse,
+  StartRequestData,
+  StartRequestResponse
 } from '@/src/api/models';
 import { RootState } from '@/src/store'; // Ensure you have the correct import path for your store
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
@@ -38,14 +40,38 @@ export const apiSlice = createApi({
         body: data
       })
     }),
-    acceptRideRequest: builder.mutation<AcceptRequestResponse, AcceptRequestData>({
+    acceptRideRequest: builder.mutation<
+      AcceptRequestResponse,
+      AcceptRequestData
+    >({
       query: (data) => ({
         url: '/drivers/acceptRequest',
         method: 'POST',
         body: data
       })
-    })
+    }),
+    startRideRequest: builder.mutation<StartRequestResponse, StartRequestData>({
+      query: (data) => ({
+        url: '/drivers/startRequest',
+        method: 'POST',
+        body: data
+      })
+    }),
+
+    pickUpRideRequest: builder.mutation<StartRequestResponse, StartRequestData>(
+      {
+        query: (data) => ({
+          url: '/drivers/pickUpRequest', // Adjust the endpoint URL as needed
+          method: 'POST',
+          body: data
+        })
+      }
+    )
   })
 });
 
-export const { useRegisterDriverMutation, useLoginDriverMutation, useAcceptRideRequestMutation } = apiSlice;
+export const {
+  useRegisterDriverMutation,
+  useLoginDriverMutation,
+  useAcceptRideRequestMutation
+} = apiSlice;

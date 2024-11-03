@@ -13,10 +13,12 @@ import {
 import { useSelector } from 'react-redux';
 
 import RideRequestCard from '@/src/components/ride-request-card';
+import TripInProgressCard from '@/src/components/trip-in-progress-card';
 import TripStartCard from '@/src/components/trip-start-card';
 import { useAppDispatch } from '@/src/hooks/use-app-dispatch';
 import {
   acceptRideRequest,
+  pickUpRideRequest,
   RideRequest,
   startRideRequest
 } from '@/src/store/slices/ride-request-slice';
@@ -52,6 +54,17 @@ export default function Map() {
     } else {
       Alert.alert('Location Error', 'Unable to retrieve user location.');
     }
+  };
+  
+  const handleConfirmPickup = (rideRequestId: string) => {
+    const data = async () => {
+      try {
+        await dispatch(pickUpRideRequest({ rideRequestId })).unwrap();
+      } catch (error) {
+        Alert.alert('Error', 'Failed to confirm rider pickup.');
+      }
+    };
+    data().catch(() => console.error('Error confirming pickup'));
   };
 
   const handleAcceptRide = (rideRequestId: string) => {
@@ -169,6 +182,18 @@ export default function Map() {
             rideRequest={request}
             onCallRider={() => handleCallRider(request.riderPhone || '')}
             onStartTrip={() => handleStartTrip(request.rideRequestId)}
+          />
+        ))}
+
+      {/* Display TripInProgressCard for each request with status 'started' */}
+      {rideRequests
+        .filter((request) => request.status === 'started')
+        .map((request) => (
+          <TripInProgressCard
+            key={request.rideRequestId}
+            rideRequest={request}
+            onCallRider={() => handleCallRider(request.riderPhone || '')}
+            onPickUpRider={() => handleConfirmPickup(request.rideRequestId)}
           />
         ))}
     </View>

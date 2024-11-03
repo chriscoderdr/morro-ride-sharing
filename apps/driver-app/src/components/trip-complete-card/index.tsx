@@ -1,4 +1,3 @@
-import { RideRequestState } from '@/src/store/slices/ride-request-slice';
 import { MaterialIcons } from '@expo/vector-icons';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
@@ -6,7 +5,7 @@ const TripCompleteCard = ({
   rideRequest,
   onCompleteTrip
 }: {
-  rideRequest: RideRequestState;
+  rideRequest: any;
   onCompleteTrip: () => void;
 }) => {
   return (
