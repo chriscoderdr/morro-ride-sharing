@@ -190,7 +190,9 @@ export const startRideRequest = async (ctx: Context) => {
     }
     if (rideRequest.status !== 'accepted') {
       ctx.status = 400;
-      ctx.body = { error: 'The ride request must be in accepted status to start the ride.' };
+      ctx.body = {
+        error: 'The ride request must be in accepted status to start the ride.'
+      };
       return;
     }
 
@@ -214,11 +216,12 @@ export const startRideRequest = async (ctx: Context) => {
   }
 };
 
-
 export const pickUpRideRequest = async (ctx: Context) => {
   const driverId = ctx.state.user.id;
   const { rideRequestId } = ctx.request.body as { rideRequestId: string };
-  logger.info(`Driver ${driverId} picking up rider for request ${rideRequestId}`);
+  logger.info(
+    `Driver ${driverId} picking up rider for request ${rideRequestId}`
+  );
 
   if (!rideRequestId) {
     ctx.status = 400;
@@ -240,7 +243,10 @@ export const pickUpRideRequest = async (ctx: Context) => {
     }
     if (rideRequest.status !== 'started') {
       ctx.status = 400;
-      ctx.body = { error: 'The ride request must be in started status to pick up the rider.' };
+      ctx.body = {
+        error:
+          'The ride request must be in started status to pick up the rider.'
+      };
       return;
     }
 
@@ -248,7 +254,9 @@ export const pickUpRideRequest = async (ctx: Context) => {
     rideRequest.status = 'picked-up';
     await rideRequest.save();
 
-    logger.info(`Ride request ${rideRequestId} picked up by driver ${driverId}`);
+    logger.info(
+      `Ride request ${rideRequestId} picked up by driver ${driverId}`
+    );
 
     ctx.status = 200;
     ctx.body = {
@@ -264,3 +272,51 @@ export const pickUpRideRequest = async (ctx: Context) => {
   }
 };
 
+export const completeRideRequest = async (ctx: Context) => {
+  const driverId = ctx.state.user.id;
+  const { rideRequestId } = ctx.request.body as { rideRequestId: string };
+  logger.info(`Driver ${driverId} completing ride request ${rideRequestId}`);
+
+  if (!rideRequestId) {
+    ctx.status = 400;
+    ctx.body = { error: 'Ride request ID is required.' };
+    return;
+  }
+
+  try {
+    // Fetch the ride request
+    const rideRequest = await RideRequest.findOne({
+      where: { id: rideRequestId, driverId: driverId } // Ensure the driver is assigned to this ride
+    });
+
+    // Validate the ride request status
+    if (!rideRequest) {
+      ctx.status = 404;
+      ctx.body = { error: 'Ride request not found.' };
+      return;
+    }
+    if (rideRequest.status !== 'picked-up') {
+      ctx.status = 400;
+      ctx.body = { error: 'The ride request must be in picked-up status to complete the ride.' };
+      return;
+    }
+
+    // Update the ride request to dropped-off
+    rideRequest.status = 'dropped-off';
+    await rideRequest.save();
+
+    logger.info(`Ride request ${rideRequestId} completed by driver ${driverId}`);
+
+    ctx.status = 200;
+    ctx.body = {
+      message: 'Ride completed successfully.',
+      rideRequestId: rideRequest.id,
+      pickupLocation: rideRequest.pickupLocation,
+      dropOffLocation: rideRequest.dropOffLocation
+    };
+  } catch (error) {
+    logger.error(error);
+    ctx.status = 500;
+    ctx.body = { error: 'Server error. Please try again later.' };
+  }
+};
