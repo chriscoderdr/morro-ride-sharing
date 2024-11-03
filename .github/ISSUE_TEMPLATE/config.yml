@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: User Story
+    url: /issues/new?template=user-story.md
+    about: Use this template for creating a new user story.
+  - name: Epic
+    url: /issues/new?template=epic.md
+    about: Use this template for creating a new epic.
