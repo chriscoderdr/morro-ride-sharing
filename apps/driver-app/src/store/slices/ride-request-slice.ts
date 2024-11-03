@@ -1,5 +1,8 @@
 // ride-request-slice.ts
 
+import { AcceptRequestData, AcceptRequestResponse } from '@/src/api/models';
+import { RootState } from '@/src/store';
+import { apiSlice } from '@/src/store/slices/api-slice';
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface Location {
@@ -20,7 +23,14 @@ export interface RideRequestState {
   pickupLocation: Location | null;
   tripTimeDistance: TimeDistance | null;
   tripLocation: Location | null;
-  isActive: boolean;
+  status:
+    | 'pending'
+    | 'accepted'
+    | 'declined'
+    | 'started'
+    | 'picked-up'
+    | 'dropped-off';
+  riderName: string | null;
 }
 
 const initialState: RideRequestState = {
@@ -30,16 +40,40 @@ const initialState: RideRequestState = {
   pickupLocation: null,
   tripTimeDistance: null,
   tripLocation: null,
-  isActive: false,
+  status: 'pending',
+  riderName: null
 };
 
-// Async thunk to handle timeout
+// Thunk to accept a ride request
+export const acceptRideRequest = createAsyncThunk<
+  AcceptRequestResponse,
+  AcceptRequestData,
+  { state: RootState }
+>(
+  'rideRequest/acceptRideRequest',
+  async (data, { dispatch, rejectWithValue }) => {
+    try {
+      const response = await dispatch(
+        apiSlice.endpoints.acceptRideRequest.initiate(data)
+      ).unwrap();
+      return response;
+    } catch (error) {
+      console.error('Error accepting ride request:', error);
+      return rejectWithValue(error);
+    }
+  }
+);
+
+// Thunk to handle timeout for pending ride request
 export const setRideRequestWithTimeout = createAsyncThunk(
   'rideRequest/setRideRequestWithTimeout',
-  async (rideRequestData: Omit<RideRequestState, 'isActive'>, { dispatch }) => {
-    dispatch(setRideRequest(rideRequestData));
+  async (
+    rideRequestData: Omit<RideRequestState, 'status' | 'riderName'>,
+    { dispatch }
+  ) => {
+    dispatch(setRideRequest({ ...rideRequestData, status: 'pending' }));
 
-    // Set a timeout to automatically deactivate the ride request
+    // Set a timeout to automatically change the status to declined if not accepted
     setTimeout(() => {
       dispatch(clearRideRequest());
     }, 15000); // 15 seconds
@@ -75,9 +109,28 @@ const rideRequestSlice = createSlice({
       state.pickupLocation = pickupLocation;
       state.tripTimeDistance = tripTimeDistance;
       state.tripLocation = tripLocation;
-      state.isActive = true;
+      state.status = 'pending';
     },
     clearRideRequest: () => initialState
+  },
+  extraReducers: (builder) => {
+    builder.addCase(acceptRideRequest.fulfilled, (state, action) => {
+      state.pickupLocation = {
+        latitude: action.payload.pickupLocation.coordinates[1],
+        longitude: action.payload.pickupLocation.coordinates[0],
+        address: action.payload.pickupAddress || '' // Assuming pickupAddress is available in the payload
+      };
+      state.tripLocation = {
+        latitude: action.payload.dropOffLocation.coordinates[1],
+        longitude: action.payload.dropOffLocation.coordinates[0],
+        address: action.payload.dropOffAddress || '' // Assuming dropOffAddress is available in the payload
+      };
+      state.riderName = action.payload.riderName;
+      state.status = 'accepted';
+    });
+    builder.addCase(setRideRequestWithTimeout.fulfilled, (state) => {
+      state.status = 'declined';
+    });
   }
 });
 

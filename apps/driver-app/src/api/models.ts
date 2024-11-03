@@ -26,4 +26,19 @@ export interface LoginResponse extends ApiResponse {
   driverId: string;
 }
 
+export interface AcceptRequestData {
+  rideRequestId: string;
+}
 
+export interface AcceptRequestResponse extends ApiResponse {
+  rideRequestId: string;
+  riderName: string;
+  pickupLocation: {
+    type: 'Point';
+    coordinates: [number, number];
+  };
+  dropOffLocation: {
+    type: 'Point';
+    coordinates: [number, number];
+  };
+}
