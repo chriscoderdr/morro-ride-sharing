@@ -25,7 +25,7 @@ export const selectCurrentRideRequest = (state: RootState) =>
       request.status === 'picked-up'
   );
 
-  export const acceptRideRequest = createAsyncThunk<
+export const acceptRideRequest = createAsyncThunk<
   AcceptRequestResponse,
   AcceptRequestData,
   { state: RootState }
@@ -33,12 +33,10 @@ export const selectCurrentRideRequest = (state: RootState) =>
   'rideRequest/acceptRideRequest',
   async (data, { dispatch, getState, rejectWithValue }) => {
     try {
-      
       const response = await dispatch(
         apiSlice.endpoints.acceptRideRequest.initiate(data)
       ).unwrap();
 
-      
       dispatch(
         updateRideRequestStatus({
           rideRequestId: data.rideRequestId,
@@ -48,13 +46,13 @@ export const selectCurrentRideRequest = (state: RootState) =>
         })
       );
 
-      
       const state = getState() as RootState;
       const pendingRequests = state.rideRequest.requests.filter(
-        (request) => request.status === 'pending' && request.rideRequestId !== data.rideRequestId
+        (request) =>
+          request.status === 'pending' &&
+          request.rideRequestId !== data.rideRequestId
       );
 
-      
       pendingRequests.forEach((request) => {
         dispatch(
           updateRideRequestStatus({
@@ -71,7 +69,6 @@ export const selectCurrentRideRequest = (state: RootState) =>
     }
   }
 );
-
 
 export const startRideRequest = createAsyncThunk<
   StartRequestResponse,
@@ -99,8 +96,8 @@ export const startRideRequest = createAsyncThunk<
 );
 
 export const pickUpRideRequest = createAsyncThunk<
-  StartRequestResponse, 
-  StartRequestData, 
+  StartRequestResponse,
+  StartRequestData,
   { state: RootState }
 >(
   'rideRequest/pickUpRideRequest',
@@ -127,16 +124,23 @@ export const completeRideRequest = createAsyncThunk<
   void,
   { rideRequestId: string },
   { state: RootState }
->('rideRequest/completeRideRequest', async ({ rideRequestId }, { dispatch, rejectWithValue }) => {
-  try {
-    const response = await dispatch(apiSlice.endpoints.completeRideRequest.initiate({ rideRequestId })).unwrap();
-    dispatch(updateRideRequestStatus({ rideRequestId, status: 'dropped-off' }));
-    return response;
-  } catch (error) {
-    console.error('Error completing ride request:', error);
-    return rejectWithValue(error);
+>(
+  'rideRequest/completeRideRequest',
+  async ({ rideRequestId }, { dispatch, rejectWithValue }) => {
+    try {
+      const response = await dispatch(
+        apiSlice.endpoints.completeRideRequest.initiate({ rideRequestId })
+      ).unwrap();
+      dispatch(
+        updateRideRequestStatus({ rideRequestId, status: 'dropped-off' })
+      );
+      return response;
+    } catch (error) {
+      console.error('Error completing ride request:', error);
+      return rejectWithValue(error);
+    }
   }
-});
+);
 
 export const setRideRequestWithTimeout = createAsyncThunk(
   'rideRequest/setRideRequestWithTimeout',
@@ -147,9 +151,14 @@ export const setRideRequestWithTimeout = createAsyncThunk(
     const state = getState() as RootState;
     const currentRide = selectCurrentRideRequest(state);
 
-    
     if (!currentRide) {
-      dispatch(addRideRequest({ ...rideRequestData, status: 'pending' }));
+      dispatch(
+        addRideRequest({
+          ...rideRequestData,
+          status: 'pending',
+          createdAt: Date.now()
+        })
+      );
 
       setTimeout(() => {
         const state = getState() as RootState;

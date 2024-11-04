@@ -9,12 +9,13 @@ export const findNearbyDrivers = async (
   radiusInMeters: number
 ) => {
   logger.info(`Finding drivers near location: ${longitude}, ${latitude}`);
+  
+  const twoMinutesAgo = new Date(Date.now() - 2 * 60 * 1000); // 2 minutes ago
+  
   const drivers = await Driver.findAll({
     where: {
-      location: {
-        [Op.ne]: null,
-      },
-      // isAvailable: true,
+      // Uncomment this line if you want to filter by recent updates:
+      // lastLocationUpdatedAt: { [Op.gte]: twoMinutesAgo },
       [Op.and]: sequelize.where(
         sequelize.literal(
           `ST_DWithin(
@@ -37,13 +38,17 @@ export const findNearbyDrivers = async (
         'ASC',
       ],
     ],
-    limit: 10,
-    // Use 'replacements' or 'bind' for parameter binding
+    limit: 100, // Ensure this is enough to include all nearby drivers
     replacements: {
       longitude,
       latitude,
       radiusInMeters,
     },
+  });
+
+  logger.info(`Total drivers found: ${drivers.length}`);
+  drivers.forEach((driver) => {
+    logger.info(`Driver ID: ${driver.id}, Location: ${driver.location}`);
   });
 
   return drivers;

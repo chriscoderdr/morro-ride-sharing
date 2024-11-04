@@ -13,6 +13,8 @@ import { setRideRequestWithTimeout } from '../store/slices/ride-request-slice';
 class MQTTClientService {
   private client: Client;
   private reconnectInterval: NodeJS.Timeout | null = null;
+  private retryAttempts = 0;
+  private maxRetryAttempts = 5;
 
   constructor(clientId: string) {
     this.client = new Client(
@@ -27,17 +29,15 @@ class MQTTClientService {
 
   connect = (onSuccess: () => void, onFailure: (error: Error) => void) => {
     store.dispatch(startConnecting());
-    if (this.client.isConnected()) {
-      this.client.disconnect();
-    }
     this.client.connect({
       useSSL: false,
-      timeout: 500,
+      keepAliveInterval: 30,
+      timeout: 10000,
       onSuccess: () => {
         console.log('Connected to MQTT broker');
         this.clearReconnectInterval();
         onSuccess();
-        this.subscribeToRideRequests(this.getDriverId());
+        this.subscribeToRideRequests();
       },
       onFailure: (error: any) => {
         console.error('Failed to connect to MQTT broker:', error);
@@ -49,20 +49,15 @@ class MQTTClientService {
   };
 
   private scheduleReconnect = () => {
-    if (this.reconnectInterval) return; // Prevent multiple intervals
+    if (this.reconnectInterval) return;
 
     this.reconnectInterval = setInterval(() => {
       console.log('Attempting to reconnect to MQTT broker...');
       this.connect(
-        () => {
-          console.log('Reconnected successfully.');
-          this.subscribeToRideRequests(this.getDriverId());
-        },
-        (error) => {
-          console.error('Reconnection attempt failed:', error);
-        }
+        () => console.log('Reconnected successfully.'),
+        (error) => console.error('Reconnection attempt failed:', error)
       );
-    }, 5000); // Retry every 5 seconds
+    }, 5000);
   };
 
   private clearReconnectInterval = () => {
@@ -72,81 +67,88 @@ class MQTTClientService {
     }
   };
 
-  getDriverId() {
-    const driverId = store.getState().auth.driverId as string;
-    console.log(` driverId: ${driverId}`);
-    return driverId;
-  }
+  private getDriverId = () => store.getState().auth.driverId as string;
 
-  hasDriverId() {
-    return this.getDriverId().length > 0;
-  }
+  private hasDriverId = () => this.getDriverId()?.length > 0;
 
-  getAccessToken() {
-    return store.getState().auth.accessToken as string;
-  }
+  private getAccessToken = () => store.getState().auth.accessToken as string;
 
-  getTopic(topic: string) {
-    switch (topic) {
-      case 'ride_requests':
-        return (config.MQTT_TOPIC_RIDE_REQUESTS + '').replaceAll(
-          ':driver_id',
-          this.getDriverId()
-        );
-      case 'driver_location':
-        const topic = (config.MQTT_TOPIC_DRIVER_LOCATION + '').replaceAll(
-          ':driver_id',
-          this.getAccessToken()
-        );
-        console.log(
-          `topic: ${topic} | debug | driver_id: ${this.getDriverId()} | template: ${
-            config.MQTT_TOPIC_DRIVER_LOCATION
-          }`
-        );
-        return topic;
-      default:
-        return '';
+  private getTopic = (topic: string) => {
+    const driverId = this.getDriverId();
+    const accessToken = this.getAccessToken();
+    if (topic === 'ride_requests') {
+      return config.MQTT_TOPIC_RIDE_REQUESTS.replace(':driver_id', driverId);
+    } else if (topic === 'driver_location') {
+      return config.MQTT_TOPIC_DRIVER_LOCATION.replace(
+        ':driver_id',
+        accessToken
+      );
     }
-  }
-
-  subscribeToRideRequests = (accessToken: string = '') => {
-    console.log(`Trying to subscribe to ride requests`);
-
-    if (accessToken.length > 0 && this.hasDriverId()) {
-      const topic = this.getTopic('ride_requests');
-      this.client.subscribe(topic, {
-        onSuccess: () => {
-          console.log('Subscribed to MQTT topic:', topic);
-          store.dispatch(connectSuccess());
-        },
-        onFailure: (error: any) => {
-          console.error('Failed to subscribe to MQTT topic:', error);
-          store.dispatch(connectFailure(error.errorMessage));
-          this.scheduleReconnect();
-        }
-      });
-    }
+    return '';
   };
 
-  onConnectionLost = (responseObject: {
+  private subscribeToRideRequests = () => {
+    if (!this.hasDriverId()) return;
+
+    const topic = this.getTopic('ride_requests');
+    console.log(`Attempting to subscribe to topic: ${topic}`);
+
+    this.client.subscribe(topic, {
+      onSuccess: () => {
+        console.log('Successfully subscribed to MQTT topic:', topic);
+        this.retryAttempts = 0;
+        store.dispatch(connectSuccess());
+      },
+      onFailure: (error: any) => {
+        console.error('Failed to subscribe to MQTT topic:', error);
+        store.dispatch(connectFailure(error.errorMessage));
+
+        if (this.retryAttempts < this.maxRetryAttempts) {
+          this.retryAttempts += 1;
+          const delay = Math.pow(2, this.retryAttempts) * 1000;
+          console.log(`Retrying subscription in ${delay / 1000} seconds...`);
+          setTimeout(this.subscribeToRideRequests, delay);
+        } else {
+          console.log(
+            'Max retry attempts reached. Will try to reconnect later.'
+          );
+          this.scheduleReconnect();
+        }
+      }
+    });
+  };
+
+  private onConnectionLost = (responseObject: {
     errorCode: number;
     errorMessage?: string;
   }) => {
     if (responseObject.errorCode !== 0) {
-      store.dispatch(connectFailure(responseObject.errorMessage as string));
+      store.dispatch(
+        connectFailure(responseObject.errorMessage || 'Unknown error')
+      );
       console.error('MQTT connection lost:', responseObject.errorMessage);
       this.scheduleReconnect();
     }
   };
 
-  onMessageArrived = (message: Message) => {
+  private onMessageArrived = (message: Message) => {
     console.log('Message received:', message.payloadString);
-    const rideRequest = JSON.parse(message.payloadString);
+    try {
+      const rideRequest = JSON.parse(message.payloadString);
+      this.showRideRequestNotification(rideRequest);
+      this.dispatchRideRequestWithTimeout(rideRequest);
+    } catch (error) {
+      console.error('Failed to process incoming message:', error);
+      setTimeout(() => this.onMessageArrived(message), 1000); // Retry processing message
+    }
+  };
 
+  private showRideRequestNotification = (rideRequest: any) => {
     Notifications.setNotificationChannelAsync('new-ride-request', {
       name: 'New Ride Request',
       importance: Notifications.AndroidImportance.HIGH
     });
+
     Notifications.setNotificationHandler({
       handleNotification: async () => ({
         shouldShowAlert: true,
@@ -154,63 +156,40 @@ class MQTTClientService {
         shouldSetBadge: false
       })
     });
+
     Notifications.scheduleNotificationAsync({
       content: {
         title: 'You got a new ride request',
         body: `Pickup location: ${rideRequest.pickupLocation.address}`,
         sound: Platform.OS === 'android' ? undefined : 'default'
       },
-      trigger: {
-        channelId: 'new-ride-request'
-      }
-    })
-      .then((notificationId) => {
-        console.log(notificationId);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+      trigger: { channelId: 'new-ride-request' }
+    }).catch((error) => console.error('Notification error:', error));
+  };
 
+  private dispatchRideRequestWithTimeout = (rideRequest: any) => {
     store.dispatch(
       setRideRequestWithTimeout({
+        createdAt: Date.now(),
         riderName: '',
         riderPhone: '',
         rideRequestId: rideRequest.rideRequestId,
         estimatedPrice: rideRequest.estimatedPrice,
         pickupTimeDistance: rideRequest.pickupTimeDistance,
-        pickupLocation: {
-          latitude: rideRequest.pickupLocation.latitude,
-          longitude: rideRequest.pickupLocation.longitude,
-          address: rideRequest.pickupLocation.address
-        },
+        pickupLocation: rideRequest.pickupLocation,
         tripTimeDistance: rideRequest.tripTimeDistance,
-        tripLocation: {
-          latitude: rideRequest.tripLocation.latitude,
-          longitude: rideRequest.tripLocation.longitude,
-          address: rideRequest.tripLocation.address
-        }
+        tripLocation: rideRequest.tripLocation
       })
     );
   };
 
-  publishLocation = (
-    latitude: number,
-    longitude: number,
-    accessToken: string
-  ) => {
-    if (
-      this.client.isConnected() &&
-      accessToken.length > 0 &&
-      this.hasDriverId()
-    ) {
-      console.log(
-        `Publishing location ${latitude} ${longitude} ${accessToken}`
-      );
+  publishLocation = (latitude: number, longitude: number) => {
+    if (this.hasDriverId()) {
       const payload = JSON.stringify({
         latitude,
         longitude,
         isAvailable: true,
-        timestamp: new Date().getTime()
+        timestamp: Date.now()
       });
       const message = new Message(payload);
       message.destinationName = this.getTopic('driver_location');
@@ -226,12 +205,10 @@ class MQTTClientService {
       this.client.disconnect();
       console.log('Disconnected from MQTT broker');
     }
-    this.clearReconnectInterval(); // Clear any pending reconnection attempts
+    this.clearReconnectInterval();
   };
 
-  isConnected = () => {
-    return this.client.isConnected();
-  };
+  isConnected = () => this.client.isConnected();
 }
 
 export default MQTTClientService;

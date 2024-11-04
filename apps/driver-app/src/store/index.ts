@@ -5,6 +5,7 @@ import rideRequestReducer from '@/src/store/slices/ride-request-slice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import { persistReducer, persistStore } from 'redux-persist';
+import timeoutMiddleware from './middleware/timeout-middleware';
 
 const persistConfig = {
   key: 'root',
@@ -35,7 +36,7 @@ const store = configureStore({
           'persist/REGISTER'
         ]
       }
-    }).concat(apiSlice.middleware)
+    }).concat(apiSlice.middleware, timeoutMiddleware)
 });
 
 export const persistor = persistStore(store);

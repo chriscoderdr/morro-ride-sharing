@@ -47,7 +47,14 @@ interface RideRequestData {
 }
 
 const processRideRequest = async (job: Job<RideRequestData>) => {
-  const { id, riderId, pickupLocation, dropOffLocation, pickupAddress, dropOffAddress } = job.data;
+  const {
+    id,
+    riderId,
+    pickupLocation,
+    dropOffLocation,
+    pickupAddress,
+    dropOffAddress
+  } = job.data;
   logger.info(`data json: ${JSON.stringify(job.data)}`);
 
   const rideRequest = {
@@ -65,7 +72,7 @@ const processRideRequest = async (job: Job<RideRequestData>) => {
   const drivers = await findNearbyDrivers(
     pickupLocation.coordinates[0],
     pickupLocation.coordinates[1],
-    100000
+    50000
   );
 
   logger.info(`Found ${drivers.length} drivers near the pickup location.`);
@@ -73,21 +80,26 @@ const processRideRequest = async (job: Job<RideRequestData>) => {
   logger.info(`Ride request details: ${message}`);
   logger.info(`Drivers: ${drivers.map((driver) => driver.id).join(', ')}`);
 
-  drivers.forEach(async (driver) => {
-    logger.info(`Found driver ${driver.id} near the pickup location.`);
-    const rideData = await transformRideData(driver, rideRequest);
-    mqttClient.publish(
-      `/drivers/${driver.id}/ride-request`,
-      JSON.stringify(rideData),
-      (error) => {
-        if (error) {
-          console.error('Failed to send ride request through MQTT:', error);
-        } else {
-          console.log(`Ride request ${id} sent to drivers.`);
+  await Promise.all(
+    drivers.map(async (driver) => {
+      logger.info(`Sending to driver ${driver.id}`);
+      const rideData = await transformRideData(driver, rideRequest);
+      mqttClient.publish(
+        `/drivers/${driver.id}/ride-request`,
+        JSON.stringify(rideData),
+        (error) => {
+          if (error) {
+            logger.error(
+              `Failed to send ride request to driver ${driver.id}:`,
+              error
+            );
+          } else {
+            logger.info(`Ride request ${id} sent to driver ${driver.id}.`);
+          }
         }
-      }
-    );
-  });
+      );
+    })
+  );
 };
 
 const rideRequestWorker = new Worker<RideRequestData>(
