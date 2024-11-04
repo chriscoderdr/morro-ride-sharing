@@ -13,7 +13,7 @@ process.on('unhandledRejection', (reason, promise) => {
   process.exit(1);
 });
 
-const MQTT_BROKER_URL = process.env.MQTT_BROKER_URL || 'mqtt://192.168.68.106:1883';
+const MQTT_BROKER_URL = process.env.MQTT_BROKER_URL || 'mqtt://mqtt:1883';
 const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET || 'access-secret';
 
 const mqttClient = mqtt.connect(MQTT_BROKER_URL, {

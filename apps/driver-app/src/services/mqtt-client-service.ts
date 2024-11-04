@@ -3,7 +3,11 @@ import { Client, Message } from 'paho-mqtt';
 import { Platform } from 'react-native';
 import config from '../config';
 import store from '../store';
-import { connectFailure, connectSuccess, startConnecting } from '../store/slices/mqtt-slice';
+import {
+  connectFailure,
+  connectSuccess,
+  startConnecting
+} from '../store/slices/mqtt-slice';
 import { setRideRequestWithTimeout } from '../store/slices/ride-request-slice';
 
 class MQTTClientService {
@@ -23,6 +27,9 @@ class MQTTClientService {
 
   connect = (onSuccess: () => void, onFailure: (error: Error) => void) => {
     store.dispatch(startConnecting());
+    if (this.client.isConnected()) {
+      this.client.disconnect();
+    }
     this.client.connect({
       useSSL: false,
       timeout: 500,

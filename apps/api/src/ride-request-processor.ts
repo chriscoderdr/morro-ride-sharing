@@ -13,7 +13,7 @@ const redisConfig = {
 };
 
 const mqttConfig = {
-  host: 'mqtt://192.168.68.106:1883',
+  host: 'mqtt://mqtt:1883',
   options: {
     clientId: process.env.MQTT_CLIENT_ID || 'ride-request-processor',
     username: process.env.MQTT_USERNAME,
