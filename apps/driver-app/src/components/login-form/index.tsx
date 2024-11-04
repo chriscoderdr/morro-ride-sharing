@@ -50,7 +50,7 @@ const LoginForm: React.FC = () => {
             driverId: result.driverId
           })
         );
-        router.push('/map');
+        router.push('/main');
       } catch (err: any) {
         const errorMessage =
           err?.data?.error || 'Login failed. Please try again.';

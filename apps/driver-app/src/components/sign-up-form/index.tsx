@@ -94,7 +94,7 @@ const SignUpForm: React.FC = () => {
             driverId: result.driverId
           })
         );
-        router.push('/map');
+        router.push('/main');
       } catch (err: any) {
         const errorMessage =
           err?.data?.error || 'Registration failed. Please try again.';
