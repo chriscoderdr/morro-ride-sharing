@@ -6,8 +6,6 @@ interface RideRequestCardStyles {
   infoContainer: ViewStyle;
   infoText: TextStyle;
   locationText: TextStyle;
-  acceptButton: ViewStyle;
-  acceptButtonText: TextStyle;
 }
 
 export default RideRequestCardStyles;
@@ -45,17 +43,5 @@ export const styles = StyleSheet.create<RideRequestCardStyles>({
     fontSize: 16,
     fontWeight: 'bold',
     color: '#333'
-  },
-  acceptButton: {
-    marginTop: 20,
-    backgroundColor: '#007AFF',
-    borderRadius: 8,
-    paddingVertical: 12,
-    alignItems: 'center'
-  },
-  acceptButtonText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: 'bold'
   }
 });

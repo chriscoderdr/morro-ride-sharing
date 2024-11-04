@@ -1,13 +1,22 @@
-import { LOCATION_TASK_NAME } from "@/src/tasks/location-task";
-import { useEffect } from "react";
-import useLocationManager from "./use-location-manager";
+import { LOCATION_TASK_NAME } from '@/src/tasks/location-task';
+import { useBackgroundPermissions } from 'expo-location';
+import { useEffect } from 'react';
+import useLocationManager from './use-location-manager';
 
 const useBackgroundLocation = () => {
-  const { startLocationUpdates } = useLocationManager(true);
+  const { startLocationUpdates, stopLocationUpdates } =
+    useLocationManager(true);
+  const [status, _] = useBackgroundPermissions();
 
   useEffect(() => {
-    startLocationUpdates(LOCATION_TASK_NAME);
-  }, [startLocationUpdates]);
+    if (status?.status === 'granted') {
+      startLocationUpdates(LOCATION_TASK_NAME);
+    }
+
+    return () => {
+      stopLocationUpdates(LOCATION_TASK_NAME);
+    };
+  }, [startLocationUpdates, status]);
 
   return null;
 };

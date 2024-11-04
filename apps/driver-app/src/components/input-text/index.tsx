@@ -1,8 +1,8 @@
-import React from "react";
-import { TextInput, View, ViewStyle } from "react-native";
-import { TouchableOpacity } from "react-native-gesture-handler";
-import { IInputTextProps } from "./props";
-import { styles } from "./styles";
+import React from 'react';
+import { TextInput, View, ViewStyle } from 'react-native';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import { IInputTextProps } from './props';
+import { styles } from './styles';
 
 const InputText: React.FC<IInputTextProps> = ({
   IconComponent,
@@ -10,7 +10,7 @@ const InputText: React.FC<IInputTextProps> = ({
   fullWidth = false,
   ...textInputProps
 }) => {
-  const fullWidthStyle: ViewStyle = fullWidth ? { alignSelf: "stretch" } : {};
+  const fullWidthStyle: ViewStyle = fullWidth ? { alignSelf: 'stretch' } : {};
 
   return (
     <View style={[styles.container, fullWidthStyle]}>

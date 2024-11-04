@@ -1,4 +1,5 @@
 import Setup from '@/src/components/setup';
+import config from '@/src/config';
 import store, { persistor } from '@/src/store';
 import {
   Inter_400Regular,
@@ -14,18 +15,19 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 
-
 const queryClient = new QueryClient();
 
-Mapbox.setAccessToken(
-  'sk.eyJ1IjoiY2dvbWV6bWVuZGV6IiwiYSI6ImNtMndhbDAwZjAzMXQyanNkMHF2NjR3bmUifQ.f6E28fydW9bkhLBP7L_lCQ'
-);
+const MAPBOX_ACCESS_TOKEN = config.MAPBOX_ACCESS_TOKEN;
+console.log('Mapbox Access Token:', MAPBOX_ACCESS_TOKEN);
+
+Mapbox.setAccessToken(MAPBOX_ACCESS_TOKEN || '');
+
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,
     shouldPlaySound: false,
-    shouldSetBadge: false,
-  }),
+    shouldSetBadge: false
+  })
 });
 
 const App = () => {

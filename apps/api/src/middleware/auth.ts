@@ -16,9 +16,11 @@ export const authenticateToken = async (ctx: Context, next: Next) => {
   }
 
   try {
-    const decoded = jwt.verify(token, ACCESS_TOKEN_SECRET) as { userId: string; userType: 'driver' | 'rider' };
+    const decoded = jwt.verify(token, ACCESS_TOKEN_SECRET) as {
+      userId: string;
+      userType: 'driver' | 'rider';
+    };
 
-    // Check if the user is a driver or a rider based on userType
     let user = null;
     console.info(decoded.userType);
     if (decoded.userType === 'driver') {
@@ -29,14 +31,12 @@ export const authenticateToken = async (ctx: Context, next: Next) => {
 
     console.info(user);
 
-    // If user not found, return an error
     if (!user) {
       ctx.status = 403;
       ctx.body = { error: 'Invalid access token.' };
       return;
     }
 
-    // Attach the authenticated user to ctx.state
     ctx.state.user = user;
     ctx.state.userType = decoded.userType;
     await next();

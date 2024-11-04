@@ -1,13 +1,9 @@
-import {
-  MQTT_BROKER_URL,
-  MQTT_PORT,
-  MQTT_TOPIC,
-  MQTT_TOPIC_RIDE_REQUESTS
-} from '@/src/config/mqtt-config';
 import * as Notifications from 'expo-notifications';
 import { Client, Message } from 'paho-mqtt';
 import { Platform } from 'react-native';
+import config from '../config';
 import store from '../store';
+import { connectFailure, connectSuccess } from '../store/slices/mqtt-slice';
 import { setRideRequestWithTimeout } from '../store/slices/ride-request-slice';
 
 class MQTTClientService {
@@ -15,8 +11,11 @@ class MQTTClientService {
   private isSuscribed: boolean = false;
 
   constructor(clientId: string) {
-    console.log(`connection info ${MQTT_BROKER_URL} ${MQTT_PORT} ${clientId}`);
-    this.client = new Client(MQTT_BROKER_URL, Number(MQTT_PORT), clientId);
+    this.client = new Client(
+      config.MQTT_BROKER_URL,
+      Number(config.MQTT_PORT),
+      clientId
+    );
 
     this.client.onConnectionLost = this.onConnectionLost;
     this.client.onMessageArrived = this.onMessageArrived;
@@ -28,21 +27,53 @@ class MQTTClientService {
       timeout: 3000,
       onSuccess: () => {
         console.log('Connected to MQTT broker');
+        store.dispatch(connectSuccess());
         onSuccess();
       },
       onFailure: (error: any) => {
+        store.dispatch(connectFailure(error.errorMessage));
         console.error('Failed to connect to MQTT broker:', error);
         onFailure(error);
       }
     });
   };
 
+  getDriverId() {
+    const driverId = store.getState().auth.driverId as string;
+    console.log(` driverId: ${driverId}`);
+    return driverId;
+  }
+
+  hasDriverId() {
+    return this.getDriverId().length > 0;
+  }
+
+  getTopic(topic: string) {
+    switch (topic) {
+      case 'ride_requests':
+        return (config.MQTT_TOPIC_RIDE_REQUESTS + '').replaceAll(
+          ':driver_id',
+          this.getDriverId()
+        );
+      case 'driver_location':
+        const topic = (config.MQTT_TOPIC_DRIVER_LOCATION + '').replaceAll(
+          ':driver_id',
+          this.getDriverId()
+        );
+        console.log(
+          `topic: ${topic} | debug | driver_id: ${this.getDriverId()} | templat: ${
+            config.MQTT_TOPIC_DRIVER_LOCATION
+          }`
+        );
+        return topic;
+      default:
+        return '';
+    }
+  }
+
   subscribeToRideRequests = (accessToken: string = '') => {
-    if (!this.isSuscribed && accessToken.length > 0) {
-      const topic = MQTT_TOPIC_RIDE_REQUESTS.replaceAll(
-        '${driver_id}',
-        store.getState().auth.driverId as string
-      );
+    if (!this.isSuscribed && accessToken.length > 0 && this.hasDriverId()) {
+      const topic = this.getTopic('ride_requests');
       this.isSuscribed = true;
       this.client.subscribe(topic, {
         onSuccess: () => {
@@ -60,6 +91,8 @@ class MQTTClientService {
     errorMessage?: string;
   }) => {
     if (responseObject.errorCode !== 0) {
+      store.dispatch(connectFailure(responseObject.errorMessage as string));
+      console.log(`${JSON.stringify(config)}`);
       console.error('MQTT connection lost:', responseObject.errorMessage);
     }
   };
@@ -71,7 +104,6 @@ class MQTTClientService {
     Notifications.setNotificationChannelAsync('new-ride-request', {
       name: 'New Ride Request',
       importance: Notifications.AndroidImportance.HIGH
-      // No `sound` property here; the default system sound will be used
     });
     Notifications.setNotificationHandler({
       handleNotification: async () => ({
@@ -85,7 +117,6 @@ class MQTTClientService {
         title: 'You got a new ride requests',
         body: `Pickup location: ${rideRequest.pickupLocation.address}`,
         sound: Platform.OS == 'android' ? undefined : 'default'
-        // sound: 'mySoundFile.wav', // Provide ONLY the base filename
       },
       trigger: {
         channelId: 'new-ride-request'
@@ -98,7 +129,6 @@ class MQTTClientService {
         console.error(error);
       });
 
-    // setTimeout(() => {
     store.dispatch(
       setRideRequestWithTimeout({
         riderName: '',
@@ -119,7 +149,6 @@ class MQTTClientService {
         }
       })
     );
-    // }, 1000);
   };
 
   publishLocation = (
@@ -127,7 +156,11 @@ class MQTTClientService {
     longitude: number,
     accessToken: string
   ) => {
-    if (this.client.isConnected() && accessToken.length > 0) {
+    if (
+      this.client.isConnected() &&
+      accessToken.length > 0 &&
+      this.hasDriverId()
+    ) {
       this.subscribeToRideRequests(accessToken);
       console.log(
         `publishing location ${latitude} ${longitude} ${accessToken}`
@@ -139,10 +172,7 @@ class MQTTClientService {
         timestamp: new Date().getTime()
       });
       const message = new Message(payload);
-      message.destinationName = MQTT_TOPIC.replaceAll(
-        '${driver_id}',
-        store.getState().auth.accessToken as string
-      );
+      message.destinationName = this.getTopic('driver_location');
       this.client.send(message);
       console.log('Published location to MQTT:', payload);
     } else {
