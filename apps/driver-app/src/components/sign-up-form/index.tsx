@@ -1,117 +1,137 @@
-import Checkbox from "@/src/components/checkbox";
-import InputTextField from "@/src/components/input-text-field";
-import RoundedButton from "@/src/components/rounded-button";
-import { useAppDispatch } from "@/src/hooks/use-app-dispatch";
-import { useRegisterDriverMutation } from "@/src/store/slices/api-slice";
-import { setTokens } from "@/src/store/slices/auth-slice";
-import React, { useRef, useState } from "react";
-import { Keyboard, Text, View } from "react-native";
-import PhoneInput from "react-native-phone-number-input";
-import { styles } from "./styles";
+import Checkbox from '@/src/components/checkbox';
+import InputTextField from '@/src/components/input-text-field';
+import RoundedButton from '@/src/components/rounded-button';
+import { useAppDispatch } from '@/src/hooks/use-app-dispatch';
+import { useRegisterDriverMutation } from '@/src/store/slices/api-slice';
+import { setTokens } from '@/src/store/slices/auth-slice';
+import {
+  isValidEmail,
+  isValidName,
+  isValidPassword,
+  isValidPhone
+} from '@/src/utils/validators';
+import { Link, useRouter } from 'expo-router';
+import React, { useRef, useState } from 'react';
+import { Alert, Keyboard, Text, View } from 'react-native';
+import PhoneInput from 'react-native-phone-number-input';
+import { styles } from './styles';
 
 const SignUpForm: React.FC = () => {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [isChecked, setIsChecked] = useState(false);
 
   const [nameError, setNameError] = useState<string | undefined>(undefined);
   const [emailError, setEmailError] = useState<string | undefined>(undefined);
   const [phoneError, setPhoneError] = useState<string | undefined>(undefined);
-  const [passwordError, setPasswordError] = useState<string | undefined>(undefined);
-  const [confirmPasswordError, setConfirmPasswordError] = useState<string | undefined>(undefined);
-  const [registrationError, setRegistrationError] = useState<string | null>(null);
+  const [passwordError, setPasswordError] = useState<string | undefined>(
+    undefined
+  );
+  const [confirmPasswordError, setConfirmPasswordError] = useState<
+    string | undefined
+  >(undefined);
 
   const phoneInputRef = useRef<PhoneInput>(null);
   const dispatch = useAppDispatch();
 
-  const [registerDriver, { isLoading, isError, error, isSuccess }] = useRegisterDriverMutation();
+  const [registerDriver, { isLoading }] = useRegisterDriverMutation();
 
-  const isValidEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  const isValidName = (name: string) => name.trim().length >= 2;
-  const isValidPhone = (phone: string) => phoneInputRef.current?.isValidNumber(phone);
+  const router = useRouter();
 
   const handleSignUp = async () => {
     let isValid = true;
 
     if (!isValidName(name)) {
-      setNameError("Please enter a valid name");
+      setNameError('Please enter a valid name');
       isValid = false;
     } else {
       setNameError(undefined);
     }
 
     if (!isValidEmail(email)) {
-      setEmailError("Please enter a valid email address");
+      setEmailError('Please enter a valid email address');
       isValid = false;
     } else {
       setEmailError(undefined);
     }
 
-    if (!isValidPhone(phone)) {
-      setPhoneError("Please enter a valid phone number");
+    if (!isValidPhone(phone, phoneInputRef as any)) {
+      setPhoneError('Please enter a valid phone number');
       isValid = false;
     } else {
       setPhoneError(undefined);
     }
 
-    if (password.length < 8) {
-      setPasswordError("Password must be at least 8 characters");
+    if (!isValidPassword(password)) {
+      setPasswordError('Password must be at least 8 characters');
       isValid = false;
     } else {
       setPasswordError(undefined);
     }
 
     if (password !== confirmPassword) {
-      setConfirmPasswordError("Passwords do not match");
+      setConfirmPasswordError('Passwords do not match');
       isValid = false;
     } else {
       setConfirmPasswordError(undefined);
     }
 
     if (isValid && isChecked) {
-      setRegistrationError(null);
       try {
-        const result = await registerDriver({ name, email, phone, password }).unwrap();
-        console.log(`Registration successful: ${result.driverId}`);
-        dispatch(setTokens({ accessToken: result.accessToken, refreshToken: result.refreshToken, driverId: result.driverId }));
+        const result = await registerDriver({
+          name,
+          email,
+          phone,
+          password
+        }).unwrap();
+        dispatch(
+          setTokens({
+            accessToken: result.accessToken,
+            refreshToken: result.refreshToken,
+            driverId: result.driverId
+          })
+        );
+        router.push('/main');
       } catch (err: any) {
-        const errorMessage = err?.data?.error || "Registration failed. Please try again.";
-        setRegistrationError(errorMessage);
-        console.error("Registration failed:", errorMessage);
+        const errorMessage =
+          err?.data?.error || 'Registration failed. Please try again.';
+        Alert.alert('Sign up Error', errorMessage);
       }
     }
   };
 
   const handleNameChange = (text: string) => {
     setName(text);
-    setNameError(!isValidName(text) ? "Please enter a valid name" : undefined);
+    setNameError(!isValidName(text) ? 'Please enter a valid name' : undefined);
   };
 
   const handleEmailChange = (text: string) => {
     setEmail(text);
     setEmailError(
-      !isValidEmail(text) ? "Please enter a valid email address" : undefined
+      !isValidEmail(text) ? 'Please enter a valid email address' : undefined
     );
   };
 
   const handlePhoneChange = (text: string) => {
     setPhone(text);
     setPhoneError(
-      !isValidPhone(text) ? "Please enter a valid phone number" : undefined
+      !isValidPhone(text, phoneInputRef as any)
+        ? 'Please enter a valid phone number'
+        : undefined
     );
   };
 
   const handlePasswordChange = (text: string) => {
     setPassword(text);
     setPasswordError(
-      text.length < 8 ? "Password must be at least 8 characters" : undefined
+      text.length < 8 ? 'Password must be at least 8 characters' : undefined
     );
     setConfirmPasswordError(
       confirmPassword && text !== confirmPassword
-        ? "Passwords do not match"
+        ? 'Passwords do not match'
         : undefined
     );
   };
@@ -119,7 +139,7 @@ const SignUpForm: React.FC = () => {
   const handleConfirmPasswordChange = (text: string) => {
     setConfirmPassword(text);
     setConfirmPasswordError(
-      text !== password ? "Passwords do not match" : undefined
+      text !== password ? 'Passwords do not match' : undefined
     );
   };
 
@@ -228,17 +248,14 @@ const SignUpForm: React.FC = () => {
       </View>
 
       <View style={styles.buttonContainer}>
-        <View style={styles.feedbackContainer}>
-          {registrationError && (
-            <Text style={styles.feedbackError}>{registrationError}</Text>
-          )}
-          {isSuccess && (
-            <Text style={styles.feedbackSuccess}>Registration successful!</Text>
-          )}
+        <View style={styles.alreadyHaveAnAccount}>
+          <Link href="/login" style={styles.alredayHaveAnAccountText}>
+            <Text>Alreday have an account? Sign in</Text>
+          </Link>
         </View>
         <RoundedButton
           disabled={isButtonDisabled()}
-          text={isLoading ? "Signing Up..." : "Sign Up"}
+          text={isLoading ? 'Signing Up...' : 'Sign Up'}
           onPress={handleSignUp}
           testID="signup-button"
         />

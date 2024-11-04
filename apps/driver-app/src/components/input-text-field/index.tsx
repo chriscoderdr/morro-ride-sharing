@@ -1,10 +1,10 @@
-import InputPhone from "@/src/components/input-phone";
-import InputText from "@/src/components/input-text";
-import ObscuredInputText from "@/src/components/obscured-input-text";
-import React, { forwardRef } from "react";
-import { Text, View } from "react-native";
-import { IInputTextFieldProps } from "./props";
-import { styles } from "./styles";
+import InputPhone from '@/src/components/input-phone';
+import InputText from '@/src/components/input-text';
+import ObscuredInputText from '@/src/components/obscured-input-text';
+import { forwardRef } from 'react';
+import { Text, View } from 'react-native';
+import { IInputTextFieldProps } from './props';
+import { styles } from './styles';
 
 const InputTextField = forwardRef<any, IInputTextFieldProps>(
   (
@@ -23,7 +23,7 @@ const InputTextField = forwardRef<any, IInputTextFieldProps>(
   ) => {
     return (
       <View
-        style={[styles.container, fullWidth ? { alignSelf: "stretch" } : {}]}
+        style={[styles.container, fullWidth ? { alignSelf: 'stretch' } : {}]}
       >
         <Text style={styles.label}>{label}</Text>
         {phoneEntry ? (

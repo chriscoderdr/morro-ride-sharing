@@ -1,7 +1,9 @@
 import React from 'react';
 import { Keyboard, TouchableWithoutFeedback, View } from 'react-native';
 
-const KeyboardDismiss: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+const KeyboardDismiss: React.FC<{ children: React.ReactNode }> = ({
+  children
+}) => {
   const dismissKeyboard = () => {
     Keyboard.dismiss();
   };

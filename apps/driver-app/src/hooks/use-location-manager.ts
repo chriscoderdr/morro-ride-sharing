@@ -51,6 +51,12 @@ const useLocationManager = (isBackground = false, interval = 60000) => {
     }
   };
 
+  const stopLocationUpdates = async (taskName: string) => {
+    if ((await checkPermissions()) && isBackground) {
+      await Location.stopLocationUpdatesAsync(taskName);
+    }
+  };
+
   useEffect(() => {
     if (isBackground) {
       startLocationUpdates("background-location-task");
@@ -66,7 +72,7 @@ const useLocationManager = (isBackground = false, interval = 60000) => {
     }
   }, [isBackground, interval]);
 
-  return { location, fetchUserLocation, startLocationUpdates };
+  return { location, fetchUserLocation, startLocationUpdates, stopLocationUpdates };
 };
 
 export default useLocationManager;

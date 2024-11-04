@@ -1,6 +1,6 @@
-import { RideRequestState } from '@/src/store/slices/ride-request-slice';
+import { RideRequest } from '@/src/store/slices/ride-request-slice';
 
-export interface RideRequestCardProps {
-  rideRequest: RideRequestState;
+export interface IRideRequestCardProps {
+  rideRequest: RideRequest;
   onAccept: () => void;
 }

@@ -7,11 +7,11 @@ const useNotificationPermissions = () => {
   const [permissionStatus, setPermissionStatus] = useState<Notifications.PermissionStatus | null>(null);
 
   const requestPermissions = async () => {
-    // Get the current notification permission status
+    
     const settings = await Notifications.getPermissionsAsync();
     let finalStatus = settings.status;
 
-    // Check if permission was denied in settings
+    
     if (finalStatus === 'denied') {
       Alert.alert(
         'Enable Notifications',
@@ -30,7 +30,7 @@ const useNotificationPermissions = () => {
       return false;
     }
 
-    // If not granted, request permission
+    
     if (finalStatus !== 'granted') {
       const { status } = await Notifications.requestPermissionsAsync();
       finalStatus = status;
@@ -38,7 +38,7 @@ const useNotificationPermissions = () => {
 
     setPermissionStatus(finalStatus);
 
-    // Check again if permission is granted after the request
+    
     if (finalStatus !== 'granted') {
       if (Platform.OS === 'ios') {
         Alert.alert(

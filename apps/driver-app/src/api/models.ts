@@ -1,9 +1,7 @@
-// Define the common API response interface
 export interface ApiResponse {
   message: string;
 }
 
-// Define driver data interfaces
 export interface DriverData {
   name: string;
   email: string;
@@ -11,14 +9,12 @@ export interface DriverData {
   phone: string;
 }
 
-// Define responses for driver registration
 export interface RegisterResponse extends ApiResponse {
   driverId: string;
   accessToken: string;
   refreshToken: string;
 }
 
-// Define login data interfaces
 export interface LoginData {
   email: string;
   password: string;
@@ -30,7 +26,6 @@ export interface LoginResponse extends ApiResponse {
   driverId: string;
 }
 
-// Define data interfaces for accepting a ride request
 export interface AcceptRequestData {
   rideRequestId: string;
 }
@@ -49,7 +44,6 @@ export interface AcceptRequestResponse extends ApiResponse {
   };
 }
 
-// Define data interfaces for starting a ride request
 export interface StartRequestData {
   rideRequestId: string;
 }
@@ -57,4 +51,34 @@ export interface StartRequestData {
 export interface StartRequestResponse extends ApiResponse {
   rideRequestId: string;
   status: 'started';
+}
+
+
+interface Location {
+  latitude: number;
+  longitude: number;
+  address: string;
+}
+
+interface TimeDistance {
+  distance: string;
+  time: string;
+}
+
+export interface RideRequest {
+  rideRequestId: string;
+  estimatedPrice: string | null;
+  pickupTimeDistance: TimeDistance | null;
+  pickupLocation: Location | null;
+  tripTimeDistance: TimeDistance | null;
+  tripLocation: Location | null;
+  status:
+    | 'pending'
+    | 'accepted'
+    | 'declined'
+    | 'started'
+    | 'picked-up'
+    | 'dropped-off';
+  riderName?: string | null;
+  riderPhone?: string | null;
 }

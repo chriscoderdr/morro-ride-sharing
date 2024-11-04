@@ -38,14 +38,11 @@ export const registerRider = async (ctx: Context) => {
       return;
     }
 
-    // Create the new rider
     const newRider = await Rider.create({ name, email, phone, password });
 
-    // Generate tokens
     const accessToken = generateAccessToken(newRider.id, 'rider');
     const refreshToken = generateRefreshToken();
 
-    // Store the refresh token in the database
     await newRider.update({ refreshToken });
 
     ctx.status = 201;
@@ -88,7 +85,6 @@ export const createRideRequest = async (ctx: Context) => {
   }
 
   try {
-    // Create the ride request with the new GEOGRAPHY data types
     const newRideRequest = await RideRequest.create({
       riderId,
       pickupLocation: {
@@ -106,7 +102,6 @@ export const createRideRequest = async (ctx: Context) => {
 
     logger.info(`Ride request created: ${newRideRequest.pickupAddress}`);
 
-    // Add the ride request to the queue
     await queueService.addRideRequestToQueue(newRideRequest);
 
     ctx.status = 201;

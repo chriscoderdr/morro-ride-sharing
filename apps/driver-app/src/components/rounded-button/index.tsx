@@ -1,46 +1,33 @@
-import React from "react";
-import { Text, TouchableOpacity, ViewStyle } from "react-native";
-import { styles } from "./styles";
-
-interface IButtonProps {
-  text: string;
-  onPress: () => void;
-  backgroundColor?: string;
-  textColor?: string;
-  size?: "small" | "medium" | "large";
-  fullWidth?: boolean;
-  borderRadius?: number;
-  type?: "primary" | "secondary";
-  testID?: string;
-  disabled?: boolean;
-}
+import React from 'react';
+import { Text, TouchableOpacity, ViewStyle } from 'react-native';
+import { styles } from './styles';
 
 const RoundedButton: React.FC<IButtonProps> = ({
   text,
   onPress,
   backgroundColor,
   textColor,
-  size = "medium",
+  size = 'medium',
   fullWidth = false,
   borderRadius = 10,
-  type = "primary",
+  type = 'primary',
   testID,
-  disabled = false,
+  disabled = false
 }) => {
   const buttonBackgroundColor =
-    backgroundColor ?? (type === "primary" ? "#000000" : "#FFFFFF");
+    backgroundColor ?? (type === 'primary' ? '#000000' : '#FFFFFF');
   const buttonTextColor =
-    textColor ?? (type === "primary" ? "#FFFFFF" : "#000000");
+    textColor ?? (type === 'primary' ? '#FFFFFF' : '#000000');
   const borderStyle =
-    type === "secondary" ? { borderWidth: 1, borderColor: "#747474" } : {};
+    type === 'secondary' ? { borderWidth: 1, borderColor: '#747474' } : {};
 
   const buttonSizeStyle =
-    size === "small"
+    size === 'small'
       ? styles.small
-      : size === "large"
+      : size === 'large'
       ? styles.large
       : styles.medium;
-  const fullWidthStyle: ViewStyle = fullWidth ? { alignSelf: "stretch" } : {};
+  const fullWidthStyle: ViewStyle = fullWidth ? { alignSelf: 'stretch' } : {};
   const opacityStyle = disabled ? { opacity: 0.5 } : {};
 
   return (
@@ -51,7 +38,7 @@ const RoundedButton: React.FC<IButtonProps> = ({
         fullWidthStyle,
         borderStyle,
         opacityStyle,
-        { backgroundColor: buttonBackgroundColor, borderRadius },
+        { backgroundColor: buttonBackgroundColor, borderRadius }
       ]}
       onPress={!disabled ? onPress : undefined}
       testID={testID}

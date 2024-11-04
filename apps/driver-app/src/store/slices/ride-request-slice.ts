@@ -1,6 +1,7 @@
 import {
   AcceptRequestData,
   AcceptRequestResponse,
+  RideRequest,
   StartRequestData,
   StartRequestResponse
 } from '@/src/api/models';
@@ -8,34 +9,7 @@ import { RootState } from '@/src/store';
 import { apiSlice } from '@/src/store/slices/api-slice';
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-interface Location {
-  latitude: number;
-  longitude: number;
-  address: string;
-}
 
-interface TimeDistance {
-  distance: string;
-  time: string;
-}
-
-export interface RideRequest {
-  rideRequestId: string;
-  estimatedPrice: string | null;
-  pickupTimeDistance: TimeDistance | null;
-  pickupLocation: Location | null;
-  tripTimeDistance: TimeDistance | null;
-  tripLocation: Location | null;
-  status:
-    | 'pending'
-    | 'accepted'
-    | 'declined'
-    | 'started'
-    | 'picked-up'
-    | 'dropped-off';
-  riderName?: string | null;
-  riderPhone?: string | null;
-}
 
 interface RideRequestState {
   requests: RideRequest[];
@@ -45,7 +19,7 @@ const initialState: RideRequestState = {
   requests: []
 };
 
-// Thunk to accept a ride request
+
 export const acceptRideRequest = createAsyncThunk<
   AcceptRequestResponse,
   AcceptRequestData,
@@ -73,7 +47,7 @@ export const acceptRideRequest = createAsyncThunk<
   }
 );
 
-// Thunk to start a ride request
+
 export const startRideRequest = createAsyncThunk<
   StartRequestResponse,
   StartRequestData,
@@ -99,7 +73,7 @@ export const startRideRequest = createAsyncThunk<
   }
 );
 
-// Thunk to handle timeout for a specific pending ride request
+
 export const setRideRequestWithTimeout = createAsyncThunk(
   'rideRequest/setRideRequestWithTimeout',
   async (
@@ -122,13 +96,13 @@ export const setRideRequestWithTimeout = createAsyncThunk(
           })
         );
       }
-    }, 15000); // 15 seconds
+    }, 15000); 
   }
 );
 
 export const pickUpRideRequest = createAsyncThunk<
-  StartRequestResponse, // Assuming the response structure is similar to StartRequestResponse
-  StartRequestData, // Assuming we use similar data structure as StartRequestData
+  StartRequestResponse, 
+  StartRequestData, 
   { state: RootState }
 >(
   'rideRequest/pickUpRideRequest',
@@ -194,7 +168,7 @@ const rideRequestSlice = createSlice({
       }
     },
     clearRideRequests: (state) => {
-      state.requests = []; // Clear all requests
+      state.requests = [];
     },
     removeRideRequest: (state, action: PayloadAction<string>) => {
       state.requests = state.requests.filter(
