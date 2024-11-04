@@ -2,6 +2,7 @@ import { RideRequest } from '@/src/api/models';
 import useRoute from '@/src/hooks/use-route';
 import { Coordinates } from '@/src/services/map-service';
 import { selectCurrentRideRequest } from '@/src/store/slices/ride-request-slice';
+import { haversineDistance } from '@/src/utils/location-utils';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import Mapbox from '@rnmapbox/maps';
 import { useEffect, useRef, useState } from 'react';
@@ -15,19 +16,62 @@ const MapView = () => {
   const cameraRef = useRef<Mapbox.Camera>(null);
   const { route, loading, error, fetchRoute } = useRoute();
 
-  const currentRideRequest = useSelector(selectCurrentRideRequest) as RideRequest | null;
+  const currentRideRequest = useSelector(
+    selectCurrentRideRequest
+  ) as RideRequest | null;
   const fetchIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const lastFetchedRequestIdRef = useRef<string | null>(null);
+  const lastFetchedRequestLocation = useRef<[number, number] | null>(null);
 
   const fetchRouteForCurrentRide = () => {
-    if (currentRideRequest && currentRideRequest.pickupLocation && currentRideRequest.tripLocation && userLocation) {
+    if (
+      currentRideRequest &&
+      currentRideRequest.pickupLocation &&
+      currentRideRequest.tripLocation &&
+      userLocation
+    ) {
       fetchRoute(
         { latitude: userLocation.latitude, longitude: userLocation.longitude },
-        { latitude: currentRideRequest.pickupLocation.latitude, longitude: currentRideRequest.pickupLocation.longitude },
-        { latitude: currentRideRequest.tripLocation.latitude, longitude: currentRideRequest.tripLocation.longitude }
+        {
+          latitude: currentRideRequest.pickupLocation.latitude,
+          longitude: currentRideRequest.pickupLocation.longitude
+        },
+        {
+          latitude: currentRideRequest.tripLocation.latitude,
+          longitude: currentRideRequest.tripLocation.longitude
+        }
       );
       lastFetchedRequestIdRef.current = currentRideRequest.rideRequestId;
+      lastFetchedRequestLocation.current = [
+        userLocation.latitude,
+        userLocation.longitude
+      ];
     }
+  };
+
+  const hasUserLastFetchedLocationChanged = () => {
+    console.log('Checking if user location has changed: ');
+    console.log(
+      `Last fetched: ${lastFetchedRequestLocation.current} : Current: ${userLocation?.latitude}, ${userLocation?.longitude}`
+    );
+
+    if (lastFetchedRequestLocation.current && userLocation) {
+      const [lastLat, lastLon] = lastFetchedRequestLocation.current;
+      const distance = haversineDistance(
+        lastLat,
+        lastLon,
+        userLocation.latitude,
+        userLocation.longitude
+      );
+
+      console.log(`Distance moved: ${distance} meters`);
+
+      // Check if distance is greater than 1 km (1000 meters)
+      return distance > 100;
+    }
+
+    // Return false if we don't have a previous location or current location
+    return false;
   };
 
   useEffect(() => {
@@ -46,6 +90,7 @@ const MapView = () => {
         currentRideRequest.pickupLocation &&
         currentRideRequest.tripLocation &&
         (lastFetchedRequestIdRef.current !== currentRideRequest.rideRequestId ||
+          hasUserLastFetchedLocationChanged() ||
           !isMapInitialized)
       ) {
         if (fetchIntervalRef.current) {
@@ -94,13 +139,18 @@ const MapView = () => {
   };
 
   const openNavigationApp = () => {
-    if (!currentRideRequest?.pickupLocation || !currentRideRequest?.tripLocation) {
+    if (
+      !currentRideRequest?.pickupLocation ||
+      !currentRideRequest?.tripLocation
+    ) {
       Alert.alert('Navigation Error', 'No pickup or destination specified');
       return;
     }
 
-    const { latitude: pickupLat, longitude: pickupLng } = currentRideRequest.pickupLocation;
-    const { latitude: dropOffLat, longitude: dropOffLng } = currentRideRequest.tripLocation;
+    const { latitude: pickupLat, longitude: pickupLng } =
+      currentRideRequest.pickupLocation;
+    const { latitude: dropOffLat, longitude: dropOffLng } =
+      currentRideRequest.tripLocation;
 
     Alert.alert(
       'Choose Navigation App',
@@ -132,7 +182,10 @@ const MapView = () => {
   };
 
   const hasInProgressRide = () => {
-    return currentRideRequest && ['started', 'picked-up'].includes(currentRideRequest.status);
+    return (
+      currentRideRequest &&
+      ['started', 'picked-up'].includes(currentRideRequest.status)
+    );
   };
 
   const hasRide = () => {
