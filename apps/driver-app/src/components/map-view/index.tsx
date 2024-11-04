@@ -48,12 +48,10 @@ const MapView = () => {
         (lastFetchedRequestIdRef.current !== currentRideRequest.rideRequestId ||
           !isMapInitialized)
       ) {
-        // Clear any existing interval before setting a new one
         if (fetchIntervalRef.current) {
           clearInterval(fetchIntervalRef.current);
         }
 
-        // Fetch route initially and set up a recurring fetch every 60 seconds
         fetchRouteForCurrentRide();
         console.log(
           `Fetching route for ride ${currentRideRequest.rideRequestId} | outside`
@@ -68,7 +66,6 @@ const MapView = () => {
       }
     }
 
-    // Clean up interval on component unmount
     return () => {
       if (fetchIntervalRef.current) {
         clearInterval(fetchIntervalRef.current);

@@ -8,7 +8,8 @@ import { persistReducer, persistStore } from 'redux-persist';
 
 const persistConfig = {
   key: 'root',
-  storage: AsyncStorage
+  storage: AsyncStorage,
+  blacklist: ['mqtt']
 };
 
 const reducer = combineReducers({

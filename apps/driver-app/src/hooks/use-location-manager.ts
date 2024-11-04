@@ -81,6 +81,7 @@ const useLocationManager = (isBackground = false, interval = 60000) => {
       startLocationUpdates('background-location-task');
     } else {
       fetchUserLocation();
+      console.log(`fetching user location first time`);
       const locationInterval = setInterval(() => {
         fetchUserLocation();
       }, interval);
