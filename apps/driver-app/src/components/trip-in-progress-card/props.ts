@@ -1,6 +1,7 @@
 import { RideRequest } from '@/src/store/slices/ride-request-slice';
 
-export interface IRideRequestCardProps {
+export interface ITripInProgressCardProps {
   rideRequest: RideRequest;
-  onAccept: () => void;
+  onPickUpRider: () => void;
+  onCallRider: () => void;
 }
