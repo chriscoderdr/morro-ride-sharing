@@ -2,8 +2,9 @@ import useUserLocation from '@/src/hooks/use-user-location';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import Mapbox from '@rnmapbox/maps';
 import { useEffect, useRef, useState } from 'react';
-import { Alert, StyleSheet, View } from 'react-native';
+import { Alert, View } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import styles from './styles';
 
 const MapView = () => {
   const { location: userLocation } = useUserLocation();
@@ -78,17 +79,3 @@ const MapView = () => {
 };
 
 export default MapView;
-
-const styles = StyleSheet.create({
-  button: {
-    position: 'absolute',
-    bottom: 30,
-    right: 10,
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: '#007AFF',
-    alignItems: 'center',
-    justifyContent: 'center'
-  }
-});

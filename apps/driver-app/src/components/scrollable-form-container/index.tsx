@@ -3,7 +3,11 @@ import { KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-const ScrollableFormContainer = ({ children }) => {
+const ScrollableFormContainer = ({
+  children
+}: {
+  children: React.ReactElement;
+}) => {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <KeyboardAvoidingView
