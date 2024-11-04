@@ -36,6 +36,7 @@ const getRoute: MapServiceInterface['getRoute'] = async (
   dropOffPoint
 ) => {
   try {
+    console.log(`Fetching route from ${userLocation} to ${pickupPoint} to ${dropOffPoint}`);
     const response = await directionsService
       .getDirections({
         profile: 'driving',

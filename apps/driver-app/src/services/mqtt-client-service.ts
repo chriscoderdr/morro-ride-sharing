@@ -76,14 +76,21 @@ class MQTTClientService {
   }
 
   subscribeToRideRequests = (accessToken: string = '') => {
+    console.log(`trying to subscribe to ride requests`);
+    console.log(
+      `isSuscribed: ${
+        this.isSuscribed
+      } |  accessToken: ${accessToken} | hasDriverId: ${this.hasDriverId()}`
+    );
     if (!this.isSuscribed && accessToken.length > 0 && this.hasDriverId()) {
       const topic = this.getTopic('ride_requests');
-      this.isSuscribed = true;
       this.client.subscribe(topic, {
         onSuccess: () => {
+          this.isSuscribed = true;
           console.log('Subscribed to MQTT topic:', topic);
         },
         onFailure: (error: any) => {
+          this.isSuscribed = false;
           console.error('Failed to subscribe to MQTT topic:', error);
         }
       });

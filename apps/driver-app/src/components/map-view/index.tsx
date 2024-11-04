@@ -1,6 +1,7 @@
 import { RideRequest } from '@/src/api/models';
 import useRoute from '@/src/hooks/use-route';
 import { Coordinates } from '@/src/services/map-service';
+import { selectCurrentRideRequest } from '@/src/store/slices/ride-request-slice';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import Mapbox from '@rnmapbox/maps';
 import { useEffect, useRef, useState } from 'react';
@@ -13,18 +14,11 @@ const MapView = () => {
   const [isMapInitialized, setIsMapInitialized] = useState(false);
   const cameraRef = useRef<Mapbox.Camera>(null);
   const { route, loading, error, fetchRoute } = useRoute();
-  const statuses = ['pending', 'accepted', 'started', 'picked-up'];
-  const onGoingStatuses = ['started', 'picked-up'];
-  const rideRequest = useSelector((state: any) =>
-    state.rideRequest.requests
-      ? state.rideRequest.requests.filter((r: any) =>
-          statuses.includes(r.status)
-        )[0]
-      : null
-  ) as RideRequest;
+
+  const currentRideRequest = useSelector(selectCurrentRideRequest) as RideRequest | null;
+  const fetchIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    
     if (userLocation != null && (!isMapInitialized || hasRide())) {
       if (hasInProgressRide() || !isMapInitialized) {
         cameraRef.current?.setCamera({
@@ -36,28 +30,57 @@ const MapView = () => {
       }
 
       if (
-        rideRequest &&
-        rideRequest.pickupLocation &&
-        rideRequest.tripLocation &&
-        hasRide()
+        currentRideRequest &&
+        currentRideRequest.pickupLocation &&
+        currentRideRequest.tripLocation
       ) {
-        fetchRoute(
-          {
-            latitude: userLocation.latitude,
-            longitude: userLocation.longitude
-          },
-          {
-            latitude: rideRequest.pickupLocation.latitude,
-            longitude: rideRequest.pickupLocation.longitude
-          },
-          {
-            latitude: rideRequest.tripLocation.latitude,
-            longitude: rideRequest.tripLocation.longitude
+        if (fetchIntervalRef.current) {
+          clearInterval(fetchIntervalRef.current);
+        }
+        if (!fetchIntervalRef.current) {
+          fetchRoute(
+            {
+              latitude: userLocation.latitude,
+              longitude: userLocation.longitude
+            },
+            {
+              latitude: currentRideRequest.pickupLocation.latitude,
+              longitude: currentRideRequest.pickupLocation.longitude
+            },
+            {
+              latitude: currentRideRequest.tripLocation.latitude,
+              longitude: currentRideRequest.tripLocation.longitude
+            }
+          );
+        }
+
+        fetchIntervalRef.current = setInterval(() => {
+          if (currentRideRequest && currentRideRequest.pickupLocation && currentRideRequest.tripLocation) {
+            fetchRoute(
+              {
+                latitude: userLocation.latitude,
+                longitude: userLocation.longitude
+              },
+              {
+                latitude: currentRideRequest.pickupLocation.latitude,
+                longitude: currentRideRequest.pickupLocation.longitude
+              },
+              {
+                latitude: currentRideRequest.tripLocation.latitude,
+                longitude: currentRideRequest.tripLocation.longitude
+              }
+            );
           }
-        );
+        }, 60000);
       }
     }
-  }, [userLocation, isMapInitialized, rideRequest]);
+
+    return () => {
+      if (fetchIntervalRef.current) {
+        clearInterval(fetchIntervalRef.current);
+      }
+    };
+  }, [userLocation, isMapInitialized, currentRideRequest]);
 
   const handleZoomToUserLocation = () => {
     if (userLocation) {
@@ -80,15 +103,13 @@ const MapView = () => {
   };
 
   const openNavigationApp = () => {
-    if (!rideRequest?.pickupLocation || !rideRequest?.tripLocation) {
+    if (!currentRideRequest?.pickupLocation || !currentRideRequest?.tripLocation) {
       Alert.alert('Navigation Error', 'No pickup or destination specified');
       return;
     }
 
-    const { latitude: pickupLat, longitude: pickupLng } =
-      rideRequest.pickupLocation;
-    const { latitude: dropOffLat, longitude: dropOffLng } =
-      rideRequest.tripLocation;
+    const { latitude: pickupLat, longitude: pickupLng } = currentRideRequest.pickupLocation;
+    const { latitude: dropOffLat, longitude: dropOffLng } = currentRideRequest.tripLocation;
 
     Alert.alert(
       'Choose Navigation App',
@@ -104,17 +125,14 @@ const MapView = () => {
         {
           text: 'Waze',
           onPress: () => {
-            // First, navigate to the pickup point
             Linking.openURL(
               `https://waze.com/ul?ll=${pickupLat},${pickupLng}&navigate=yes`
             );
-
-            // Then, after reaching the pickup point, navigate to the drop-off point
             setTimeout(() => {
               Linking.openURL(
                 `https://waze.com/ul?ll=${dropOffLat},${dropOffLng}&navigate=yes`
               );
-            }, 1000); // Small delay to allow the first URL to open
+            }, 1000);
           }
         }
       ],
@@ -123,13 +141,12 @@ const MapView = () => {
   };
 
   const hasInProgressRide = () => {
-    
-    return rideRequest && onGoingStatuses.includes(rideRequest.status)
+    return currentRideRequest && ['started', 'picked-up'].includes(currentRideRequest.status);
   };
 
   const hasRide = () => {
-    return rideRequest && statuses.includes(rideRequest.status);
-  }
+    return currentRideRequest !== null;
+  };
 
   return (
     <>
@@ -165,7 +182,7 @@ const MapView = () => {
           </Mapbox.Image>
         </Mapbox.Images>
 
-        {rideRequest && rideRequest.pickupLocation && (
+        {currentRideRequest && currentRideRequest.pickupLocation && (
           <Mapbox.ShapeSource
             id="pickupSource"
             shape={{
@@ -173,8 +190,8 @@ const MapView = () => {
               geometry: {
                 type: 'Point',
                 coordinates: [
-                  rideRequest.pickupLocation.longitude,
-                  rideRequest.pickupLocation.latitude
+                  currentRideRequest.pickupLocation.longitude,
+                  currentRideRequest.pickupLocation.latitude
                 ]
               },
               properties: {
@@ -192,7 +209,7 @@ const MapView = () => {
           </Mapbox.ShapeSource>
         )}
 
-        {rideRequest && rideRequest.tripLocation && (
+        {currentRideRequest && currentRideRequest.tripLocation && (
           <Mapbox.ShapeSource
             id="dropoffSource"
             shape={{
@@ -200,8 +217,8 @@ const MapView = () => {
               geometry: {
                 type: 'Point',
                 coordinates: [
-                  rideRequest.tripLocation.longitude,
-                  rideRequest.tripLocation.latitude
+                  currentRideRequest.tripLocation.longitude,
+                  currentRideRequest.tripLocation.latitude
                 ]
               },
               properties: {
@@ -219,7 +236,7 @@ const MapView = () => {
           </Mapbox.ShapeSource>
         )}
 
-        {rideRequest && route && (
+        {currentRideRequest && route && (
           <Mapbox.ShapeSource id="routeSource" shape={route}>
             <Mapbox.LineLayer
               id="routeLine"
@@ -232,7 +249,7 @@ const MapView = () => {
         )}
       </Mapbox.MapView>
 
-      {rideRequest && hasInProgressRide() && (
+      {currentRideRequest && hasInProgressRide() && (
         <TouchableOpacity
           style={[styles.button, { top: 100 }]}
           onPress={openNavigationApp}

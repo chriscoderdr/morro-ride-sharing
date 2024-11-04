@@ -1,29 +1,35 @@
 import * as Location from 'expo-location';
 import * as Notifications from 'expo-notifications';
 import React, { useEffect, useState } from 'react';
-import { Alert, Linking, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, AppState, Linking, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 const PermissionBlocker = ({ children }: { children: React.ReactNode }) => {
   const [permissionsGranted, setPermissionsGranted] = useState(false);
 
   useEffect(() => {
     checkPermissions();
+
+    // Add an event listener for app state changes
+    const subscription = AppState.addEventListener('change', handleAppStateChange);
+    return () => subscription.remove();
   }, []);
+
+  const handleAppStateChange = (nextAppState: string) => {
+    if (nextAppState === 'active') {
+      checkPermissions(); // Re-check permissions when app comes back to the foreground
+    }
+  };
 
   const checkPermissions = async () => {
     const { status: locationStatus } = await Location.getForegroundPermissionsAsync();
     const { status: backgroundStatus } = await Location.getBackgroundPermissionsAsync();
     const { status: notificationStatus } = await Notifications.getPermissionsAsync();
 
-    if (
+    setPermissionsGranted(
       locationStatus === 'granted' &&
       backgroundStatus === 'granted' &&
       notificationStatus === 'granted'
-    ) {
-      setPermissionsGranted(true);
-    } else {
-      setPermissionsGranted(false);
-    }
+    );
   };
 
   const handleRequestPermissions = async () => {
@@ -57,15 +63,15 @@ const PermissionBlocker = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <View style={styles.overlay}>
-      <Text style={styles.title}>Permissions Required</Text>
-      <Text style={styles.message}>
-        To provide ride services, we need permission for notifications, location, and background
-        location. Please enable these permissions in settings.
-      </Text>
-      <TouchableOpacity style={styles.button} onPress={handleRequestPermissions}>
-        <Text style={styles.buttonText}>Grant Permissions</Text>
-      </TouchableOpacity>
-    </View>
+  <Text style={styles.title}>Permissions Required</Text>
+  <Text style={styles.message}>
+    To receive ride requests and navigate to passengers, we need access to notifications, location, and background location. Please enable these permissions in your settings to start accepting rides.
+  </Text>
+  <TouchableOpacity style={styles.button} onPress={handleRequestPermissions}>
+    <Text style={styles.buttonText}>Grant Permissions</Text>
+  </TouchableOpacity>
+</View>
+
   );
 };
 
