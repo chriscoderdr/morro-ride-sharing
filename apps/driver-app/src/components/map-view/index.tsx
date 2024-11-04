@@ -17,6 +17,18 @@ const MapView = () => {
 
   const currentRideRequest = useSelector(selectCurrentRideRequest) as RideRequest | null;
   const fetchIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const lastFetchedRequestIdRef = useRef<string | null>(null);
+
+  const fetchRouteForCurrentRide = () => {
+    if (currentRideRequest && currentRideRequest.pickupLocation && currentRideRequest.tripLocation && userLocation) {
+      fetchRoute(
+        { latitude: userLocation.latitude, longitude: userLocation.longitude },
+        { latitude: currentRideRequest.pickupLocation.latitude, longitude: currentRideRequest.pickupLocation.longitude },
+        { latitude: currentRideRequest.tripLocation.latitude, longitude: currentRideRequest.tripLocation.longitude }
+      );
+      lastFetchedRequestIdRef.current = currentRideRequest.rideRequestId;
+    }
+  };
 
   useEffect(() => {
     if (userLocation != null && (!isMapInitialized || hasRide())) {
@@ -32,55 +44,37 @@ const MapView = () => {
       if (
         currentRideRequest &&
         currentRideRequest.pickupLocation &&
-        currentRideRequest.tripLocation
+        currentRideRequest.tripLocation &&
+        (lastFetchedRequestIdRef.current !== currentRideRequest.rideRequestId ||
+          !isMapInitialized)
       ) {
+        // Clear any existing interval before setting a new one
         if (fetchIntervalRef.current) {
           clearInterval(fetchIntervalRef.current);
         }
-        if (!fetchIntervalRef.current) {
-          fetchRoute(
-            {
-              latitude: userLocation.latitude,
-              longitude: userLocation.longitude
-            },
-            {
-              latitude: currentRideRequest.pickupLocation.latitude,
-              longitude: currentRideRequest.pickupLocation.longitude
-            },
-            {
-              latitude: currentRideRequest.tripLocation.latitude,
-              longitude: currentRideRequest.tripLocation.longitude
-            }
-          );
-        }
+
+        // Fetch route initially and set up a recurring fetch every 60 seconds
+        fetchRouteForCurrentRide();
+        console.log(
+          `Fetching route for ride ${currentRideRequest.rideRequestId} | outside`
+        );
 
         fetchIntervalRef.current = setInterval(() => {
-          if (currentRideRequest && currentRideRequest.pickupLocation && currentRideRequest.tripLocation) {
-            fetchRoute(
-              {
-                latitude: userLocation.latitude,
-                longitude: userLocation.longitude
-              },
-              {
-                latitude: currentRideRequest.pickupLocation.latitude,
-                longitude: currentRideRequest.pickupLocation.longitude
-              },
-              {
-                latitude: currentRideRequest.tripLocation.latitude,
-                longitude: currentRideRequest.tripLocation.longitude
-              }
-            );
-          }
+          console.log(
+            `Fetching route for ride ${currentRideRequest.rideRequestId} | inside`
+          );
+          fetchRouteForCurrentRide();
         }, 60000);
       }
     }
 
+    // Clean up interval on component unmount
     return () => {
       if (fetchIntervalRef.current) {
         clearInterval(fetchIntervalRef.current);
       }
     };
-  }, [userLocation, isMapInitialized, currentRideRequest]);
+  }, [userLocation, currentRideRequest]);
 
   const handleZoomToUserLocation = () => {
     if (userLocation) {
