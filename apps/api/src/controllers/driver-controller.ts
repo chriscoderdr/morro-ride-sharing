@@ -2,9 +2,8 @@ import { transformRideData } from '@/utils/ride-data-transformer';
 import bcrypt from 'bcrypt';
 import { Context } from 'koa';
 import { Op } from 'sequelize';
-import Driver from '../models/driver';
-import RideRequest from '../models/ride-request';
-import Rider from '../models/rider';
+import { Driver, RideRequest, Rider } from '../models';
+
 import logger from '../utils/logger';
 import {
   generateAccessToken,
@@ -313,7 +312,7 @@ export const getRideRequests = async (ctx: Context) => {
   const driverId = ctx.state.user.id; // Assumes driver is authenticated, and ID is stored in the token
   logger.info(`Fetching ride requests for driver ${driverId}`);
 
-  console.error('HOLAAAA')
+  console.error('HOLAAAA');
   try {
     const rideRequests = await RideRequest.findAll({
       where: { driverId },

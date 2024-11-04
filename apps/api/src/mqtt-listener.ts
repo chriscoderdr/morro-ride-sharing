@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import mqtt from 'mqtt';
-import Driver from './models/driver';
+import { Driver } from './models';
 import logger from './utils/logger';
 
 process.on('uncaughtException', (error) => {

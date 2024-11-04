@@ -1,5 +1,5 @@
 import { Context } from 'koa';
-import Driver from '../models/driver';
+import { Driver } from '../models';
 import { generateAccessToken } from '../utils/token-utils';
 
 export const refreshAccessToken = async (ctx: Context) => {

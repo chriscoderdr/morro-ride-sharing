@@ -50,10 +50,6 @@ const MapView = () => {
   };
 
   const hasUserLastFetchedLocationChanged = () => {
-    console.log('Checking if user location has changed: ');
-    console.log(
-      `Last fetched: ${lastFetchedRequestLocation.current} : Current: ${userLocation?.latitude}, ${userLocation?.longitude}`
-    );
 
     if (lastFetchedRequestLocation.current && userLocation) {
       const [lastLat, lastLon] = lastFetchedRequestLocation.current;
@@ -65,18 +61,18 @@ const MapView = () => {
       );
 
       console.log(`Distance moved: ${distance} meters`);
-
-      // Check if distance is greater than 1 km (1000 meters)
       return distance > 100;
     }
-
-    // Return false if we don't have a previous location or current location
     return false;
   };
 
   useEffect(() => {
     if (userLocation != null && (!isMapInitialized || hasRide())) {
-      if (hasInProgressRide() || !isMapInitialized) {
+      if (
+        hasInProgressRide() ||
+        !isMapInitialized ||
+        hasUserLastFetchedLocationChanged()
+      ) {
         cameraRef.current?.setCamera({
           centerCoordinate: [userLocation.longitude, userLocation.latitude],
           zoomLevel: hasInProgressRide() ? 16 : 12,

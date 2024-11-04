@@ -216,6 +216,22 @@ const rideRequestSlice = createSlice({
       state.requests = state.requests.filter(
         (req) => req.rideRequestId !== action.payload
       );
+    },
+    updateRideRequestDistanceTimes: (
+      state,
+      action: PayloadAction<{
+        rideRequestId: string;
+        tripTimeDistance: { distance: string; time: string };
+        pickupTimeDistance: { distance: string; time: string };
+      }>
+    ) => {
+      const request = state.requests.find(
+        (req) => req.rideRequestId === action.payload.rideRequestId
+      );
+      if (request) {
+        request.tripTimeDistance = action.payload.tripTimeDistance;
+        request.pickupTimeDistance = action.payload.pickupTimeDistance;
+      }
     }
   }
 });

@@ -19,12 +19,12 @@ interface DriverAttributes {
     coordinates: [number, number]; // [longitude, latitude]
   };
   lastLocationUpdatedAt?: Date;
-  isAvailable?: boolean;
+  isAvailable: boolean;
 }
 
 interface DriverCreationAttributes extends Optional<DriverAttributes, 'id'> {}
 
-class Driver extends Model<DriverAttributes, DriverCreationAttributes> {
+class Driver extends Model<DriverAttributes, DriverCreationAttributes> implements DriverAttributes {
   public id!: string;
   public name!: string;
   public email!: string;
@@ -41,68 +41,71 @@ class Driver extends Model<DriverAttributes, DriverCreationAttributes> {
   public lastLocationUpdatedAt?: Date;
   public isAvailable!: boolean;
 
+  // Method to compare encrypted password
   public async comparePassword(password: string): Promise<boolean> {
     return bcrypt.compare(password, this.password);
   }
 }
 
+// Initialize the Driver model
 Driver.init(
   {
     id: {
       type: DataTypes.UUID,
       defaultValue: DataTypes.UUIDV4,
-      primaryKey: true,
+      primaryKey: true
     },
     name: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: false
     },
     email: {
       type: DataTypes.STRING,
       allowNull: false,
       unique: true,
-      validate: { isEmail: true },
+      validate: { isEmail: true }
     },
     phone: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique: true,
+      unique: true
     },
     password: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: false
     },
     refreshToken: {
       type: DataTypes.STRING,
-      allowNull: true,
+      allowNull: true
     },
     loginAt: {
       type: DataTypes.DATE,
-      allowNull: true,
+      allowNull: true
     },
     location: {
       type: DataTypes.GEOGRAPHY('POINT', 4326),
-      allowNull: true,
+      allowNull: true
     },
     lastLocationUpdatedAt: {
       type: DataTypes.DATE,
-      allowNull: true,
+      allowNull: true
     },
     isAvailable: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
-      defaultValue: true,
-    },
+      defaultValue: true
+    }
   },
   {
     sequelize,
     tableName: 'drivers',
     hooks: {
+      // Hook to hash password before creating the driver instance
       beforeCreate: async (driver) => {
         driver.password = await bcrypt.hash(driver.password, saltRounds);
-      },
+      }
     },
-    timestamps: true,
+    timestamps: true
   }
 );
 

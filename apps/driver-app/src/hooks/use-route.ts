@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import MapService, {
-    Coordinates,
-    RouteGeometry
+  Coordinates,
+  RouteGeometry
 } from '../services/map-service';
 
 interface UseRouteResult {
@@ -34,6 +34,7 @@ const useRoute = (): UseRouteResult => {
         pickupPoint,
         dropOffPoint
       );
+      console.log(`Fetched route: ${JSON.stringify(fetchedRoute)}`);
       setRoute(fetchedRoute || null);
     } catch (err) {
       setError('Failed to fetch route');

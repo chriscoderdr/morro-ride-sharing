@@ -1,8 +1,6 @@
-import Rider from '@/models/rider';
 import mapbox from '@mapbox/mapbox-sdk';
 import Directions from '@mapbox/mapbox-sdk/services/directions';
-import Driver from '../models/driver';
-import RideRequest from '../models/ride-request';
+import { Driver, RideRequest, Rider } from '../models';
 import logger from './logger';
 
 /**
