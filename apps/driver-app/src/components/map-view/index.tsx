@@ -1,13 +1,11 @@
-import useUserLocation from '@/src/hooks/use-user-location';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import Mapbox from '@rnmapbox/maps';
 import { useEffect, useRef, useState } from 'react';
-import { Alert, View } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import { Alert, TouchableOpacity, View } from 'react-native';
 import styles from './styles';
 
 const MapView = () => {
-  const { location: userLocation } = useUserLocation();
+  const [userLocation, setUserLocation] = useState<[number, number]>();
   const [isMapInitialized, setIsMapInitialized] = useState(false);
   const cameraRef = useRef<Mapbox.Camera>(null);
 
@@ -34,10 +32,16 @@ const MapView = () => {
     }
   };
 
+  const onUserLocationUpdate = (location: Mapbox.Location) => {
+    const userLocation = location.coords;
+    setUserLocation([userLocation.longitude, userLocation.latitude]);
+  };
+
   return (
     <>
       <Mapbox.MapView style={{ flex: 1 }}>
         <Mapbox.Camera ref={cameraRef} />
+        <Mapbox.UserLocation onUpdate={onUserLocationUpdate} />
         <Mapbox.LocationPuck
           visible
           topImage="topImage"

@@ -1,6 +1,7 @@
 import {
   AcceptRequestData,
   AcceptRequestResponse,
+  RideRequest,
   StartRequestData,
   StartRequestResponse
 } from '@/src/api/models';
@@ -8,34 +9,7 @@ import { RootState } from '@/src/store';
 import { apiSlice } from '@/src/store/slices/api-slice';
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-interface Location {
-  latitude: number;
-  longitude: number;
-  address: string;
-}
 
-interface TimeDistance {
-  distance: string;
-  time: string;
-}
-
-export interface RideRequest {
-  rideRequestId: string;
-  estimatedPrice: string | null;
-  pickupTimeDistance: TimeDistance | null;
-  pickupLocation: Location | null;
-  tripTimeDistance: TimeDistance | null;
-  tripLocation: Location | null;
-  status:
-    | 'pending'
-    | 'accepted'
-    | 'declined'
-    | 'started'
-    | 'picked-up'
-    | 'dropped-off';
-  riderName?: string | null;
-  riderPhone?: string | null;
-}
 
 interface RideRequestState {
   requests: RideRequest[];

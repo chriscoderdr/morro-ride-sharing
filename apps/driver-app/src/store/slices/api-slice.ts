@@ -8,10 +8,11 @@ import {
   StartRequestData,
   StartRequestResponse
 } from '@/src/api/models';
+import config from '@/src/config';
 import { RootState } from '@/src/store';
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
-const API_BASE_URL = process.env.EXPO_PUBLIC_MORRO_API_BASE_URL;
+const API_BASE_URL = config.MORRO_API_BASE_URL;
 
 export const apiSlice = createApi({
   reducerPath: 'api',
@@ -61,7 +62,7 @@ export const apiSlice = createApi({
     pickUpRideRequest: builder.mutation<StartRequestResponse, StartRequestData>(
       {
         query: (data) => ({
-          url: '/drivers/pickUpRequest', 
+          url: '/drivers/pickUpRequest',
           method: 'POST',
           body: data
         })

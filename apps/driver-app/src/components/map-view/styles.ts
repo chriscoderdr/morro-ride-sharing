@@ -14,7 +14,7 @@ const styles: IMapViewStyles = StyleSheet.create({
     borderRadius: 25,
     backgroundColor: '#007AFF',
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
   }
 });
 

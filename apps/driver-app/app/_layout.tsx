@@ -1,4 +1,5 @@
 import Setup from '@/src/components/setup';
+import config from '@/src/config';
 import store, { persistor } from '@/src/store';
 import {
   Inter_400Regular,
@@ -16,12 +17,10 @@ import { PersistGate } from 'redux-persist/integration/react';
 
 const queryClient = new QueryClient();
 
-const MAPBOX_ACCESS_TOKEN = process.env.EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN;
+const MAPBOX_ACCESS_TOKEN = config.MAPBOX_ACCESS_TOKEN;
 console.log('Mapbox Access Token:', MAPBOX_ACCESS_TOKEN);
 
-
 Mapbox.setAccessToken(MAPBOX_ACCESS_TOKEN || '');
-
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
