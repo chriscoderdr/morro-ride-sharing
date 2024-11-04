@@ -36,7 +36,6 @@ const getRoute: MapServiceInterface['getRoute'] = async (
   dropOffPoint
 ) => {
   try {
-    console.log(`Mirame: longitude:${userLocation.longitude} latitude:${userLocation.latitude}`);
     const response = await directionsService
       .getDirections({
         profile: 'driving',

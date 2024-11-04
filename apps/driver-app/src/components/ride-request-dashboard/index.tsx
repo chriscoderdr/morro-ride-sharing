@@ -8,59 +8,38 @@ import {
   acceptRideRequest,
   completeRideRequest,
   pickUpRideRequest,
+  selectCurrentRideRequest,
   startRideRequest
 } from '@/src/store/slices/ride-request-slice';
-import { Alert, Linking, Platform } from 'react-native';
+import { Alert, Linking, Platform, View } from 'react-native';
 import { useSelector } from 'react-redux';
+import AnimatedRideRequestCard from '../animated-ride-request-card';
 
 const RideRequestDashboard = () => {
   const rideRequests = useSelector(
     (state: any) => state.rideRequest.requests
   ) as RideRequest[];
+  const currentRide = useSelector(selectCurrentRideRequest);
   const dispatch = useAppDispatch();
 
   const handleConfirmPickup = (rideRequestId: string) => {
-    const data = async () => {
-      try {
-        await dispatch(pickUpRideRequest({ rideRequestId })).unwrap();
-      } catch (error) {
-        Alert.alert('Error', 'Failed to confirm rider pickup.');
-      }
-    };
-    data().catch(() => console.error('Error confirming pickup'));
+    dispatch(pickUpRideRequest({ rideRequestId }));
   };
 
   const handleAcceptRide = (rideRequestId: string) => {
-    const data = async () => {
-      console.log(`Accepting ride request: ${rideRequestId}`);
-      try {
-        await dispatch(acceptRideRequest({ rideRequestId })).unwrap();
-      } catch (error) {
-        Alert.alert('Error', 'Failed to accept the ride request.');
-      }
-    };
-    data().catch(() => {
-      console.error('Error accepting ride request');
-    });
+    dispatch(acceptRideRequest({ rideRequestId }));
   };
 
   const handleStartTrip = (rideRequestId: string) => {
-    const data = async () => {
-      console.log(`Starting trip for request: ${rideRequestId}`);
-      try {
-        await dispatch(startRideRequest({ rideRequestId })).unwrap();
-      } catch (error) {
-        Alert.alert('Error', 'Failed to start the trip.');
-      }
-    };
-    data().catch(() => {
-      console.error('Error starting trip');
-    });
+    dispatch(startRideRequest({ rideRequestId }));
+  };
+
+  const handleCompleteTrip = (rideRequestId: string) => {
+    dispatch(completeRideRequest({ rideRequestId }));
   };
 
   const handleCallRider = (riderPhone: string) => {
     const phoneNumber = `tel:${riderPhone}`;
-
     if (Platform.OS === 'ios' || Platform.OS === 'android') {
       Linking.canOpenURL(phoneNumber)
         .then((supported) => {
@@ -82,61 +61,50 @@ const RideRequestDashboard = () => {
     }
   };
 
-  const handleCompleteTrip = (rideRequestId: string) => {
-    const data = async () => {
-      try {
-        await dispatch(completeRideRequest({ rideRequestId })).unwrap();
-      } catch (error) {
-        Alert.alert('Error', 'Failed to complete the trip.');
-      }
-    };
-    data().catch(() => console.error('Error completing trip'));
-  };
-
   return (
-    <>
-      {rideRequests
-        .filter((request) => request.status === 'pending')
-        .map((request) => (
-          <RideRequestCard
-            key={request.rideRequestId}
-            rideRequest={request}
-            onAccept={() => handleAcceptRide(request.rideRequestId)}
-          />
-        ))}
+    <View>
+      {!currentRide &&
+        rideRequests
+          .filter((request) => request.status === 'pending')
+          .map((request) => (
+            <AnimatedRideRequestCard key={request.rideRequestId}>
+              <RideRequestCard
+                rideRequest={request}
+                onAccept={() => handleAcceptRide(request.rideRequestId)}
+              />
+            </AnimatedRideRequestCard>
+          ))}
 
-      {rideRequests
-        .filter((request) => request.status === 'accepted')
-        .map((request) => (
+      {/* Show the active ride based on its status */}
+      {currentRide?.status === 'accepted' && (
+        <AnimatedRideRequestCard key={currentRide.rideRequestId}>
           <TripStartCard
-            key={request.rideRequestId}
-            rideRequest={request}
-            onCallRider={() => handleCallRider(request.riderPhone || '')}
-            onStartTrip={() => handleStartTrip(request.rideRequestId)}
+            rideRequest={currentRide}
+            onCallRider={() => handleCallRider(currentRide.riderPhone || '')}
+            onStartTrip={() => handleStartTrip(currentRide.rideRequestId)}
           />
-        ))}
+        </AnimatedRideRequestCard>
+      )}
 
-      {rideRequests
-        .filter((request) => request.status === 'started')
-        .map((request) => (
+      {currentRide?.status === 'started' && (
+        <AnimatedRideRequestCard key={currentRide.rideRequestId}>
           <TripInProgressCard
-            key={request.rideRequestId}
-            rideRequest={request}
-            onCallRider={() => handleCallRider(request.riderPhone || '')}
-            onPickUpRider={() => handleConfirmPickup(request.rideRequestId)}
+            rideRequest={currentRide}
+            onCallRider={() => handleCallRider(currentRide.riderPhone || '')}
+            onPickUpRider={() => handleConfirmPickup(currentRide.rideRequestId)}
           />
-        ))}
+        </AnimatedRideRequestCard>
+      )}
 
-      {rideRequests
-        .filter((request) => request.status === 'picked-up')
-        .map((request) => (
+      {currentRide?.status === 'picked-up' && (
+        <AnimatedRideRequestCard key={currentRide.rideRequestId}>
           <TripCompleteCard
-            key={request.rideRequestId}
-            rideRequest={request}
-            onCompleteTrip={() => handleCompleteTrip(request.rideRequestId)}
+            rideRequest={currentRide}
+            onCompleteTrip={() => handleCompleteTrip(currentRide.rideRequestId)}
           />
-        ))}
-    </>
+        </AnimatedRideRequestCard>
+      )}
+    </View>
   );
 };
 

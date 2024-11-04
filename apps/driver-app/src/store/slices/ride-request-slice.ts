@@ -9,8 +9,6 @@ import { RootState } from '@/src/store';
 import { apiSlice } from '@/src/store/slices/api-slice';
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-
-
 interface RideRequestState {
   requests: RideRequest[];
 }
@@ -19,18 +17,28 @@ const initialState: RideRequestState = {
   requests: []
 };
 
+export const selectCurrentRideRequest = (state: RootState) =>
+  state.rideRequest.requests.find(
+    (request) =>
+      request.status === 'accepted' ||
+      request.status === 'started' ||
+      request.status === 'picked-up'
+  );
 
-export const acceptRideRequest = createAsyncThunk<
+  export const acceptRideRequest = createAsyncThunk<
   AcceptRequestResponse,
   AcceptRequestData,
   { state: RootState }
 >(
   'rideRequest/acceptRideRequest',
-  async (data, { dispatch, rejectWithValue }) => {
+  async (data, { dispatch, getState, rejectWithValue }) => {
     try {
+      
       const response = await dispatch(
         apiSlice.endpoints.acceptRideRequest.initiate(data)
       ).unwrap();
+
+      
       dispatch(
         updateRideRequestStatus({
           rideRequestId: data.rideRequestId,
@@ -39,6 +47,23 @@ export const acceptRideRequest = createAsyncThunk<
           riderPhone: response.riderPhone
         })
       );
+
+      
+      const state = getState() as RootState;
+      const pendingRequests = state.rideRequest.requests.filter(
+        (request) => request.status === 'pending' && request.rideRequestId !== data.rideRequestId
+      );
+
+      
+      pendingRequests.forEach((request) => {
+        dispatch(
+          updateRideRequestStatus({
+            rideRequestId: request.rideRequestId,
+            status: 'declined'
+          })
+        );
+      });
+
       return response;
     } catch (error) {
       console.error('Error accepting ride request:', error);
@@ -70,33 +95,6 @@ export const startRideRequest = createAsyncThunk<
       console.error('Error starting ride request:', error);
       return rejectWithValue(error);
     }
-  }
-);
-
-
-export const setRideRequestWithTimeout = createAsyncThunk(
-  'rideRequest/setRideRequestWithTimeout',
-  async (
-    rideRequestData: Omit<RideRequest, 'status'>,
-    { dispatch, getState }
-  ) => {
-    dispatch(addRideRequest({ ...rideRequestData, status: 'pending' }));
-
-    setTimeout(() => {
-      const state = getState() as RootState;
-      const request = state.rideRequest.requests.find(
-        (req) => req.rideRequestId === rideRequestData.rideRequestId
-      );
-
-      if (request && request.status === 'pending') {
-        dispatch(
-          updateRideRequestStatus({
-            rideRequestId: rideRequestData.rideRequestId,
-            status: 'declined'
-          })
-        );
-      }
-    }, 15000); 
   }
 );
 
@@ -139,6 +137,38 @@ export const completeRideRequest = createAsyncThunk<
     return rejectWithValue(error);
   }
 });
+
+export const setRideRequestWithTimeout = createAsyncThunk(
+  'rideRequest/setRideRequestWithTimeout',
+  async (
+    rideRequestData: Omit<RideRequest, 'status'>,
+    { dispatch, getState }
+  ) => {
+    const state = getState() as RootState;
+    const currentRide = selectCurrentRideRequest(state);
+
+    
+    if (!currentRide) {
+      dispatch(addRideRequest({ ...rideRequestData, status: 'pending' }));
+
+      setTimeout(() => {
+        const state = getState() as RootState;
+        const request = state.rideRequest.requests.find(
+          (req) => req.rideRequestId === rideRequestData.rideRequestId
+        );
+
+        if (request && request.status === 'pending') {
+          dispatch(
+            updateRideRequestStatus({
+              rideRequestId: rideRequestData.rideRequestId,
+              status: 'declined'
+            })
+          );
+        }
+      }, 15000);
+    }
+  }
+);
 
 const rideRequestSlice = createSlice({
   name: 'rideRequest',

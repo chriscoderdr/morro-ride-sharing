@@ -10,7 +10,6 @@ const useLocationManager = (isBackground = false, interval = 60000) => {
     if (status !== Location.PermissionStatus.GRANTED) {
       const { status: requestStatus } = await Location.requestForegroundPermissionsAsync();
       if (requestStatus !== Location.PermissionStatus.GRANTED) {
-        Alert.alert("Permission denied", "Location permission is required.");
         return false;
       }
     }
