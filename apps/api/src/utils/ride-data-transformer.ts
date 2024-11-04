@@ -1,3 +1,4 @@
+import Rider from '@/models/rider';
 import mapbox from '@mapbox/mapbox-sdk';
 import Directions from '@mapbox/mapbox-sdk/services/directions';
 import Driver from '../models/driver';
@@ -29,7 +30,7 @@ export async function transformRideData(
   }
 
   // Extract coordinates
-  const driverCoordinates = driver.location.coordinates; // [longitude, latitude]
+  const driverCoordinates = driver.location?.coordinates; // [longitude, latitude]
   const pickupCoordinates = rideRequest.pickupLocation.coordinates; // [longitude, latitude]
   const dropOffCoordinates = rideRequest.dropOffLocation.coordinates; // [longitude, latitude]
 
@@ -58,6 +59,8 @@ export async function transformRideData(
     dropOffCoordinates
   );
 
+  const rider = await Rider.findOne({ where: { id: rideRequest.riderId } });
+
   // Prepare display data
   const displayData = {
     rideRequestId: rideRequest.id,
@@ -79,7 +82,9 @@ export async function transformRideData(
       latitude: dropOffCoordinates[1],
       longitude: dropOffCoordinates[0],
       address: rideRequest.dropOffAddress
-    }
+    },
+    status: rideRequest.status,
+    riderName: rider?.dataValues.name
   };
 
   return displayData;

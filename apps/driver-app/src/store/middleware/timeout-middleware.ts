@@ -1,8 +1,8 @@
 import { createAction, Middleware } from '@reduxjs/toolkit';
 import { RootState } from '../../store';
 import {
-    addRideRequest,
-    updateRideRequestStatus
+  addRideRequest,
+  updateRideRequestStatus
 } from '../slices/ride-request-slice';
 
 export const initializePendingRequests = createAction(
@@ -14,47 +14,54 @@ const timeoutMiddleware: Middleware =
   (next) =>
   (action: any) => {
     console.log(`Middleware: action.type=${action.type}`);
-    // Allow action to pass through to other reducers
     const result = next(action);
 
-    const setRequestTimeout = (rideRequestId: string) => {
-      setTimeout(() => {
-        const currentState = getState() as RootState;
-        const request = currentState.rideRequest.requests.find(
-          (req) => req.rideRequestId === rideRequestId
-        );
+    const setRequestTimeout = (rideRequestId: string, createdAt: number) => {
+      const now = Date.now();
+      const timeElapsed = now - createdAt;
 
-        if (request && request.status === 'pending') {
-          dispatch(
-            updateRideRequestStatus({
-              rideRequestId,
-              status: 'declined'
-            })
+      if (timeElapsed > 10000) {
+        dispatch(
+          updateRideRequestStatus({
+            rideRequestId,
+            status: 'declined'
+          })
+        );
+      } else {
+        setTimeout(() => {
+          const currentState = getState() as RootState;
+          const request = currentState.rideRequest.requests.find(
+            (req) => req.rideRequestId === rideRequestId
           );
-        }
-      }, 15000); // 15 seconds
+
+          if (request && request.status === 'pending') {
+            dispatch(
+              updateRideRequestStatus({
+                rideRequestId,
+                status: 'declined'
+              })
+            );
+          }
+        }, 15000 - timeElapsed);
+      }
     };
 
-    // Check if action is of type `addRideRequest`
     if (addRideRequest.match(action)) {
-      const { rideRequestId, status } = action.payload;
+      const { rideRequestId, status, createdAt } = action.payload;
 
-      // Only set a timeout if the status is 'pending'
       if (status === 'pending') {
-        setRequestTimeout(rideRequestId);
+        setRequestTimeout(rideRequestId, createdAt);
       }
     }
 
-    // Handle initializePendingRequests action
     if (initializePendingRequests.match(action)) {
       const state = getState() as RootState;
       const pendingRequests = state.rideRequest.requests.filter(
         (req) => req.status === 'pending'
       );
 
-      // Set a timeout for each pending request
       pendingRequests.forEach((request) =>
-        setRequestTimeout(request.rideRequestId)
+        setRequestTimeout(request.rideRequestId, request.createdAt)
       );
     }
 

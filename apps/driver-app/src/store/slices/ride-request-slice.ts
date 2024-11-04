@@ -206,6 +206,9 @@ const rideRequestSlice = createSlice({
         }
       }
     },
+    addRideRequests: (state, action: PayloadAction<RideRequest[]>) => {
+      state.requests = action.payload;
+    },
     clearRideRequests: (state) => {
       state.requests = [];
     },
@@ -221,6 +224,7 @@ export const {
   addRideRequest,
   updateRideRequestStatus,
   clearRideRequests,
-  removeRideRequest
+  removeRideRequest,
+  addRideRequests
 } = rideRequestSlice.actions;
 export default rideRequestSlice.reducer;

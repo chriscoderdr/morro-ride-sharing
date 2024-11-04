@@ -15,7 +15,7 @@ export const findNearbyDrivers = async (
   const drivers = await Driver.findAll({
     where: {
       // Uncomment this line if you want to filter by recent updates:
-      // lastLocationUpdatedAt: { [Op.gte]: twoMinutesAgo },
+      lastLocationUpdatedAt: { [Op.gte]: twoMinutesAgo },
       [Op.and]: sequelize.where(
         sequelize.literal(
           `ST_DWithin(

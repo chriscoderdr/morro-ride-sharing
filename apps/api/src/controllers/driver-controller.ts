@@ -1,3 +1,4 @@
+import { transformRideData } from '@/utils/ride-data-transformer';
 import bcrypt from 'bcrypt';
 import { Context } from 'koa';
 import { Op } from 'sequelize';
@@ -301,6 +302,33 @@ export const completeRideRequest = async (ctx: Context) => {
       pickupLocation: rideRequest.pickupLocation,
       dropOffLocation: rideRequest.dropOffLocation
     };
+  } catch (error) {
+    logger.error(error);
+    ctx.status = 500;
+    ctx.body = { error: 'Server error. Please try again later.' };
+  }
+};
+
+export const getRideRequests = async (ctx: Context) => {
+  const driverId = ctx.state.user.id; // Assumes driver is authenticated, and ID is stored in the token
+  logger.info(`Fetching ride requests for driver ${driverId}`);
+
+  console.error('HOLAAAA')
+  try {
+    const rideRequests = await RideRequest.findAll({
+      where: { driverId },
+      order: [['updatedAt', 'DESC']] // Orders by updatedAt descending
+    });
+    const user = (await Driver.findByPk(driverId)) as any;
+    const transformedRideRequests = await Promise.all(
+      rideRequests.map((rideRequest) => transformRideData(user, rideRequest))
+    );
+
+    ctx.status = 200;
+    ctx.body = { data: transformedRideRequests }; // Returns an empty array if no ride requests are found
+    logger.info(
+      `Fetched ${rideRequests.length} ride requests for driver ${driverId}`
+    );
   } catch (error) {
     logger.error(error);
     ctx.status = 500;
