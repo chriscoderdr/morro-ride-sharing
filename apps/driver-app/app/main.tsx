@@ -1,4 +1,5 @@
 import MapView from '@/src/components/map-view';
+import PermissionBlocker from '@/src/components/permission-blocker';
 import RideRequestDashboard from '@/src/components/ride-request-dashboard';
 import useForegroundLocation from '@/src/hooks/use-foreground-location';
 import useNotificationPermissions from '@/src/hooks/use-notifications-permissions';
@@ -17,8 +18,10 @@ export default function Map() {
 
   return (
     <View style={{ flex: 1 }}>
-      <MapView />
-      <RideRequestDashboard />
+      <PermissionBlocker>
+        <MapView />
+        <RideRequestDashboard />
+      </PermissionBlocker>
     </View>
   );
 }

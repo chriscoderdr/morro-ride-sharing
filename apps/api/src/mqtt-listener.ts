@@ -57,7 +57,7 @@ mqttClient.on('message', async (topic, message) => {
   try {
     const driverAccessToken = topic.split('/')[2];
     const decoded = jwt.verify(driverAccessToken, ACCESS_TOKEN_SECRET) as {
-      driverId: string;
+      userId: string;
     };
 
     const payload = JSON.parse(message.toString());

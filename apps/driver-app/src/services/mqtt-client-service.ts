@@ -48,6 +48,10 @@ class MQTTClientService {
     return this.getDriverId().length > 0;
   }
 
+  getAccessToken() {
+    return store.getState().auth.accessToken as string;
+  }
+
   getTopic(topic: string) {
     switch (topic) {
       case 'ride_requests':
@@ -58,7 +62,7 @@ class MQTTClientService {
       case 'driver_location':
         const topic = (config.MQTT_TOPIC_DRIVER_LOCATION + '').replaceAll(
           ':driver_id',
-          this.getDriverId()
+          this.getAccessToken()
         );
         console.log(
           `topic: ${topic} | debug | driver_id: ${this.getDriverId()} | templat: ${

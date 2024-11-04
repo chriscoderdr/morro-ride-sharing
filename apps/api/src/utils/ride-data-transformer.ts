@@ -103,7 +103,10 @@ async function getRoute(
     const response = await directionsService
       .getDirections({
         profile: 'driving',
-        waypoints: [{ coordinates: origin }, { coordinates: destination }],
+        waypoints: [
+          { coordinates: origin as [number, number] },
+          { coordinates: destination as [number, number] }
+        ],
         geometries: 'geojson',
         overview: 'simplified'
       })

@@ -1,14 +1,14 @@
+import { RideRequest } from '@/src/api/models';
 import RideRequestCard from '@/src/components/ride-request-card';
 import TripCompleteCard from '@/src/components/trip-complete-card';
 import TripInProgressCard from '@/src/components/trip-in-progress-card';
 import TripStartCard from '@/src/components/trip-start-card';
 import { useAppDispatch } from '@/src/hooks/use-app-dispatch';
 import {
-    acceptRideRequest,
-    completeRideRequest,
-    pickUpRideRequest,
-    RideRequest,
-    startRideRequest
+  acceptRideRequest,
+  completeRideRequest,
+  pickUpRideRequest,
+  startRideRequest
 } from '@/src/store/slices/ride-request-slice';
 import { Alert, Linking, Platform } from 'react-native';
 import { useSelector } from 'react-redux';
