@@ -2,7 +2,7 @@ import * as Location from "expo-location";
 import { useEffect, useState } from "react";
 import { Alert } from "react-native";
 
-const useLocationManager = (isBackground = false, interval = 60000) => {
+const useLocationManager = (isBackground = false, interval = 3000) => {
   const [location, setLocation] = useState<[number, number] | null>(null);
 
   const checkPermissions = async (
@@ -81,7 +81,6 @@ const useLocationManager = (isBackground = false, interval = 60000) => {
       startLocationUpdates('background-location-task');
     } else {
       fetchUserLocation();
-      console.log(`fetching user location first time`);
       const locationInterval = setInterval(() => {
         fetchUserLocation();
       }, interval);

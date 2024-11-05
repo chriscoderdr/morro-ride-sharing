@@ -142,6 +142,7 @@ export const completeRideRequest = createAsyncThunk<
   }
 );
 
+
 export const setRideRequestWithTimeout = createAsyncThunk(
   'rideRequest/setRideRequestWithTimeout',
   async (
@@ -206,16 +207,30 @@ const rideRequestSlice = createSlice({
         }
       }
     },
+    removeRideRequest: (state, action: PayloadAction<string>) => {
+      state.requests = state.requests.filter(
+        (req) => req.rideRequestId !== action.payload
+      );
+    },
+    updateRideRequest: (
+      state,
+      action: PayloadAction<{ rideRequestId: string; data: RideRequest }>
+    ) => {
+      const index = state.requests.findIndex(
+        (req) => req.rideRequestId === action.payload.rideRequestId
+      );
+      if (index !== -1) {
+        state.requests[index] = {
+          ...state.requests[index],
+          ...action.payload.data
+        };
+      }
+    },
     addRideRequests: (state, action: PayloadAction<RideRequest[]>) => {
       state.requests = action.payload;
     },
     clearRideRequests: (state) => {
       state.requests = [];
-    },
-    removeRideRequest: (state, action: PayloadAction<string>) => {
-      state.requests = state.requests.filter(
-        (req) => req.rideRequestId !== action.payload
-      );
     },
     updateRideRequestDistanceTimes: (
       state,
@@ -241,6 +256,8 @@ export const {
   updateRideRequestStatus,
   clearRideRequests,
   removeRideRequest,
-  addRideRequests
+  addRideRequests,
+  updateRideRequest,
+  updateRideRequestDistanceTimes
 } = rideRequestSlice.actions;
 export default rideRequestSlice.reducer;

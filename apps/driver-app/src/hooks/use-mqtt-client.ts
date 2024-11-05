@@ -8,11 +8,9 @@ const useMQTTClient = () => {
   useEffect(() => {
     mqttClient.connect(
       () => {
-        console.log("MQTT Connected!");
         setIsConnected(true);
       },
       (error) => {
-        console.error("MQTT Connection Error:", error);
         setIsConnected(false);
       }
     );

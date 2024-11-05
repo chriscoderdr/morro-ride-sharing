@@ -34,7 +34,6 @@ const useRoute = (): UseRouteResult => {
         pickupPoint,
         dropOffPoint
       );
-      console.log(`Fetched route: ${JSON.stringify(fetchedRoute)}`);
       setRoute(fetchedRoute || null);
     } catch (err) {
       setError('Failed to fetch route');

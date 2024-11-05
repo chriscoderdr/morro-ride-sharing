@@ -12,7 +12,7 @@ const TripStartCard: React.FC<ITripStartCardProps> = ({
 }) => {
   return (
     <GenericCard
-      title={`${rideRequest.pickupTimeDistance?.time} • ${rideRequest.tripTimeDistance?.distance} away`}
+      title={`${rideRequest.pickupTimeDistance?.time} • ${rideRequest.pickupTimeDistance?.distance} away`}
       buttonText="Start Trip"
       onPressButton={onStartTrip}
       buttonType="primary"

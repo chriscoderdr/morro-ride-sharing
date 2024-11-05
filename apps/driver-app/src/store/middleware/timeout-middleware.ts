@@ -13,7 +13,6 @@ const timeoutMiddleware: Middleware =
   ({ dispatch, getState }) =>
   (next) =>
   (action: any) => {
-    console.log(`Middleware: action.type=${action.type}`);
     const result = next(action);
 
     const setRequestTimeout = (rideRequestId: string, createdAt: number) => {

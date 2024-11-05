@@ -1,6 +1,8 @@
 import { RideRequest } from '@/src/api/models';
+import { useAppDispatch } from '@/src/hooks/use-app-dispatch';
 import useRoute from '@/src/hooks/use-route';
 import { Coordinates } from '@/src/services/map-service';
+import { initializePendingRequests } from '@/src/store/middleware/timeout-middleware';
 import { selectCurrentRideRequest } from '@/src/store/slices/ride-request-slice';
 import { haversineDistance } from '@/src/utils/location-utils';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
@@ -22,6 +24,7 @@ const MapView = () => {
   const fetchIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const lastFetchedRequestIdRef = useRef<string | null>(null);
   const lastFetchedRequestLocation = useRef<[number, number] | null>(null);
+  const dispatch = useAppDispatch();
 
   const fetchRouteForCurrentRide = () => {
     if (
@@ -50,7 +53,6 @@ const MapView = () => {
   };
 
   const hasUserLastFetchedLocationChanged = () => {
-
     if (lastFetchedRequestLocation.current && userLocation) {
       const [lastLat, lastLon] = lastFetchedRequestLocation.current;
       const distance = haversineDistance(
@@ -60,7 +62,6 @@ const MapView = () => {
         userLocation.longitude
       );
 
-      console.log(`Distance moved: ${distance} meters`);
       return distance > 100;
     }
     return false;
@@ -94,15 +95,11 @@ const MapView = () => {
         }
 
         fetchRouteForCurrentRide();
-        console.log(
-          `Fetching route for ride ${currentRideRequest.rideRequestId} | outside`
-        );
+        dispatch(initializePendingRequests());
 
         fetchIntervalRef.current = setInterval(() => {
-          console.log(
-            `Fetching route for ride ${currentRideRequest.rideRequestId} | inside`
-          );
           fetchRouteForCurrentRide();
+          dispatch(initializePendingRequests());
         }, 60000);
       }
     }

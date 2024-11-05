@@ -17,10 +17,7 @@ const useForegroundLocation = () => {
       accessToken &&
       status?.status === 'granted'
     ) {
-      mqttClient.publishLocation(location[1], location[0], accessToken);
-      console.log(
-        `Published location to MQTT: ${location[1]}, ${location[0]}, accesssToken: ${accessToken}`
-      );
+      mqttClient.publishLocation(location[1], location[0]);
     }
   }, [location, mqttClient, isConnected, status]);
 

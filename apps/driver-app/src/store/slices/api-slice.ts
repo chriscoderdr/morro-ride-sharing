@@ -5,7 +5,6 @@ import {
   LoginData,
   LoginResponse,
   RegisterResponse,
-  RideRequest,
   StartRequestData,
   StartRequestResponse
 } from '@/src/api/models';
@@ -17,7 +16,7 @@ const API_BASE_URL = config.MORRO_API_BASE_URL;
 
 export const apiSlice = createApi({
   reducerPath: 'api',
-  tagTypes: ['RideRequestResponse'],
+  tagTypes: ['somethingelseKeyApi'],
   baseQuery: fetchBaseQuery({
     baseUrl: API_BASE_URL,
     prepareHeaders: (headers, { getState }) => {
@@ -77,15 +76,17 @@ export const apiSlice = createApi({
         body: data
       })
     }),
-    getRideRequestsResponse: builder.query<{ data: RideRequest[] }, void>({
+    getRideRequestsResponse: builder.query<{ data: any[] }, void>({
+      keepUnusedDataFor: 0,
       query: () => ({
         url: `/drivers/rideRequests`,
         headers: {
           'Cache-Control': 'no-store',
           Pragma: 'no-cache'
-        }
+        },
       }),
-      providesTags: ['RideRequestResponse']
+      forceRefetch: () => true,
+      providesTags: ['somethingelseKeyApi']
     })
   })
 });

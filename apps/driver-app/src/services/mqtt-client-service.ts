@@ -34,13 +34,11 @@ class MQTTClientService {
       keepAliveInterval: 30,
       timeout: 10000,
       onSuccess: () => {
-        console.log('Connected to MQTT broker');
         this.clearReconnectInterval();
         onSuccess();
         this.subscribeToRideRequests();
       },
       onFailure: (error: any) => {
-        console.error('Failed to connect to MQTT broker:', error);
         store.dispatch(connectFailure(error.errorMessage));
         this.scheduleReconnect();
         onFailure(error);
@@ -52,7 +50,6 @@ class MQTTClientService {
     if (this.reconnectInterval) return;
 
     this.reconnectInterval = setInterval(() => {
-      console.log('Attempting to reconnect to MQTT broker...');
       this.connect(
         () => console.log('Reconnected successfully.'),
         (error) => console.error('Reconnection attempt failed:', error)
@@ -91,27 +88,20 @@ class MQTTClientService {
     if (!this.hasDriverId()) return;
 
     const topic = this.getTopic('ride_requests');
-    console.log(`Attempting to subscribe to topic: ${topic}`);
 
     this.client.subscribe(topic, {
       onSuccess: () => {
-        console.log('Successfully subscribed to MQTT topic:', topic);
         this.retryAttempts = 0;
         store.dispatch(connectSuccess());
       },
       onFailure: (error: any) => {
-        console.error('Failed to subscribe to MQTT topic:', error);
         store.dispatch(connectFailure(error.errorMessage));
 
         if (this.retryAttempts < this.maxRetryAttempts) {
           this.retryAttempts += 1;
           const delay = Math.pow(2, this.retryAttempts) * 1000;
-          console.log(`Retrying subscription in ${delay / 1000} seconds...`);
           setTimeout(this.subscribeToRideRequests, delay);
         } else {
-          console.log(
-            'Max retry attempts reached. Will try to reconnect later.'
-          );
           this.scheduleReconnect();
         }
       }
@@ -132,7 +122,6 @@ class MQTTClientService {
   };
 
   private onMessageArrived = (message: Message) => {
-    console.log('Message received:', message.payloadString);
     try {
       const rideRequest = JSON.parse(message.payloadString);
       this.showRideRequestNotification(rideRequest);
@@ -178,7 +167,8 @@ class MQTTClientService {
         pickupTimeDistance: rideRequest.pickupTimeDistance,
         pickupLocation: rideRequest.pickupLocation,
         tripTimeDistance: rideRequest.tripTimeDistance,
-        tripLocation: rideRequest.tripLocation
+        tripLocation: rideRequest.tripLocation,
+        updatedAt: Date.now()
       })
     );
   };
@@ -194,16 +184,13 @@ class MQTTClientService {
       const message = new Message(payload);
       message.destinationName = this.getTopic('driver_location');
       this.client.send(message);
-      console.log('Published location to MQTT:', payload);
     } else {
-      console.error('Cannot publish: MQTT client is not connected');
     }
   };
 
   disconnect = () => {
     if (this.client.isConnected()) {
       this.client.disconnect();
-      console.log('Disconnected from MQTT broker');
     }
     this.clearReconnectInterval();
   };

@@ -18,7 +18,6 @@ import { PersistGate } from 'redux-persist/integration/react';
 const queryClient = new QueryClient();
 
 const MAPBOX_ACCESS_TOKEN = config.MAPBOX_ACCESS_TOKEN;
-console.log('Mapbox Access Token:', MAPBOX_ACCESS_TOKEN);
 
 Mapbox.setAccessToken(MAPBOX_ACCESS_TOKEN || '');
 

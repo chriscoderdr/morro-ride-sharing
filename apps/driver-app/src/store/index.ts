@@ -17,7 +17,7 @@ import timeoutMiddleware, {
 const persistConfig = {
   key: 'root',
   storage: AsyncStorage,
-  blacklist: ['mqtt']
+  blacklist: ['mqtt', apiSlice.reducerPath]
 };
 
 const reducer = combineReducers({
