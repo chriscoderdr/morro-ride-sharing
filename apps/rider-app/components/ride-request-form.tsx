@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Alert, View } from 'react-native';
-import { multiply } from 'react-native-morro-taxi-rn-components';
+import { InputText, multiply, TestComponent } from 'react-native-morro-taxi-rn-components';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import PlaceSelector from './place-selector';
 
@@ -93,7 +93,8 @@ const RideRequestForm: React.FC = () => {
           currentLocation={{ latitude: 14.189096, longitude: 121.131042 }}
           onSelect={(selection) => setDropOffLocation(selection)}
         />
-
+        <TestComponent />
+        <InputText />
         {/* <InputText  /> */}
         {/* <Button title="Create Ride Request" onPress={handleSubmit} /> */}
       </View>
