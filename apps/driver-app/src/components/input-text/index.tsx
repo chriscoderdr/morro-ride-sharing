@@ -1,6 +1,5 @@
 import React from 'react';
-import { TextInput, View, ViewStyle } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import { TextInput, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { IInputTextProps } from './props';
 import { styles } from './styles';
 
