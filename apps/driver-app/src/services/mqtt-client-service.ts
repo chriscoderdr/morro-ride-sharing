@@ -50,6 +50,7 @@ class MQTTClientService {
     if (this.reconnectInterval) return;
 
     this.reconnectInterval = setInterval(() => {
+      store.dispatch(startConnecting());
       this.connect(
         () => console.log('Reconnected successfully.'),
         (error) => console.error('Reconnection attempt failed:', error)
@@ -183,7 +184,9 @@ class MQTTClientService {
       });
       const message = new Message(payload);
       message.destinationName = this.getTopic('driver_location');
-      this.client.send(message);
+      if (this.client.isConnected()) {
+        this.client.send(message);
+      }
     } else {
     }
   };

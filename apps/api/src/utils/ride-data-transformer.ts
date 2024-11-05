@@ -44,25 +44,51 @@ export async function transformRideData(
   const directionsService = Directions(mapboxClient);
 
   // Calculate route from driver to pickup location
-  const pickupRoute = await getRoute(
-    directionsService,
-    driverCoordinates,
-    pickupCoordinates
-  );
+  let pickupRoute = null;
+  if (rideRequest.status != 'dropped-off') {
+    // Calculate route from pickup to drop-off location
+    pickupRoute = await getRoute(
+      directionsService,
+      driverCoordinates,
+      pickupCoordinates
+    );
+  } else {
+    pickupRoute = {
+      distance: 0,
+      duration: 0
+    };
+  }
 
-  // Calculate route from pickup to drop-off location
-  const tripRoute = await getRoute(
-    directionsService,
-    pickupCoordinates,
-    dropOffCoordinates
-  );
+  let tripRoute = null;
+  if (rideRequest.status != 'dropped-off') {
+    // Calculate route from pickup to drop-off location
+    if (rideRequest.status === 'picked-up') {
+      tripRoute = await getRoute(
+        directionsService,
+        driverCoordinates,
+        dropOffCoordinates
+      );
+    } else {
+      tripRoute = await getRoute(
+        directionsService,
+        pickupCoordinates,
+        dropOffCoordinates
+      );
+    }
+  } else {
+    tripRoute = {
+      distance: 0,
+      duration: 0
+    };
+  }
 
   const rider = await Rider.findOne({ where: { id: rideRequest.riderId } });
+  const price = Math.floor(tripRoute.distance / 1000) * 30;
 
   // Prepare display data
   const displayData = {
     rideRequestId: rideRequest.id,
-    estimatedPrice: Math.floor(tripRoute.distance / 1000) * 30, // Use rideRequest.estimatedPrice if available
+    estimatedPrice: price <= 100 ? 100 : price, // Use rideRequest.estimatedPrice if available
     pickupTimeDistance: {
       distance: formatDistance(pickupRoute.distance),
       time: formatTime(pickupRoute.duration)

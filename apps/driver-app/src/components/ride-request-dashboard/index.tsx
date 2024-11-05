@@ -1,8 +1,4 @@
 import { RideRequest } from '@/src/api/models';
-import RideRequestCard from '@/src/components/ride-request-card';
-import TripCompleteCard from '@/src/components/trip-complete-card';
-import TripInProgressCard from '@/src/components/trip-in-progress-card';
-import TripStartCard from '@/src/components/trip-start-card';
 import { useAppDispatch } from '@/src/hooks/use-app-dispatch';
 import {
   acceptRideRequest,
@@ -11,9 +7,10 @@ import {
   selectCurrentRideRequest,
   startRideRequest
 } from '@/src/store/slices/ride-request-slice';
-import { Alert, Linking, Platform, View } from 'react-native';
+import { Alert, FlatList, Linking, Platform, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import AnimatedRideRequestCard from '../animated-ride-request-card';
+import RideCard from '../ride-card';
 
 const RideRequestDashboard = () => {
   const rideRequests = useSelector(
@@ -30,7 +27,7 @@ const RideRequestDashboard = () => {
     dispatch(acceptRideRequest({ rideRequestId }));
   };
 
-  const handleStartTrip = (rideRequestId: string) => {
+  const handleStartRide = (rideRequestId: string) => {
     dispatch(startRideRequest({ rideRequestId }));
   };
 
@@ -63,44 +60,64 @@ const RideRequestDashboard = () => {
 
   return (
     <View>
-      {!currentRide &&
-        rideRequests
-          .filter((request) => request.status === 'pending')
-          .map((request) => (
-            <AnimatedRideRequestCard key={request.rideRequestId}>
-              <RideRequestCard
-                rideRequest={request}
-                onAccept={() => handleAcceptRide(request.rideRequestId)}
+      <FlatList
+        data={rideRequests.filter((request) => request.status === 'pending')}
+        ItemSeparatorComponent={() => <View style={{ height: 20 }} />}
+        renderItem={({ item }) => {
+          return (
+            <AnimatedRideRequestCard key={item.rideRequestId}>
+              <RideCard
+                rideRequest={item}
+                type="pending"
+                onCallRider={handleCallRider}
+                onCompleteTrip={handleCompleteTrip}
+                onAccept={handleAcceptRide}
+                onPickUpRider={handleConfirmPickup}
+                onStartRide={handleStartRide}
               />
             </AnimatedRideRequestCard>
-          ))}
-
+          );
+        }}
+      />
       {/* Show the active ride based on its status */}
       {currentRide?.status === 'accepted' && (
         <AnimatedRideRequestCard key={currentRide.rideRequestId}>
-          <TripStartCard
+          <RideCard
             rideRequest={currentRide}
-            onCallRider={() => handleCallRider(currentRide.riderPhone || '')}
-            onStartTrip={() => handleStartTrip(currentRide.rideRequestId)}
+            type="accepted"
+            onCallRider={handleCallRider}
+            onCompleteTrip={handleCompleteTrip}
+            onAccept={handleAcceptRide}
+            onPickUpRider={handleConfirmPickup}
+            onStartRide={handleStartRide}
           />
         </AnimatedRideRequestCard>
       )}
 
       {currentRide?.status === 'started' && (
         <AnimatedRideRequestCard key={currentRide.rideRequestId}>
-          <TripInProgressCard
+          <RideCard
             rideRequest={currentRide}
-            onCallRider={() => handleCallRider(currentRide.riderPhone || '')}
-            onPickUpRider={() => handleConfirmPickup(currentRide.rideRequestId)}
+            type="started"
+            onCallRider={handleCallRider}
+            onCompleteTrip={handleCompleteTrip}
+            onAccept={handleAcceptRide}
+            onPickUpRider={handleConfirmPickup}
+            onStartRide={handleStartRide}
           />
         </AnimatedRideRequestCard>
       )}
 
       {currentRide?.status === 'picked-up' && (
         <AnimatedRideRequestCard key={currentRide.rideRequestId}>
-          <TripCompleteCard
+          <RideCard
             rideRequest={currentRide}
-            onCompleteTrip={() => handleCompleteTrip(currentRide.rideRequestId)}
+            type="picked-up"
+            onCallRider={handleCallRider}
+            onCompleteTrip={handleCompleteTrip}
+            onAccept={handleAcceptRide}
+            onPickUpRider={handleConfirmPickup}
+            onStartRide={handleStartRide}
           />
         </AnimatedRideRequestCard>
       )}
