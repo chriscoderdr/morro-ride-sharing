@@ -6,6 +6,9 @@
       "react": ["./node_modules/types/react"],
       "react-dom": ["./node_modules/types/react-dom"],
       "react-native": ["./node_modules/types/react-native"],
+      "@/*": [
+        "./*"
+      ]
     },
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,
