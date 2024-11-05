@@ -16,6 +16,7 @@ const API_BASE_URL = config.MORRO_API_BASE_URL;
 
 export const apiSlice = createApi({
   reducerPath: 'api',
+  tagTypes: ['somethingelseKeyApi'],
   baseQuery: fetchBaseQuery({
     baseUrl: API_BASE_URL,
     prepareHeaders: (headers, { getState }) => {
@@ -74,6 +75,18 @@ export const apiSlice = createApi({
         method: 'POST',
         body: data
       })
+    }),
+    getRideRequestsResponse: builder.query<{ data: any[] }, void>({
+      keepUnusedDataFor: 0,
+      query: () => ({
+        url: `/drivers/rideRequests`,
+        headers: {
+          'Cache-Control': 'no-store',
+          Pragma: 'no-cache'
+        },
+      }),
+      forceRefetch: () => true,
+      providesTags: ['somethingelseKeyApi']
     })
   })
 });
@@ -81,5 +94,6 @@ export const apiSlice = createApi({
 export const {
   useRegisterDriverMutation,
   useLoginDriverMutation,
-  useAcceptRideRequestMutation
+  useAcceptRideRequestMutation,
+  useGetRideRequestsResponseQuery
 } = apiSlice;

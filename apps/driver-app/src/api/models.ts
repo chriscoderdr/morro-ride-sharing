@@ -53,7 +53,6 @@ export interface StartRequestResponse extends ApiResponse {
   status: 'started';
 }
 
-
 interface Location {
   latitude: number;
   longitude: number;
@@ -66,6 +65,7 @@ interface TimeDistance {
 }
 
 export interface RideRequest {
+  createdAt: number;
   rideRequestId: string;
   estimatedPrice: string | null;
   pickupTimeDistance: TimeDistance | null;
@@ -81,4 +81,5 @@ export interface RideRequest {
     | 'dropped-off';
   riderName?: string | null;
   riderPhone?: string | null;
+  updatedAt: number;
 }

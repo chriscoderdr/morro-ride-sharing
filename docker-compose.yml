@@ -5,7 +5,7 @@ services:
       dockerfile: Dockerfile
     entrypoint: ['/bin/bash', '/app/entrypoint.sh']
     ports:
-      - '3000:3000'
+      - '0.0.0.0:3000:3000'
     depends_on:
       - db
       - redis
@@ -112,9 +112,9 @@ services:
   mqtt:
     image: eclipse-mosquitto
     ports:
-      - '1883:1883'
-      - '8883:8883'
-      - '9001:9001'
+      - '0.0.0.0:1883:1883'
+      - '0.0.0.0:8883:8883'
+      - '0.0.0.0:9001:9001'
     volumes:
       - ./apps/api/mosquitto.conf:/mosquitto/config/mosquitto.conf
       - mqtt_data:/mosquitto/data

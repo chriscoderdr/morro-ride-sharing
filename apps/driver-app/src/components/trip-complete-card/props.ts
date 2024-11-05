@@ -1,8 +1,6 @@
-interface ITripCompleteCardProps {
-  rideRequest: {
-    tripTimeDistance: { time: string };
-    riderName: string;
-    tripLocation?: { address: string };
-  };
+import { RideRequest } from '@/src/api/models';
+
+export interface ITripCompleteCardProps {
+  rideRequest: RideRequest;
   onCompleteTrip: () => void;
 }

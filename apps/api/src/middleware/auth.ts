@@ -1,8 +1,7 @@
 import logger from '@/utils/logger';
 import jwt from 'jsonwebtoken';
 import { Context, Next } from 'koa';
-import Driver from '../models/driver';
-import Rider from '../models/rider';
+import { Driver, Rider } from '../models';
 
 const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET || 'access-secret';
 

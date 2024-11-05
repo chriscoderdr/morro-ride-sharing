@@ -1,5 +1,5 @@
 import { Queue } from 'bullmq';
-import RideRequest from '../models/ride-request';
+import { RideRequest } from '../models';
 
 class QueueService {
   private rideRequestQueue: Queue;
