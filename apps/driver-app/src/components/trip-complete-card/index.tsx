@@ -1,6 +1,7 @@
 import GenericCard from '@/src/components/generic-card';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Text, View } from 'react-native';
+import { ITripCompleteCardProps } from './props';
 import { styles } from './styles';
 
 const TripCompleteCard = ({
@@ -9,7 +10,7 @@ const TripCompleteCard = ({
 }: ITripCompleteCardProps) => {
   return (
     <GenericCard
-      title={`${rideRequest.tripTimeDistance.time} to destination`}
+      title={`Charge the rider: $${rideRequest.estimatedPrice}`}
       buttonText="Complete Trip"
       onPressButton={onCompleteTrip}
       buttonType="secondary"

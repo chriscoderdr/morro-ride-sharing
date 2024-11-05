@@ -1,7 +1,6 @@
 import mapbox from '@mapbox/mapbox-sdk';
 import Directions from '@mapbox/mapbox-sdk/services/directions';
-import Driver from '../models/driver';
-import RideRequest from '../models/ride-request';
+import { Driver, RideRequest, Rider } from '../models';
 import logger from './logger';
 
 /**
@@ -29,7 +28,7 @@ export async function transformRideData(
   }
 
   // Extract coordinates
-  const driverCoordinates = driver.location.coordinates; // [longitude, latitude]
+  const driverCoordinates = driver.location?.coordinates; // [longitude, latitude]
   const pickupCoordinates = rideRequest.pickupLocation.coordinates; // [longitude, latitude]
   const dropOffCoordinates = rideRequest.dropOffLocation.coordinates; // [longitude, latitude]
 
@@ -45,23 +44,51 @@ export async function transformRideData(
   const directionsService = Directions(mapboxClient);
 
   // Calculate route from driver to pickup location
-  const pickupRoute = await getRoute(
-    directionsService,
-    driverCoordinates,
-    pickupCoordinates
-  );
+  let pickupRoute = null;
+  if (rideRequest.status != 'dropped-off') {
+    // Calculate route from pickup to drop-off location
+    pickupRoute = await getRoute(
+      directionsService,
+      driverCoordinates,
+      pickupCoordinates
+    );
+  } else {
+    pickupRoute = {
+      distance: 0,
+      duration: 0
+    };
+  }
 
-  // Calculate route from pickup to drop-off location
-  const tripRoute = await getRoute(
-    directionsService,
-    pickupCoordinates,
-    dropOffCoordinates
-  );
+  let tripRoute = null;
+  if (rideRequest.status != 'dropped-off') {
+    // Calculate route from pickup to drop-off location
+    if (rideRequest.status === 'picked-up') {
+      tripRoute = await getRoute(
+        directionsService,
+        driverCoordinates,
+        dropOffCoordinates
+      );
+    } else {
+      tripRoute = await getRoute(
+        directionsService,
+        pickupCoordinates,
+        dropOffCoordinates
+      );
+    }
+  } else {
+    tripRoute = {
+      distance: 0,
+      duration: 0
+    };
+  }
+
+  const rider = await Rider.findOne({ where: { id: rideRequest.riderId } });
+  const price = Math.floor(tripRoute.distance / 1000) * 30;
 
   // Prepare display data
   const displayData = {
     rideRequestId: rideRequest.id,
-    estimatedPrice: Math.floor(tripRoute.distance / 1000) * 30, // Use rideRequest.estimatedPrice if available
+    estimatedPrice: price <= 100 ? 100 : price, // Use rideRequest.estimatedPrice if available
     pickupTimeDistance: {
       distance: formatDistance(pickupRoute.distance),
       time: formatTime(pickupRoute.duration)
@@ -79,7 +106,9 @@ export async function transformRideData(
       latitude: dropOffCoordinates[1],
       longitude: dropOffCoordinates[0],
       address: rideRequest.dropOffAddress
-    }
+    },
+    status: rideRequest.status,
+    riderName: rider?.dataValues.name
   };
 
   return displayData;
@@ -103,7 +132,10 @@ async function getRoute(
     const response = await directionsService
       .getDirections({
         profile: 'driving',
-        waypoints: [{ coordinates: origin }, { coordinates: destination }],
+        waypoints: [
+          { coordinates: origin as [number, number] },
+          { coordinates: destination as [number, number] }
+        ],
         geometries: 'geojson',
         overview: 'simplified'
       })

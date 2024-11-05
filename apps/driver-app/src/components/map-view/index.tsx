@@ -1,30 +1,121 @@
+import { RideRequest } from '@/src/api/models';
+import { useAppDispatch } from '@/src/hooks/use-app-dispatch';
+import useRoute from '@/src/hooks/use-route';
+import { Coordinates } from '@/src/services/map-service';
+import { initializePendingRequests } from '@/src/store/middleware/timeout-middleware';
+import { selectCurrentRideRequest } from '@/src/store/slices/ride-request-slice';
+import { haversineDistance } from '@/src/utils/location-utils';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import Mapbox from '@rnmapbox/maps';
 import { useEffect, useRef, useState } from 'react';
-import { Alert, TouchableOpacity, View } from 'react-native';
+import { Alert, Linking, TouchableOpacity, View } from 'react-native';
+import { useSelector } from 'react-redux';
 import styles from './styles';
 
 const MapView = () => {
-  const [userLocation, setUserLocation] = useState<[number, number]>();
+  const [userLocation, setUserLocation] = useState<Coordinates | null>(null);
   const [isMapInitialized, setIsMapInitialized] = useState(false);
   const cameraRef = useRef<Mapbox.Camera>(null);
+  const { route, loading, error, fetchRoute } = useRoute();
+
+  const currentRideRequest = useSelector(
+    selectCurrentRideRequest
+  ) as RideRequest | null;
+  const fetchIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const lastFetchedRequestIdRef = useRef<string | null>(null);
+  const lastFetchedRequestLocation = useRef<[number, number] | null>(null);
+  const dispatch = useAppDispatch();
+
+  const fetchRouteForCurrentRide = () => {
+    if (
+      currentRideRequest &&
+      currentRideRequest.pickupLocation &&
+      currentRideRequest.tripLocation &&
+      userLocation
+    ) {
+      fetchRoute(
+        { latitude: userLocation.latitude, longitude: userLocation.longitude },
+        {
+          latitude: currentRideRequest.pickupLocation.latitude,
+          longitude: currentRideRequest.pickupLocation.longitude
+        },
+        {
+          latitude: currentRideRequest.tripLocation.latitude,
+          longitude: currentRideRequest.tripLocation.longitude
+        }
+      );
+      lastFetchedRequestIdRef.current = currentRideRequest.rideRequestId;
+      lastFetchedRequestLocation.current = [
+        userLocation.latitude,
+        userLocation.longitude
+      ];
+    }
+  };
+
+  const hasUserLastFetchedLocationChanged = () => {
+    if (lastFetchedRequestLocation.current && userLocation) {
+      const [lastLat, lastLon] = lastFetchedRequestLocation.current;
+      const distance = haversineDistance(
+        lastLat,
+        lastLon,
+        userLocation.latitude,
+        userLocation.longitude
+      );
+
+      return distance > 100;
+    }
+    return false;
+  };
 
   useEffect(() => {
-    if (userLocation && !isMapInitialized) {
-      cameraRef.current?.setCamera({
-        centerCoordinate: userLocation,
-        zoomLevel: 14,
-        animationDuration: 2000
-      });
-      setIsMapInitialized(true);
+    if (userLocation != null && (!isMapInitialized || hasRide())) {
+      if (
+        hasInProgressRide() ||
+        !isMapInitialized ||
+        hasUserLastFetchedLocationChanged()
+      ) {
+        cameraRef.current?.setCamera({
+          centerCoordinate: [userLocation.longitude, userLocation.latitude],
+          zoomLevel: hasInProgressRide() ? 16 : 12,
+          animationDuration: 2000
+        });
+        setIsMapInitialized(true);
+      }
+
+      if (
+        currentRideRequest &&
+        currentRideRequest.pickupLocation &&
+        currentRideRequest.tripLocation &&
+        (lastFetchedRequestIdRef.current !== currentRideRequest.rideRequestId ||
+          hasUserLastFetchedLocationChanged() ||
+          !isMapInitialized)
+      ) {
+        if (fetchIntervalRef.current) {
+          clearInterval(fetchIntervalRef.current);
+        }
+
+        fetchRouteForCurrentRide();
+        dispatch(initializePendingRequests());
+
+        fetchIntervalRef.current = setInterval(() => {
+          fetchRouteForCurrentRide();
+          dispatch(initializePendingRequests());
+        }, 60000);
+      }
     }
-  }, [userLocation, isMapInitialized]);
+
+    return () => {
+      if (fetchIntervalRef.current) {
+        clearInterval(fetchIntervalRef.current);
+      }
+    };
+  }, [userLocation, currentRideRequest]);
 
   const handleZoomToUserLocation = () => {
     if (userLocation) {
       cameraRef.current?.setCamera({
-        centerCoordinate: userLocation,
-        zoomLevel: 14,
+        centerCoordinate: [userLocation.longitude, userLocation.latitude],
+        zoomLevel: 12,
         animationDuration: 2000
       });
     } else {
@@ -34,7 +125,64 @@ const MapView = () => {
 
   const onUserLocationUpdate = (location: Mapbox.Location) => {
     const userLocation = location.coords;
-    setUserLocation([userLocation.longitude, userLocation.latitude]);
+    setUserLocation({
+      longitude: userLocation.longitude,
+      latitude: userLocation.latitude
+    });
+  };
+
+  const openNavigationApp = () => {
+    if (
+      !currentRideRequest?.pickupLocation ||
+      !currentRideRequest?.tripLocation
+    ) {
+      Alert.alert('Navigation Error', 'No pickup or destination specified');
+      return;
+    }
+
+    const { latitude: pickupLat, longitude: pickupLng } =
+      currentRideRequest.pickupLocation;
+    const { latitude: dropOffLat, longitude: dropOffLng } =
+      currentRideRequest.tripLocation;
+
+    Alert.alert(
+      'Choose Navigation App',
+      'Select an app to navigate',
+      [
+        {
+          text: 'Google Maps',
+          onPress: () =>
+            Linking.openURL(
+              `https://www.google.com/maps/dir/?api=1&origin=${userLocation?.latitude},${userLocation?.longitude}&waypoints=${pickupLat},${pickupLng}&destination=${dropOffLat},${dropOffLng}&travelmode=driving`
+            )
+        },
+        {
+          text: 'Waze',
+          onPress: () => {
+            Linking.openURL(
+              `https://waze.com/ul?ll=${pickupLat},${pickupLng}&navigate=yes`
+            );
+            setTimeout(() => {
+              Linking.openURL(
+                `https://waze.com/ul?ll=${dropOffLat},${dropOffLng}&navigate=yes`
+              );
+            }, 1000);
+          }
+        }
+      ],
+      { cancelable: true }
+    );
+  };
+
+  const hasInProgressRide = () => {
+    return (
+      currentRideRequest &&
+      ['started', 'picked-up'].includes(currentRideRequest.status)
+    );
+  };
+
+  const hasRide = () => {
+    return currentRideRequest !== null;
   };
 
   return (
@@ -44,7 +192,7 @@ const MapView = () => {
         <Mapbox.UserLocation onUpdate={onUserLocationUpdate} />
         <Mapbox.LocationPuck
           visible
-          topImage="topImage"
+          topImage="me"
           puckBearingEnabled
           pulsing={{
             isEnabled: true,
@@ -52,25 +200,100 @@ const MapView = () => {
             radius: 50.0
           }}
         />
+
         <Mapbox.Images>
-          <Mapbox.Image name="topImage">
-            <View
-              style={{
-                borderColor: '#FFFFFF',
-                borderWidth: 2,
-                width: 40,
-                height: 40,
-                borderRadius: 20,
-                backgroundColor: '#FFFFFF',
-                justifyContent: 'center',
-                alignItems: 'center'
-              }}
-            >
-              <MaterialIcons name="navigation" size={30} color="#5588FF" />
+          <Mapbox.Image name="me">
+            <View style={styles.iconContainer}>
+              <MaterialIcons name="navigation" size={30} color="#00AACC" />
+            </View>
+          </Mapbox.Image>
+          <Mapbox.Image name="pickupIcon">
+            <View style={styles.iconContainer}>
+              <MaterialIcons name="person" size={30} color="#FF5555" />
+            </View>
+          </Mapbox.Image>
+          <Mapbox.Image name="dropoffIcon">
+            <View style={styles.iconContainer}>
+              <MaterialIcons name="location-pin" size={30} color="#5588FF" />
             </View>
           </Mapbox.Image>
         </Mapbox.Images>
+
+        {currentRideRequest && currentRideRequest.pickupLocation && (
+          <Mapbox.ShapeSource
+            id="pickupSource"
+            shape={{
+              type: 'Feature',
+              geometry: {
+                type: 'Point',
+                coordinates: [
+                  currentRideRequest.pickupLocation.longitude,
+                  currentRideRequest.pickupLocation.latitude
+                ]
+              },
+              properties: {
+                title: 'Pick-off'
+              }
+            }}
+          >
+            <Mapbox.SymbolLayer
+              id="pickupSymbol"
+              style={{
+                iconImage: 'pickupIcon',
+                iconSize: 1
+              }}
+            />
+          </Mapbox.ShapeSource>
+        )}
+
+        {currentRideRequest && currentRideRequest.tripLocation && (
+          <Mapbox.ShapeSource
+            id="dropoffSource"
+            shape={{
+              type: 'Feature',
+              geometry: {
+                type: 'Point',
+                coordinates: [
+                  currentRideRequest.tripLocation.longitude,
+                  currentRideRequest.tripLocation.latitude
+                ]
+              },
+              properties: {
+                title: 'Drop-off'
+              }
+            }}
+          >
+            <Mapbox.SymbolLayer
+              id="dropoffSymbol"
+              style={{
+                iconImage: 'dropoffIcon',
+                iconSize: 1
+              }}
+            />
+          </Mapbox.ShapeSource>
+        )}
+
+        {currentRideRequest && route && (
+          <Mapbox.ShapeSource id="routeSource" shape={route}>
+            <Mapbox.LineLayer
+              id="routeLine"
+              style={{
+                lineWidth: 5,
+                lineColor: '#00A8FF'
+              }}
+            />
+          </Mapbox.ShapeSource>
+        )}
       </Mapbox.MapView>
+
+      {currentRideRequest && hasInProgressRide() && (
+        <TouchableOpacity
+          style={[styles.button, { top: 100 }]}
+          onPress={openNavigationApp}
+        >
+          <Ionicons name="navigate-circle-outline" size={24} color="white" />
+        </TouchableOpacity>
+      )}
 
       <TouchableOpacity
         style={styles.button}

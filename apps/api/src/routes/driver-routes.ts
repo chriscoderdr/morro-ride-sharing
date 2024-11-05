@@ -3,6 +3,7 @@ import Router from '@koa/router';
 import {
     acceptRideRequest,
     completeRideRequest,
+    getRideRequests,
     loginDriver,
     pickUpRideRequest,
     registerDriver,
@@ -17,5 +18,6 @@ router.post('/acceptRequest', authenticateToken, acceptRideRequest);
 router.post('/startRequest', authenticateToken, startRideRequest);
 router.post('/pickUpRequest', authenticateToken, pickUpRideRequest);
 router.post('/completeRequest', authenticateToken, completeRideRequest);
+router.get('/rideRequests', authenticateToken, getRideRequests);
 
 export default router;

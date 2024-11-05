@@ -18,12 +18,27 @@ interface RiderAttributes {
 
 interface RiderCreationAttributes extends Optional<RiderAttributes, 'id'> {}
 
-class Rider extends Model<RiderAttributes, RiderCreationAttributes> {
+class Rider
+  extends Model<RiderAttributes, RiderCreationAttributes>
+  implements RiderAttributes
+{
+  public id!: string;
+  public name!: string;
+  public email!: string;
+  public phone!: string;
+  public password!: string;
+  public refreshToken?: string;
+  public createdAt!: Date;
+  public updatedAt!: Date;
+  public loginAt?: Date;
+
+  // Compare encrypted password with a provided password
   public async comparePassword(password: string): Promise<boolean> {
-    return bcrypt.compare(password, this.dataValues.password);
+    return bcrypt.compare(password, this.password);
   }
 }
 
+// Initialize the Rider model with attributes and table configuration
 Rider.init(
   {
     id: {
@@ -72,15 +87,13 @@ Rider.init(
   {
     sequelize,
     tableName: 'riders',
+    timestamps: true,
     hooks: {
+      // Encrypt the password before saving a new rider to the database
       beforeCreate: async (rider) => {
-        rider.dataValues.password = await bcrypt.hash(
-          rider.dataValues.password,
-          saltRounds
-        );
+        rider.password = await bcrypt.hash(rider.password, saltRounds);
       }
-    },
-    timestamps: true
+    }
   }
 );
 

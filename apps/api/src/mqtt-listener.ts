@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import mqtt from 'mqtt';
-import Driver from './models/driver';
+import { Driver } from './models';
 import logger from './utils/logger';
 
 process.on('uncaughtException', (error) => {
@@ -13,7 +13,7 @@ process.on('unhandledRejection', (reason, promise) => {
   process.exit(1);
 });
 
-const MQTT_BROKER_URL = process.env.MQTT_BROKER_URL || 'mqtt://192.168.68.106:1883';
+const MQTT_BROKER_URL = process.env.MQTT_BROKER_URL || 'mqtt://mqtt:1883';
 const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET || 'access-secret';
 
 const mqttClient = mqtt.connect(MQTT_BROKER_URL, {
@@ -57,7 +57,7 @@ mqttClient.on('message', async (topic, message) => {
   try {
     const driverAccessToken = topic.split('/')[2];
     const decoded = jwt.verify(driverAccessToken, ACCESS_TOKEN_SECRET) as {
-      driverId: string;
+      userId: string;
     };
 
     const payload = JSON.parse(message.toString());

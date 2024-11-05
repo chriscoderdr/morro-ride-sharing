@@ -3,12 +3,18 @@ import { Client, Message } from 'paho-mqtt';
 import { Platform } from 'react-native';
 import config from '../config';
 import store from '../store';
-import { connectFailure, connectSuccess } from '../store/slices/mqtt-slice';
+import {
+  connectFailure,
+  connectSuccess,
+  startConnecting
+} from '../store/slices/mqtt-slice';
 import { setRideRequestWithTimeout } from '../store/slices/ride-request-slice';
 
 class MQTTClientService {
   private client: Client;
-  private isSuscribed: boolean = false;
+  private reconnectInterval: NodeJS.Timeout | null = null;
+  private retryAttempts = 0;
+  private maxRetryAttempts = 5;
 
   constructor(clientId: string) {
     this.client = new Client(
@@ -22,89 +28,117 @@ class MQTTClientService {
   }
 
   connect = (onSuccess: () => void, onFailure: (error: Error) => void) => {
+    store.dispatch(startConnecting());
     this.client.connect({
       useSSL: false,
-      timeout: 3000,
+      keepAliveInterval: 30,
+      timeout: 10000,
       onSuccess: () => {
-        console.log('Connected to MQTT broker');
-        store.dispatch(connectSuccess());
+        this.clearReconnectInterval();
         onSuccess();
+        this.subscribeToRideRequests();
       },
       onFailure: (error: any) => {
         store.dispatch(connectFailure(error.errorMessage));
-        console.error('Failed to connect to MQTT broker:', error);
+        this.scheduleReconnect();
         onFailure(error);
       }
     });
   };
 
-  getDriverId() {
-    const driverId = store.getState().auth.driverId as string;
-    console.log(` driverId: ${driverId}`);
-    return driverId;
-  }
+  private scheduleReconnect = () => {
+    if (this.reconnectInterval) return;
 
-  hasDriverId() {
-    return this.getDriverId().length > 0;
-  }
+    this.reconnectInterval = setInterval(() => {
+      store.dispatch(startConnecting());
+      this.connect(
+        () => console.log('Reconnected successfully.'),
+        (error) => console.error('Reconnection attempt failed:', error)
+      );
+    }, 5000);
+  };
 
-  getTopic(topic: string) {
-    switch (topic) {
-      case 'ride_requests':
-        return (config.MQTT_TOPIC_RIDE_REQUESTS + '').replaceAll(
-          ':driver_id',
-          this.getDriverId()
-        );
-      case 'driver_location':
-        const topic = (config.MQTT_TOPIC_DRIVER_LOCATION + '').replaceAll(
-          ':driver_id',
-          this.getDriverId()
-        );
-        console.log(
-          `topic: ${topic} | debug | driver_id: ${this.getDriverId()} | templat: ${
-            config.MQTT_TOPIC_DRIVER_LOCATION
-          }`
-        );
-        return topic;
-      default:
-        return '';
-    }
-  }
-
-  subscribeToRideRequests = (accessToken: string = '') => {
-    if (!this.isSuscribed && accessToken.length > 0 && this.hasDriverId()) {
-      const topic = this.getTopic('ride_requests');
-      this.isSuscribed = true;
-      this.client.subscribe(topic, {
-        onSuccess: () => {
-          console.log('Subscribed to MQTT topic:', topic);
-        },
-        onFailure: (error: any) => {
-          console.error('Failed to subscribe to MQTT topic:', error);
-        }
-      });
+  private clearReconnectInterval = () => {
+    if (this.reconnectInterval) {
+      clearInterval(this.reconnectInterval);
+      this.reconnectInterval = null;
     }
   };
 
-  onConnectionLost = (responseObject: {
+  private getDriverId = () => store.getState().auth.driverId as string;
+
+  private hasDriverId = () => this.getDriverId()?.length > 0;
+
+  private getAccessToken = () => store.getState().auth.accessToken as string;
+
+  private getTopic = (topic: string) => {
+    const driverId = this.getDriverId();
+    const accessToken = this.getAccessToken();
+    if (topic === 'ride_requests') {
+      return config.MQTT_TOPIC_RIDE_REQUESTS.replace(':driver_id', driverId);
+    } else if (topic === 'driver_location') {
+      return config.MQTT_TOPIC_DRIVER_LOCATION.replace(
+        ':driver_id',
+        accessToken
+      );
+    }
+    return '';
+  };
+
+  private subscribeToRideRequests = () => {
+    if (!this.hasDriverId()) return;
+
+    const topic = this.getTopic('ride_requests');
+
+    this.client.subscribe(topic, {
+      onSuccess: () => {
+        this.retryAttempts = 0;
+        store.dispatch(connectSuccess());
+      },
+      onFailure: (error: any) => {
+        store.dispatch(connectFailure(error.errorMessage));
+
+        if (this.retryAttempts < this.maxRetryAttempts) {
+          this.retryAttempts += 1;
+          const delay = Math.pow(2, this.retryAttempts) * 1000;
+          setTimeout(this.subscribeToRideRequests, delay);
+        } else {
+          this.scheduleReconnect();
+        }
+      }
+    });
+  };
+
+  private onConnectionLost = (responseObject: {
     errorCode: number;
     errorMessage?: string;
   }) => {
     if (responseObject.errorCode !== 0) {
-      store.dispatch(connectFailure(responseObject.errorMessage as string));
-      console.log(`${JSON.stringify(config)}`);
+      store.dispatch(
+        connectFailure(responseObject.errorMessage || 'Unknown error')
+      );
       console.error('MQTT connection lost:', responseObject.errorMessage);
+      this.scheduleReconnect();
     }
   };
 
-  onMessageArrived = (message: Message) => {
-    console.log('Message received:', message.payloadString);
-    const rideRequest = JSON.parse(message.payloadString);
+  private onMessageArrived = (message: Message) => {
+    try {
+      const rideRequest = JSON.parse(message.payloadString);
+      this.showRideRequestNotification(rideRequest);
+      this.dispatchRideRequestWithTimeout(rideRequest);
+    } catch (error) {
+      console.error('Failed to process incoming message:', error);
+      setTimeout(() => this.onMessageArrived(message), 1000); // Retry processing message
+    }
+  };
 
+  private showRideRequestNotification = (rideRequest: any) => {
     Notifications.setNotificationChannelAsync('new-ride-request', {
       name: 'New Ride Request',
       importance: Notifications.AndroidImportance.HIGH
     });
+
     Notifications.setNotificationHandler({
       handleNotification: async () => ({
         shouldShowAlert: true,
@@ -112,84 +146,59 @@ class MQTTClientService {
         shouldSetBadge: false
       })
     });
+
     Notifications.scheduleNotificationAsync({
       content: {
-        title: 'You got a new ride requests',
+        title: 'You got a new ride request',
         body: `Pickup location: ${rideRequest.pickupLocation.address}`,
-        sound: Platform.OS == 'android' ? undefined : 'default'
+        sound: Platform.OS === 'android' ? undefined : 'default'
       },
-      trigger: {
-        channelId: 'new-ride-request'
-      }
-    })
-      .then((notificationId) => {
-        console.log(notificationId);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+      trigger: { channelId: 'new-ride-request' }
+    }).catch((error) => console.error('Notification error:', error));
+  };
 
+  private dispatchRideRequestWithTimeout = (rideRequest: any) => {
     store.dispatch(
       setRideRequestWithTimeout({
+        createdAt: Date.now(),
         riderName: '',
         riderPhone: '',
         rideRequestId: rideRequest.rideRequestId,
         estimatedPrice: rideRequest.estimatedPrice,
         pickupTimeDistance: rideRequest.pickupTimeDistance,
-        pickupLocation: {
-          latitude: rideRequest.pickupLocation.latitude,
-          longitude: rideRequest.pickupLocation.longitude,
-          address: rideRequest.pickupLocation.address
-        },
+        pickupLocation: rideRequest.pickupLocation,
         tripTimeDistance: rideRequest.tripTimeDistance,
-        tripLocation: {
-          latitude: rideRequest.tripLocation.latitude,
-          longitude: rideRequest.tripLocation.longitude,
-          address: rideRequest.tripLocation.address
-        }
+        tripLocation: rideRequest.tripLocation,
+        updatedAt: Date.now()
       })
     );
   };
 
-  publishLocation = (
-    latitude: number,
-    longitude: number,
-    accessToken: string
-  ) => {
-    if (
-      this.client.isConnected() &&
-      accessToken.length > 0 &&
-      this.hasDriverId()
-    ) {
-      this.subscribeToRideRequests(accessToken);
-      console.log(
-        `publishing location ${latitude} ${longitude} ${accessToken}`
-      );
+  publishLocation = (latitude: number, longitude: number) => {
+    if (this.hasDriverId()) {
       const payload = JSON.stringify({
         latitude,
         longitude,
         isAvailable: true,
-        timestamp: new Date().getTime()
+        timestamp: Date.now()
       });
       const message = new Message(payload);
       message.destinationName = this.getTopic('driver_location');
-      this.client.send(message);
-      console.log('Published location to MQTT:', payload);
+      if (this.client.isConnected()) {
+        this.client.send(message);
+      }
     } else {
-      console.error('Cannot publish: MQTT client is not connected');
     }
   };
 
   disconnect = () => {
     if (this.client.isConnected()) {
       this.client.disconnect();
-      console.log('Disconnected from MQTT broker');
     }
+    this.clearReconnectInterval();
   };
 
-  isConnected = () => {
-    return this.client.isConnected();
-  };
+  isConnected = () => this.client.isConnected();
 }
 
 export default MQTTClientService;

@@ -2,6 +2,7 @@ import { StyleSheet, ViewStyle } from 'react-native';
 
 interface IMapViewStyles {
   button: ViewStyle;
+  iconContainer: ViewStyle;
 }
 
 const styles: IMapViewStyles = StyleSheet.create({
@@ -15,7 +16,17 @@ const styles: IMapViewStyles = StyleSheet.create({
     backgroundColor: '#007AFF',
     alignItems: 'center',
     justifyContent: 'center',
-  }
+  },
+  iconContainer: {
+    borderColor: '#FFFFFF',
+    borderWidth: 2,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#FFFFFF',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 });
 
 export default styles;

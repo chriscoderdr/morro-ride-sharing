@@ -2,28 +2,47 @@ import * as Location from "expo-location";
 import { useEffect, useState } from "react";
 import { Alert } from "react-native";
 
-const useLocationManager = (isBackground = false, interval = 60000) => {
+const useLocationManager = (isBackground = false, interval = 3000) => {
   const [location, setLocation] = useState<[number, number] | null>(null);
 
-  const checkPermissions = async () => {
+  const checkPermissions = async (
+    isBackground = false,
+    shouldRequest = false
+  ) => {
     const { status } = await Location.getForegroundPermissionsAsync();
+
     if (status !== Location.PermissionStatus.GRANTED) {
-      const { status: requestStatus } = await Location.requestForegroundPermissionsAsync();
-      if (requestStatus !== Location.PermissionStatus.GRANTED) {
-        Alert.alert("Permission denied", "Location permission is required.");
+      if (shouldRequest) {
+        const { status: requestStatus } =
+          await Location.requestForegroundPermissionsAsync();
+        if (requestStatus !== Location.PermissionStatus.GRANTED) {
+          return false;
+        }
+      } else {
         return false;
       }
     }
+
     if (isBackground) {
-      const { status: backgroundStatus } = await Location.getBackgroundPermissionsAsync();
+      const { status: backgroundStatus } =
+        await Location.getBackgroundPermissionsAsync();
       if (backgroundStatus !== Location.PermissionStatus.GRANTED) {
-        const { status: backgroundRequestStatus } = await Location.requestBackgroundPermissionsAsync();
-        if (backgroundRequestStatus !== Location.PermissionStatus.GRANTED) {
-          Alert.alert("Permission denied", "Background location permission is required.");
+        if (shouldRequest) {
+          const { status: backgroundRequestStatus } =
+            await Location.requestBackgroundPermissionsAsync();
+          if (backgroundRequestStatus !== Location.PermissionStatus.GRANTED) {
+            Alert.alert(
+              'Permission denied',
+              'Background location permission is required.'
+            );
+            return false;
+          }
+        } else {
           return false;
         }
       }
     }
+
     return true;
   };
 
@@ -32,7 +51,7 @@ const useLocationManager = (isBackground = false, interval = 60000) => {
       const userLocation = await Location.getCurrentPositionAsync({});
       const coords: [number, number] = [
         userLocation.coords.longitude,
-        userLocation.coords.latitude,
+        userLocation.coords.latitude
       ];
       setLocation(coords);
       return coords;
@@ -46,7 +65,7 @@ const useLocationManager = (isBackground = false, interval = 60000) => {
         accuracy: Location.Accuracy.High,
         timeInterval: interval,
         distanceInterval: 10,
-        showsBackgroundLocationIndicator: true,
+        showsBackgroundLocationIndicator: true
       });
     }
   };
@@ -59,7 +78,7 @@ const useLocationManager = (isBackground = false, interval = 60000) => {
 
   useEffect(() => {
     if (isBackground) {
-      startLocationUpdates("background-location-task");
+      startLocationUpdates('background-location-task');
     } else {
       fetchUserLocation();
       const locationInterval = setInterval(() => {
@@ -72,7 +91,12 @@ const useLocationManager = (isBackground = false, interval = 60000) => {
     }
   }, [isBackground, interval]);
 
-  return { location, fetchUserLocation, startLocationUpdates, stopLocationUpdates };
+  return {
+    location,
+    fetchUserLocation,
+    startLocationUpdates,
+    stopLocationUpdates
+  };
 };
 
 export default useLocationManager;
