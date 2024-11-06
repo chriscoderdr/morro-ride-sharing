@@ -13,15 +13,10 @@ import { useSelector } from 'react-redux';
 export default function SignUp() {
   const dispatch = useAppDispatch();
   const isLoading = useSelector((state: RootState) => state.auth.loading);
-  const error = useSelector((state: RootState) => state.auth.error);
-  const user = useSelector((state: RootState) => state.auth.user);
   const router = useRouter();
 
   const onRegisterUser = (data: IRegisterUser) => {
     dispatch(registerUser({ ...data }));
-    console.log('Registering user:', data);
-    console.log('Error:', error);
-    console.log(`user: ${user}`);
   };
 
   const onGoToLogin = () => {

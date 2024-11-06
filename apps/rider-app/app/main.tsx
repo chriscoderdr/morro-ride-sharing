@@ -6,9 +6,6 @@ import {
 } from 'react-native-morro-taxi-rn-components';
 
 export default function Home() {
-  //   // useBackgroundLocation(); // TODO: Implement useBackgroundLocation hook
-  //   useForegroundLocation();
-
   return (
     <View style={{ flex: 1 }}>
       <PermissionBlocker>

@@ -35,33 +35,6 @@ export interface LoginResponse extends ApiResponse {
   refreshToken: string;
 }
 
-export interface AcceptRequestData {
-  rideRequestId: string;
-}
-
-export interface AcceptRequestResponse extends ApiResponse {
-  rideRequestId: string;
-  riderName: string;
-  riderPhone: string;
-  pickupLocation: {
-    type: 'Point';
-    coordinates: [number, number];
-  };
-  dropOffLocation: {
-    type: 'Point';
-    coordinates: [number, number];
-  };
-}
-
-export interface StartRequestData {
-  rideRequestId: string;
-}
-
-export interface StartRequestResponse extends ApiResponse {
-  rideRequestId: string;
-  status: 'started';
-}
-
 interface Location {
   latitude: number;
   longitude: number;

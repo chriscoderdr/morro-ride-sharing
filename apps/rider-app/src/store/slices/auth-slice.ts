@@ -66,7 +66,7 @@ export const registerUser = createAsyncThunk<
     console.log(`debugging: ${JSON.stringify(response)}`);
     return response;
   } catch (response) {
-    console.log(`debuging error: ${JSON.stringify(response)}`);
+    console.log(`debuging error: ${JSON.stringify(response)}`); // TODO: refactor into a function
     const status = response?.status;
     let errorMessage = '';
     switch (status) {
