@@ -25,5 +25,15 @@ export {
   RoundedButton,
   ScrollableFormContainer,
   SignUpForm,
-  TestComponent,
+  TestComponent
 };
+
+// Exportar los tipos de props
+  export type { ICheckboxProps } from './checkbox/props';
+  export type { IGenericCardProps } from './generic-card/props';
+  export type { IInputPhoneProps } from './input-phone/props';
+  export type { IInputTextFieldProps } from './input-text-field/props';
+  export type { IInputTextProps } from './input-text/props';
+  export type { IButtonProps } from './rounded-button/props';
+  export type { ISignUpFormProps } from './sign-up-form/props';
+

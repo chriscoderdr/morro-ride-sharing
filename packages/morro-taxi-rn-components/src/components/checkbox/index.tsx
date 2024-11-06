@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
+import { ICheckboxProps } from './props';
 import { styles } from './styles';
 
 const Checkbox: React.FC<ICheckboxProps> = ({

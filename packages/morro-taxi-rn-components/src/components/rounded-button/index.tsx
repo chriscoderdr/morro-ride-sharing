@@ -1,5 +1,6 @@
 import React from 'react';
 import { Text, TouchableOpacity, ViewStyle } from 'react-native';
+import { IButtonProps } from './props';
 import { styles } from './styles';
 
 const RoundedButton: React.FC<IButtonProps> = ({

@@ -1,4 +1,4 @@
-interface IButtonProps {
+export interface IButtonProps {
   text: string;
   onPress: () => void;
   backgroundColor?: string;

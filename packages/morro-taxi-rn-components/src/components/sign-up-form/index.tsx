@@ -1,18 +1,19 @@
-import Checkbox from '../checkbox';
-import InputTextField from '../input-text-field';
-import RoundedButton from '../rounded-button';
+import { useRef, useState } from 'react';
+import { Alert, Keyboard, Text, View } from 'react-native';
+import PhoneInput from 'react-native-phone-number-input';
 import {
   isValidEmail,
   isValidName,
   isValidPassword,
   isValidPhone,
 } from '../../utils/validators';
-import React, { useRef, useState } from 'react';
-import { Alert, Keyboard, Text, View } from 'react-native';
+import InputTextField from '..//input-text-field';
+import Checkbox from '../checkbox';
+import RoundedButton from '../rounded-button';
+import { ISignUpFormProps } from './props';
 import { styles } from './styles';
-import PhoneInput from 'react-native-phone-number-input';
 
-const SignUpForm: React.FC = () => {
+const SignUpForm = ({ registerUser, isLoading }: ISignUpFormProps) => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
@@ -72,7 +73,12 @@ const SignUpForm: React.FC = () => {
 
     if (isValid && isChecked) {
       try {
-        // TODO: call parent component to handle sign up
+        registerUser({
+          name,
+          email,
+          phone,
+          password,
+        });
       } catch (err: any) {
         const errorMessage =
           err?.data?.error || 'Registration failed. Please try again.';
@@ -127,6 +133,7 @@ const SignUpForm: React.FC = () => {
 
   const isButtonDisabled = () => {
     return (
+      isLoading ||
       !isChecked ||
       Boolean(
         nameError ||
@@ -226,14 +233,15 @@ const SignUpForm: React.FC = () => {
 
       <View style={styles.buttonContainer}>
         <View style={styles.alreadyHaveAnAccount}>
-          {/* <Link href="/login" style={styles.alredayHaveAnAccountText}>
+          {/* <Link href="/login" > */}
+          <View style={styles.alredayHaveAnAccountText}>
             <Text>Alreday have an account? Sign in</Text>
-          </Link> */}
+          </View>
+          {/* </Link> */}
         </View>
         <RoundedButton
           disabled={isButtonDisabled()}
-          // text={isLoading ? 'Signing Up...' : 'Sign Up'}
-          text="Sign up"
+          text={isLoading ? 'Signing Up...' : 'Sign Up'}
           onPress={handleSignUp}
           testID="signup-button"
         />
@@ -243,3 +251,5 @@ const SignUpForm: React.FC = () => {
 };
 
 export default SignUpForm;
+
+export type { ISignUpFormProps };

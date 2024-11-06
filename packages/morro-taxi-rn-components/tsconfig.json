@@ -6,14 +6,16 @@
       "react-native-morro-taxi-rn-components": ["./src/index"], // Only the package entry
       "@/*": ["./*"]  // Custom alias if used in the package
     },
+    "declaration": true,
+    "emitDeclarationOnly": true,
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "jsx": "react-jsx",
     "lib": ["dom", "dom.iterable", "ESNext"],
-    "module": "ESNext",
-    "moduleResolution": "Node",  // Node is often more compatible in monorepos
+    "module": "Node16",
+    "moduleResolution": "Node16",  // Node is often more compatible in monorepos
     "noEmit": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitReturns": true,

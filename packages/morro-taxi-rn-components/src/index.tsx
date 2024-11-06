@@ -1,4 +1,3 @@
-import TestComponent from "./components/test-component";
 import Checkbox from "./components/checkbox";
 import GenericCard from "./components/generic-card";
 import InputPhone from "./components/input-phone";
@@ -11,23 +10,30 @@ import PermissionBlocker from "./components/permission-blocker";
 import RoundedButton from "./components/rounded-button";
 import ScrollableFormContainer from "./components/scrollable-form-container";
 import SignUpForm from "./components/sign-up-form";
+import TestComponent from "./components/test-component";
 
 export {
-    TestComponent,
-    Checkbox,
-    GenericCard,
-    InputPhone,
-    InputText,
-    InputTextField,
-    KeyboardDismiss,
-    LoginForm,
-    ObscuredInputText,
-    PermissionBlocker,
-    RoundedButton,
-    ScrollableFormContainer,
-    SignUpForm,
-  };
-  
+  Checkbox,
+  GenericCard,
+  InputPhone,
+  InputText,
+  InputTextField,
+  KeyboardDismiss,
+  LoginForm,
+  ObscuredInputText,
+  PermissionBlocker,
+  RoundedButton,
+  ScrollableFormContainer,
+  SignUpForm, TestComponent
+};
+
+  export type { ICheckboxProps } from './components/checkbox/props';
+  export type { IGenericCardProps } from './components/generic-card/props';
+  export type { IInputPhoneProps } from './components/input-phone/props';
+  export type { IInputTextFieldProps } from './components/input-text-field/props';
+  export type { IInputTextProps } from './components/input-text/props';
+  export type { IButtonProps } from './components/rounded-button/props';
+  export type { ISignUpFormProps } from './components/sign-up-form/props';
 
 // export { default as MorroTaxiRnComponentsView } from './MorroTaxiRnComponentsViewNativeComponent';
 // export * from './MorroTaxiRnComponentsViewNativeComponent';
