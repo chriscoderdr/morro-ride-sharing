@@ -1,13 +1,16 @@
 import InputTextField from '../input-text-field';
 import RoundedButton from '../rounded-button';
-
 import { isValidEmail, isValidPassword } from '../../utils/validators';
-
-import React, { useState } from 'react';
-import { Alert, Keyboard, Text, View } from 'react-native';
+import { useState } from 'react';
+import { Alert, Keyboard, Text, TouchableOpacity, View } from 'react-native';
 import { styles } from './styles';
+import { ILoginFormProps } from './props';
 
-const LoginForm: React.FC = () => {
+const LoginForm = ({
+  loginUser,
+  isLoading,
+  onGoToRegister,
+}: ILoginFormProps) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -35,7 +38,10 @@ const LoginForm: React.FC = () => {
 
     if (isValid) {
       try {
-        // Todo: Implement login functionality
+        await loginUser({
+          email,
+          password,
+        });
       } catch (err: any) {
         const errorMessage =
           err?.data?.error || 'Login failed. Please try again.';
@@ -63,7 +69,9 @@ const LoginForm: React.FC = () => {
   };
 
   const isButtonDisabled = () => {
-    return Boolean(emailError || passwordError) || !email || !password;
+    return (
+      isLoading || Boolean(emailError || passwordError) || !email || !password
+    );
   };
 
   return (
@@ -101,15 +109,18 @@ const LoginForm: React.FC = () => {
       <View style={styles.buttonContainer}>
         <RoundedButton
           disabled={isButtonDisabled()}
-          // text={isLoading ? 'Logging in...' : 'Login'}
-          text="Login"
+          text={isLoading ? 'Logging in...' : 'Login'}
           onPress={handleLogin}
           testID="login-button"
         />
         <View style={styles.dontHaveAnAccount}>
-          {/* <Link href="/signup" style={styles.dontHaveAnAccountText}> */}
-          <Text>Don't have an account? Sign up</Text>
-          {/* </Link> */}
+          {onGoToRegister && (
+            <TouchableOpacity onPress={onGoToRegister}>
+              <View style={styles.dontHaveAnAccountText}>
+                <Text>Don't have an account? Sign up</Text>
+              </View>
+            </TouchableOpacity>
+          )}
         </View>
       </View>
     </View>

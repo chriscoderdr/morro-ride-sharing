@@ -12,13 +12,13 @@ export const Setup = () => {
     (state: RootState) => state.auth.isAuthenticated
   );
 
-  // useEffect(() => {
-  //   if (!isAuthenticated) {
-  //     router.replace('/signup');
-  //   } else {
-  //     router.replace('/main');
-  //   }
-  // }, [isAuthenticated]);
+  useEffect(() => {
+    if (!isAuthenticated) {
+      router.replace('/signup');
+    } else {
+      router.replace('/main');
+    }
+  }, [isAuthenticated]);
 
   useEffect(() => {
     const keepScreenAwake = async () => {

@@ -1,4 +1,5 @@
 import { queueService } from '@/services';
+import bcrypt from 'bcrypt';
 import { Context } from 'koa';
 import { Op } from 'sequelize';
 import { RideRequest, Rider } from '../models';
@@ -129,5 +130,45 @@ export const createRideRequest = async (ctx: Context) => {
   } catch (error) {
     logger.error('Error creating ride request:', error);
     sendErrorResponse(ctx, 500, 'Server error. Please try again later.');
+  }
+};
+
+export const login = async (ctx: Context) => {
+  const { email, password } = ctx.request.body as {
+    email: string;
+    password: string;
+  };
+
+  if (!email || !password) {
+    ctx.status = 400;
+    ctx.body = { error: 'Email and password are required.' };
+    return;
+  }
+
+  try {
+    const user = await Rider.findOne({ where: { email } });
+
+    if (!user || !(await bcrypt.compare(password, user.password))) {
+      ctx.status = 401;
+      ctx.body = { error: 'Invalid email or password.' };
+      return;
+    }
+
+    const accessToken = generateAccessToken(user.dataValues.id, 'rider');
+    const refreshToken = generateRefreshToken();
+
+    await user.update({ refreshToken });
+
+    ctx.status = 200;
+    ctx.body = {
+      id: user.dataValues.id,
+      accessToken,
+      refreshToken,
+      name: user.dataValues.name
+    };
+  } catch (error) {
+    logger.error(error);
+    ctx.status = 500;
+    ctx.body = { error: 'Server error. Please try again later.' };
   }
 };

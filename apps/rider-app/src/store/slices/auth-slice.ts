@@ -34,8 +34,23 @@ export const loginUser = createAsyncThunk<
       apiSlice.endpoints.loginUser.initiate(data)
     ).unwrap();
     return response;
-  } catch (error) {
-    return rejectWithValue(error);
+  } catch (response) {
+    console.log(`debuging error: ${JSON.stringify(response)}`);
+    const status = response?.status;
+    let errorMessage = '';
+    switch (status) {
+      case 'FETCH_ERROR':
+        errorMessage =
+          'Oops! A network error occurred. Please check your internet connection and try again.';
+        break;
+      default:
+        errorMessage =
+          response?.data?.error ||
+          'Something went wrong. Please try again later.';
+        break;
+    }
+    Alert.alert('Error', errorMessage);
+    return rejectWithValue(response);
   }
 });
 
@@ -89,15 +104,15 @@ const authSlice = createSlice({
       .addCase(
         loginUser.fulfilled,
         (state, action: PayloadAction<LoginResponse>) => {
-          state.loading = false;
           state.isAuthenticated = true;
+          state.loading = false;
+          state.error = null;
           state.user = {
             accessToken: action.payload.accessToken,
             id: action.payload.id,
             refreshToken: action.payload.refreshToken,
             name: action.payload.name
           };
-          state.error = null;
         }
       )
       .addCase(loginUser.rejected, (state, action) => {
