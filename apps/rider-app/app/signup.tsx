@@ -2,6 +2,7 @@ import { useAppDispatch } from '@/src/hooks/use-app-dispatch';
 import { RootState } from '@/src/store';
 import { useRegisterUserMutation } from '@/src/store/slices/api-slice';
 import { registerUser } from '@/src/store/slices/auth-slice';
+import { useRouter } from 'expo-router';
 import {
   IRegisterUser,
   ScrollableFormContainer,
@@ -14,16 +15,26 @@ export default function SignUp() {
   const isLoading = useSelector((state: RootState) => state.auth.loading);
   const error = useSelector((state: RootState) => state.auth.error);
   const user = useSelector((state: RootState) => state.auth.user);
+  const router = useRouter();
 
   const onRegisterUser = (data: IRegisterUser) => {
-    dispatch(registerUser({ ...data, bustCache: Date.now() }));
+    dispatch(registerUser({ ...data }));
     console.log('Registering user:', data);
     console.log('Error:', error);
     console.log(`user: ${user}`);
   };
+
+  const onGoToLogin = () => {
+    router.navigate('/login');
+  };
+
   return (
     <ScrollableFormContainer>
-      <SignUpForm isLoading={isLoading} registerUser={onRegisterUser} />
+      <SignUpForm
+        isLoading={isLoading}
+        registerUser={onRegisterUser}
+        onGoToLogin={onGoToLogin}
+      />
     </ScrollableFormContainer>
   );
 }

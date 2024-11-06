@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { Alert, Keyboard, Text, View } from 'react-native';
+import { Alert, Keyboard, Text, TouchableOpacity, View } from 'react-native';
 import PhoneInput from 'react-native-phone-number-input';
 import {
   isValidEmail,
@@ -13,7 +13,11 @@ import RoundedButton from '../rounded-button';
 import { ISignUpFormProps } from './props';
 import { styles } from './styles';
 
-const SignUpForm = ({ registerUser, isLoading }: ISignUpFormProps) => {
+const SignUpForm = ({
+  registerUser,
+  isLoading,
+  onGoToLogin,
+}: ISignUpFormProps) => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
@@ -233,11 +237,13 @@ const SignUpForm = ({ registerUser, isLoading }: ISignUpFormProps) => {
 
       <View style={styles.buttonContainer}>
         <View style={styles.alreadyHaveAnAccount}>
-          {/* <Link href="/login" > */}
-          <View style={styles.alredayHaveAnAccountText}>
-            <Text>Alreday have an account? Sign in</Text>
-          </View>
-          {/* </Link> */}
+          {onGoToLogin && (
+            <TouchableOpacity onPress={onGoToLogin}>
+              <View style={styles.alredayHaveAnAccountText}>
+                <Text>Alreday have an account? Sign in</Text>
+              </View>
+            </TouchableOpacity>
+          )}
         </View>
         <RoundedButton
           disabled={isButtonDisabled()}

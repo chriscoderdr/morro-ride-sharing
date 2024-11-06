@@ -5,13 +5,14 @@ import {
   LoginData,
   LoginResponse,
   RegisterResponse,
-  DriverData
+  RiderData,
+  User
 } from '@/src/api/models';
 import { Alert } from 'react-native';
 
 interface AuthState {
   isAuthenticated: boolean;
-  user: LoginResponse | null;
+  user: User | null;
   loading: boolean;
   error: string | null;
 }
@@ -40,17 +41,17 @@ export const loginUser = createAsyncThunk<
 
 export const registerUser = createAsyncThunk<
   RegisterResponse,
-  DriverData,
+  RiderData,
   { state: RootState }
 >('riders/register', async (data, { dispatch, rejectWithValue }) => {
   try {
     const response = await dispatch(
       apiSlice.endpoints.registerUser.initiate(data)
     ).unwrap();
-    console.log(`debugging: ${JSON.stringify(response)}`)
+    console.log(`debugging: ${JSON.stringify(response)}`);
     return response;
   } catch (response) {
-    console.log(`debuging error: ${JSON.stringify(response)}`)
+    console.log(`debuging error: ${JSON.stringify(response)}`);
     const status = response?.status;
     let errorMessage = '';
     switch (status) {
@@ -90,9 +91,13 @@ const authSlice = createSlice({
         (state, action: PayloadAction<LoginResponse>) => {
           state.loading = false;
           state.isAuthenticated = true;
-          state.user = action.payload;
+          state.user = {
+            accessToken: action.payload.accessToken,
+            id: action.payload.id,
+            refreshToken: action.payload.refreshToken,
+            name: action.payload.name
+          };
           state.error = null;
-          console.log('Veamos algo ', action.payload)
         }
       )
       .addCase(loginUser.rejected, (state, action) => {
@@ -106,19 +111,23 @@ const authSlice = createSlice({
       .addCase(
         registerUser.fulfilled,
         (state, action: PayloadAction<RegisterResponse>) => {
+          state.isAuthenticated = true;
           state.loading = false;
           state.error = null;
           state.user = {
             accessToken: action.payload.accessToken,
-            driverId: action.payload.driverId,
+            id: action.payload.id,
             refreshToken: action.payload.refreshToken,
-            message: ''
-          }
+            name: action.payload.name
+          };
         }
       )
       .addCase(registerUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || 'Failed to register';
+      })
+      .addDefaultCase((state, action) => {
+        state.loading = false;
       });
   }
 });

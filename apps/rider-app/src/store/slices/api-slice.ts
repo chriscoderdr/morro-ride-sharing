@@ -1,5 +1,5 @@
 import {
-  DriverData,
+  RiderData,
   LoginData,
   LoginResponse,
   RegisterResponse
@@ -25,7 +25,7 @@ export const apiSlice = createApi({
     }
   }),
   endpoints: (builder) => ({
-    registerUser: builder.mutation<RegisterResponse, DriverData>({
+    registerUser: builder.mutation<RegisterResponse, RiderData>({
       query: (data) => ({
         url: '/riders/register',
         method: 'POST',

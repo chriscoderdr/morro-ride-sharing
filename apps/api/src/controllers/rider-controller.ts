@@ -34,14 +34,19 @@ const sendErrorResponse = (ctx: Context, status: number, message: string) => {
 
 // Register Rider
 export const registerRider = async (ctx: Context) => {
-  const { name, email, phone, password } = ctx.request.body as RegisterRiderRequestBody;
+  const { name, email, phone, password } = ctx.request
+    .body as RegisterRiderRequestBody;
 
   // Validation
   if (!name || !email || !phone || !password) {
     return sendErrorResponse(ctx, 400, 'All fields are required.');
   }
   if (password.length < 8) {
-    return sendErrorResponse(ctx, 400, 'Password must be at least 8 characters.');
+    return sendErrorResponse(
+      ctx,
+      400,
+      'Password must be at least 8 characters.'
+    );
   }
 
   try {
@@ -50,7 +55,11 @@ export const registerRider = async (ctx: Context) => {
       where: { [Op.or]: [{ email }, { phone }] }
     });
     if (existingRider) {
-      return sendErrorResponse(ctx, 409, 'Email or phone number already registered.');
+      return sendErrorResponse(
+        ctx,
+        409,
+        'Email or phone number already registered.'
+      );
     }
 
     // Create new rider
@@ -63,9 +72,10 @@ export const registerRider = async (ctx: Context) => {
     ctx.status = 201;
     ctx.body = {
       message: 'Rider registered successfully.',
-      riderId: newRider.dataValues.id,
+      id: newRider.dataValues.id,
       accessToken,
-      refreshToken
+      refreshToken,
+      name: newRider.dataValues.name
     };
   } catch (error) {
     logger.error('Error registering rider:', error);
@@ -75,7 +85,8 @@ export const registerRider = async (ctx: Context) => {
 
 // Create Ride Request
 export const createRideRequest = async (ctx: Context) => {
-  const { pickupLocation, dropOffLocation } = ctx.request.body as CreateRideRequestBody;
+  const { pickupLocation, dropOffLocation } = ctx.request
+    .body as CreateRideRequestBody;
   const riderId = ctx.state.user.id;
 
   // Validation
@@ -105,7 +116,7 @@ export const createRideRequest = async (ctx: Context) => {
     });
 
     logger.info(`Ride request created: ${newRideRequest.pickupAddress}`);
-    
+
     // Queue the ride request
     await queueService.addRideRequestToQueue(newRideRequest);
 

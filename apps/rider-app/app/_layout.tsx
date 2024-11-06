@@ -1,7 +1,8 @@
+import { LogBox } from 'react-native';
+
+// Ignore specific warning by message
+LogBox.ignoreLogs(['Warning: CountryModal: Support for defaultProps will be removed from function components in a future major release. Use JavaScript default parameters instead.']);
 import React from 'react';
-
-
-
 
 import Setup from '@/src/components/setup';
 import config from '@/src/config';

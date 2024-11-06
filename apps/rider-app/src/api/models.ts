@@ -2,17 +2,25 @@ export interface ApiResponse {
   message: string;
 }
 
-export interface DriverData {
+export interface RiderData {
   name: string;
   email: string;
   password: string;
   phone: string;
 }
 
-export interface RegisterResponse extends ApiResponse {
-  driverId: string;
+export interface User {
+  id: string;
   accessToken: string;
   refreshToken: string;
+  name: string;
+}
+
+export interface RegisterResponse extends ApiResponse {
+  id: string;
+  accessToken: string;
+  refreshToken: string;
+  name: string;
 }
 
 export interface LoginData {
@@ -21,9 +29,10 @@ export interface LoginData {
 }
 
 export interface LoginResponse extends ApiResponse {
+  id: string;
+  name: string;
   accessToken: string;
   refreshToken: string;
-  driverId: string;
 }
 
 export interface AcceptRequestData {
