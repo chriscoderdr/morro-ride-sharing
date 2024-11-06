@@ -8,20 +8,8 @@ import { SearchBoxCore, SessionToken } from '@mapbox/search-js-core';
 import config from '@/src/config';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
-const PlaceItem = ({ item }) => {
-  return (
-    <TouchableOpacity>
-      <View style={{ paddingHorizontal: 14, paddingVertical: 8 }}>
-        <Text>{item.name}</Text>
-        <Text>{item.place_formatted}</Text>
-      </View>
-    </TouchableOpacity>
-  );
-};
-
-export const SearchBox = () => {
+export const SearchBox = ({ showList, placeholder, onSuggestions }) => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [places, setPlaces] = useState([]);
 
   const searchPlace = async (query: string) => {
     const search = new SearchBoxCore({
@@ -29,7 +17,7 @@ export const SearchBox = () => {
     });
     const sessionToken = new SessionToken();
     const result = await search.suggest(query, { sessionToken });
-    setPlaces(result.suggestions);
+    onSuggestions(result.suggestions);
     console.log(`Search result: ${JSON.stringify(result)}`);
   };
 
@@ -48,17 +36,10 @@ export const SearchBox = () => {
   }, [searchQuery]);
 
   return (
-    <View style={{ paddingVertical: 100, paddingHorizontal: 20 }}>
+    <View style={{ paddingHorizontal: 20 }}>
       <InputText
-        placeholder="Where to?"
+        placeholder={placeholder}
         onChangeText={handleSearchQueryChange}
-      />
-      <FlatList
-        data={places}
-        ItemSeparatorComponent={() => <View style={{ height: 1, backgroundColor: '#000000' }} />}
-        renderItem={({ item }) => (
-          <PlaceItem item={item} key={item.mapbox_id} />
-        )}
       />
     </View>
   );
