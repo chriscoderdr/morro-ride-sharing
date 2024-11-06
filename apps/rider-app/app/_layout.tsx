@@ -1,39 +1,51 @@
+import Setup from '@/src/components/setup';
+import config from '@/src/config';
+import store, { persistor } from '@/src/store';
 import {
-  DefaultTheme,
-  ThemeProvider
-} from '@react-navigation/native';
-import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from 'react';
-import 'react-native-reanimated';
+  Inter_400Regular,
+  Inter_700Bold,
+  useFonts
+} from '@expo-google-fonts/inter';
+import { Poppins_700Bold } from '@expo-google-fonts/poppins';
+import Mapbox from '@rnmapbox/maps';
+import * as Notifications from 'expo-notifications';
+import { View } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { Provider } from 'react-redux';
+import { PersistGate } from 'redux-persist/integration/react';
 
-import { useColorScheme } from '@/hooks/useColorScheme';
+const MAPBOX_ACCESS_TOKEN = config.MAPBOX_ACCESS_TOKEN;
 
-SplashScreen.preventAutoHideAsync();
+Mapbox.setAccessToken(MAPBOX_ACCESS_TOKEN || '');
 
-export default function RootLayout() {
-  const colorScheme = useColorScheme();
-  const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf')
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: false,
+    shouldSetBadge: false
+  })
+});
+
+const App = () => {
+  const [fontsLoaded] = useFonts({
+    Inter_400Regular,
+    Inter_700Bold,
+    Poppins_700Bold
   });
 
-  useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded]);
-
-  if (!loaded) {
-    return null;
+  if (!fontsLoaded) {
+    return <View />;
   }
 
   return (
-    <ThemeProvider value={DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-    </ThemeProvider>
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <GestureHandlerRootView style={{ flex: 1 }}>
+          <Setup />
+        </GestureHandlerRootView>
+      </PersistGate>
+    </Provider>
   );
-}
+};
+
+export default App;
