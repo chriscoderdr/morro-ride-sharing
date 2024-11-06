@@ -1,3 +1,8 @@
+import React from 'react';
+
+
+
+
 import Setup from '@/src/components/setup';
 import config from '@/src/config';
 import store, { persistor } from '@/src/store';

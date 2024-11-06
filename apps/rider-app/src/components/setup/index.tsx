@@ -1,6 +1,6 @@
 import { useAppDispatch } from '@/src/hooks/use-app-dispatch';
 import { useAuthToken } from '@/src/hooks/use-auth-token';
-import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake';
+// import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake';
 import { Stack, useRouter } from 'expo-router';
 import { useEffect } from 'react';
 
@@ -18,13 +18,13 @@ export const Setup = () => {
 
   useEffect(() => {
     const keepScreenAwake = async () => {
-      await activateKeepAwakeAsync();
+      // await activateKeepAwakeAsync();
     };
 
     keepScreenAwake();
 
     return () => {
-      deactivateKeepAwake();
+      // deactivateKeepAwake();
     };
   }, []);
 

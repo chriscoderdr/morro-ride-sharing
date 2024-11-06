@@ -1,14 +1,10 @@
 {
   "compilerOptions": {
     "rootDir": ".",
+    "baseUrl": ".",  // Set the base URL for easier path resolution
     "paths": {
-      "react-native-morro-taxi-rn-components": ["./src/index"],
-      "react": ["./node_modules/types/react"],
-      "react-dom": ["./node_modules/types/react-dom"],
-      "react-native": ["./node_modules/types/react-native"],
-      "@/*": [
-        "./*"
-      ]
+      "react-native-morro-taxi-rn-components": ["./src/index"], // Only the package entry
+      "@/*": ["./*"]  // Custom alias if used in the package
     },
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,
@@ -17,7 +13,7 @@
     "jsx": "react-jsx",
     "lib": ["dom", "dom.iterable", "ESNext"],
     "module": "ESNext",
-    "moduleResolution": "Bundler",
+    "moduleResolution": "Node",  // Node is often more compatible in monorepos
     "noEmit": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitReturns": true,
@@ -30,6 +26,6 @@
     "skipLibCheck": true,
     "strict": true,
     "target": "ESNext",
-    "verbatimModuleSyntax": false,
+    "verbatimModuleSyntax": false
   }
 }

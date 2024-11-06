@@ -9,12 +9,40 @@
     "@nx/js": "20.0.3",
     "nx": "20.0.3"
   },
+  "resolutions": {
+    "react-native": "0.74.5"
+  },
   "workspaces": {
     "packages": [
       "packages/*",
       "apps/*"
     ],
     "nohoist": [
+      "**/react-native-phone-number-input",
+      "**/react-native-phone-number-input/**",
+      "**/react-is",
+      "react-is",
+      "/node_modules/prop-types/node_modules/react-is",
+      "**/prop-types",
+      "**/@react-native-community/cli/node_modules/fs-extra",
+      "fs-extra",
+      "**/fs-extra/",
+      "**/fs-extra/**",
+      "**/fs-extra-*/**",
+      "**/cli-*/**",
+      "**/cli-doctor/**",
+      "**/@react-native-community_cli/",
+      "@react-native-community/cli-doctor/",
+      "**/@react-native-community/**",
+      "**/@react-native-community-*/",
+      "**/@react-native-community/",
+      "**/@babel/core/**",
+      "**/@babel/core",
+      "**/@babel-*/**",
+      "**/@babel-*",
+      "**/@babel",
+      "**/babel-*",
+      "**/babel-*/**",
       "**/rnmapbox-*/**",
       "**/rnmapbox-*",
       "**/rnmapbox/**",
@@ -54,7 +82,9 @@
       "**/scheduler",
       "**/scheduler/**",
       "**/react-native",
-      "**/react-native/**"
+      "**/react-native/**",
+      "**/react-native-phone-number-input",
+      "**/react-native-phone-number-input/**"
     ]
   },
   "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"

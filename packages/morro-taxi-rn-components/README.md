@@ -1,6 +1,6 @@
 # react-native-morro-taxi-rn-components
 
-Shared components for morro taxi react native apps
+test
 
 ## Installation
 
@@ -12,11 +12,11 @@ npm install react-native-morro-taxi-rn-components
 
 
 ```js
-import { multiply } from 'react-native-morro-taxi-rn-components';
+import { MorroTaxiRnComponentsView } from "react-native-morro-taxi-rn-components";
 
 // ...
 
-const result = await multiply(3, 7);
+<MorroTaxiRnComponentsView color="tomato" />
 ```
 
 
