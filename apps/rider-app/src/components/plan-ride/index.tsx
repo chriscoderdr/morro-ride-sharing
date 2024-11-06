@@ -1,6 +1,6 @@
 import { FlatList, Text, TouchableOpacity, View } from 'react-native';
 import { SearchBox } from '../search-box';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const PlaceItem = ({ item }) => {
   return (
@@ -26,23 +26,23 @@ export const PlanRide = () => {
     setDropoffSuggestions(suggestions);
   };
 
-  const handleFocusChange = (focus) => {};
+  useEffect(() => {}, []);
 
   return (
     <View style={{ flex: 1 }}>
       <SearchBox
-        showList
         placeholder={'Current Location'}
         onSuggestions={handleOnPickupSuggestions}
+        onFocus={() => setFocus('pickup')}
       />
       <View style={{ marginTop: 30 }} />
       <SearchBox
-        showList
         placeholder={'Where to?'}
         onSuggestions={handleDropoffSuggestions}
+        onFocus={() => setFocus('drop-off')}
       />
       <View style={{ marginTop: 30 }} />
-      {pickupSuggestions && (
+      {pickupSuggestions && focus === 'pickup' && (
         <FlatList
           data={pickupSuggestions}
           ItemSeparatorComponent={() => (
@@ -53,7 +53,7 @@ export const PlanRide = () => {
           )}
         />
       )}
-      {dropoffSuggestions && (
+      {dropoffSuggestions && focus === 'drop-off' && (
         <FlatList
           data={dropoffSuggestions}
           ItemSeparatorComponent={() => (
