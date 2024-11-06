@@ -6,6 +6,18 @@ import {
 } from 'react-native-morro-taxi-rn-components';
 import { SearchBoxCore, SessionToken } from '@mapbox/search-js-core';
 import config from '@/src/config';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+
+const PlaceItem = ({ item }) => {
+  return (
+    <TouchableOpacity>
+      <View style={{ paddingHorizontal: 14, paddingVertical: 8 }}>
+        <Text>{item.name}</Text>
+        <Text>{item.place_formatted}</Text>
+      </View>
+    </TouchableOpacity>
+  );
+};
 
 export const SearchBox = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -43,7 +55,10 @@ export const SearchBox = () => {
       />
       <FlatList
         data={places}
-        renderItem={({ item }) => <Text>{item.name}</Text>}
+        ItemSeparatorComponent={() => <View style={{ height: 1, backgroundColor: '#000000' }} />}
+        renderItem={({ item }) => (
+          <PlaceItem item={item} key={item.mapbox_id} />
+        )}
       />
     </View>
   );
