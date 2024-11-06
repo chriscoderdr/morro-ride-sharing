@@ -1,11 +1,9 @@
-import InputText from "@/src/components/input-text";
-import { IInputTextProps } from "@/src/components/input-text/props";
-import { AntDesign } from "@expo/vector-icons";
-import React, { useState } from "react";
+import InputText from '..//input-text';
+import { IInputTextProps } from '../input-text/props';
+import { AntDesign } from '@expo/vector-icons';
+import React, { useState } from 'react';
 
-interface IObscuredInputTextProps extends IInputTextProps {}
-
-const ObscuredInputText: React.FC<IObscuredInputTextProps> = ({
+const ObscuredInputText: React.FC<IInputTextProps> = ({
   ...inputTextProps
 }) => {
   const [isTextHidden, setIsTextHidden] = useState(true);

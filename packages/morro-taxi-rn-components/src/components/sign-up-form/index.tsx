@@ -1,12 +1,12 @@
-import Checkbox from '@/src/components/checkbox';
-import InputTextField from '@/src/components/input-text-field';
-import RoundedButton from '@/src/components/rounded-button';
+import Checkbox from '../checkbox';
+import InputTextField from '../input-text-field';
+import RoundedButton from '../rounded-button';
 import {
   isValidEmail,
   isValidName,
   isValidPassword,
   isValidPhone,
-} from '@/src/utils/validators';
+} from '../../utils/validators';
 import React, { useRef, useState } from 'react';
 import { Alert, Keyboard, Text, View } from 'react-native';
 import { styles } from './styles';
@@ -72,7 +72,7 @@ const SignUpForm: React.FC = () => {
 
     if (isValid && isChecked) {
       try {
-      // TODO: call parent component to handle sign up
+        // TODO: call parent component to handle sign up
       } catch (err: any) {
         const errorMessage =
           err?.data?.error || 'Registration failed. Please try again.';
@@ -233,7 +233,7 @@ const SignUpForm: React.FC = () => {
         <RoundedButton
           disabled={isButtonDisabled()}
           // text={isLoading ? 'Signing Up...' : 'Sign Up'}
-          text='Sign up'
+          text="Sign up"
           onPress={handleSignUp}
           testID="signup-button"
         />

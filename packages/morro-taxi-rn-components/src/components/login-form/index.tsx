@@ -1,7 +1,7 @@
-import InputTextField from '@/src/components/input-text-field';
-import RoundedButton from '@/src/components/rounded-button';
+import InputTextField from '../input-text-field';
+import RoundedButton from '../rounded-button';
 
-import { isValidEmail, isValidPassword } from '@/src/utils/validators';
+import { isValidEmail, isValidPassword } from '../../utils/validators';
 
 import React, { useState } from 'react';
 import { Alert, Keyboard, Text, View } from 'react-native';

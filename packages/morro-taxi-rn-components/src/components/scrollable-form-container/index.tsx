@@ -1,4 +1,4 @@
-import KeyboardDismiss from '@/src/components/keyboard-dismiss';
+import KeyboardDismiss from '../keyboard-dismiss';
 import { KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
 import { ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';

@@ -1,4 +1,4 @@
-import { IInputTextProps } from '@/src/components/input-text/props';
+import { IInputTextProps } from '../input-text/props';
 
 export interface IInputTextFieldProps extends IInputTextProps {
   label: string;

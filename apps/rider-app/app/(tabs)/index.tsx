@@ -6,17 +6,17 @@ import {
   StyleSheet,
   View
 } from 'react-native';
+import {
+  LoginForm,
+  ScrollableFormContainer
+} from 'react-native-morro-taxi-rn-components';
 
 export default function HomeScreen() {
   return (
-    <View>
-      <SafeAreaView>
-        <KeyboardAvoidingView>
-          <ScrollView>
-            <RideRequestForm />
-          </ScrollView>
-        </KeyboardAvoidingView>
-      </SafeAreaView>
+    <View style={{flex: 1}}>
+      <ScrollableFormContainer>
+        <LoginForm />
+      </ScrollableFormContainer>
     </View>
   );
 }

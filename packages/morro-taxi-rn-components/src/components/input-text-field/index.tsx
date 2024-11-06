@@ -1,6 +1,6 @@
-import InputPhone from '@/src/components/input-phone';
-import InputText from '@/src/components/input-text';
-import ObscuredInputText from '@/src/components/obscured-input-text';
+import InputPhone from '../input-phone';
+import InputText from '..//input-text';
+import ObscuredInputText from '../obscured-input-text';
 import { forwardRef } from 'react';
 import { Text, View } from 'react-native';
 import { IInputTextFieldProps } from './props';
