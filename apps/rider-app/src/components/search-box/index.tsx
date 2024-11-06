@@ -44,7 +44,7 @@ export const SearchBox = forwardRef<TextInput, ISearchBoxProps>(
     }, [searchQuery]);
 
     return (
-      <View style={{ paddingHorizontal: 20 }}>
+      <View>
         <InputText
           placeholder={placeholder}
           onChangeText={handleSearchQueryChange}
