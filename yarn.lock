@@ -7013,7 +7013,7 @@ check-error@^2.1.1:
 
 chokidar-cli@^3.0.0:
   version "3.0.0"
-  resolved "https://registry.npmjs.org/chokidar-cli/-/chokidar-cli-3.0.0.tgz"
+  resolved "https://registry.yarnpkg.com/chokidar-cli/-/chokidar-cli-3.0.0.tgz#29283666063b9e167559d30f247ff8fc48794eb7"
   integrity sha512-xVW+Qeh7z15uZRxHOkP93Ux8A0xbPzwK4GaqD8dQOYc34TlkqUhVSS59fK36DOp5WdJlrRzlYSy02Ht99FjZqQ==
   dependencies:
     chokidar "^3.5.2"
@@ -15776,8 +15776,8 @@ react-native-helmet-async@2.0.4:
     react-fast-compare "^3.2.2"
     shallowequal "^1.1.0"
 
-"react-native-morro-taxi-rn-components@file:packages/morro-taxi-rn-components":
-  version "0.1.0"
+"react-native-morro-taxi-rn-components@file:./packages/morro-taxi-rn-components":
+  version "1.0.1"
 
 react-native-phone-number-input@^2.1.0:
   version "2.1.0"

@@ -1,6 +1,6 @@
 {
   "name": "react-native-morro-taxi-rn-components",
-  "version": "0.1.0",
+  "version": "1.0.1",
   "description": "Shared components for morro taxi react native apps",
   "source": "./src/index.tsx",
   "main": "./lib/commonjs/index.js",
@@ -43,7 +43,8 @@
     "lint": "eslint \"**/*.{js,ts,tsx}\"",
     "clean": "del-cli android/build example/android/build example/android/app/build example/ios/build lib",
     "prepare": "bob build",
-    "release": "release-it"
+    "release": "release-it",
+    "watch": "chokidar 'src/**/*' -c 'bob build && (cd ../../apps/rider-app && yarn install --force)'"
   },
   "keywords": [
     "react-native",
@@ -63,9 +64,7 @@
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
   },
-  "dependencies": {
-    
-  },
+  "dependencies": {},
   "devDependencies": {
     "@commitlint/config-conventional": "^17.0.2",
     "@evilmartians/lefthook": "^1.5.0",
@@ -81,6 +80,7 @@
     "@types/semver": "^6.0.2",
     "@types/wcwidth": "^1.0.0",
     "chalk": "^4.1.2",
+    "chokidar-cli": "^3.0.0",
     "command-exists": "^1.2.8",
     "commitlint": "^17.0.2",
     "deepmerge": "^4.3.0",
@@ -98,6 +98,7 @@
     "ora": "^5.4.1",
     "prettier": "^3.0.3",
     "prop-types": "^15.8.1",
+    "react-native": "0.74.5",
     "react-native-builder-bob": "^0.30.3",
     "react-native-phone-number-input": "^2.1.0",
     "react-native-safe-area-context": "4.10.5",
@@ -107,8 +108,7 @@
     "turbo": "^1.10.7",
     "typescript": "^5.2.2",
     "wcwidth": "^1.0.1",
-    "yaml": "^2.2.1",
-    "react-native": "0.74.5"
+    "yaml": "^2.2.1"
   },
   "resolutions": {
     "@types/react": "^18.2.44"
