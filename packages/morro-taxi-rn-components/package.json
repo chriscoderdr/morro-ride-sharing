@@ -1,0 +1,229 @@
+{
+  "name": "react-native-morro-taxi-rn-components",
+  "version": "1.0.1",
+  "description": "Shared components for morro taxi react native apps",
+  "source": "./src/index.tsx",
+  "main": "./lib/commonjs/index.js",
+  "module": "./lib/module/index.js",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./lib/typescript/module/src/index.d.ts",
+        "default": "./lib/module/index.js"
+      },
+      "require": {
+        "types": "./lib/typescript/commonjs/src/index.d.ts",
+        "default": "./lib/commonjs/index.js"
+      }
+    }
+  },
+  "files": [
+    "src",
+    "lib",
+    "android",
+    "ios",
+    "cpp",
+    "*.podspec",
+    "react-native.config.json",
+    "!ios/build",
+    "!android/build",
+    "!android/gradle",
+    "!android/gradlew",
+    "!android/gradlew.bat",
+    "!android/local.properties",
+    "!**/__tests__",
+    "!**/__fixtures__",
+    "!**/__mocks__",
+    "!**/.*"
+  ],
+  "scripts": {
+    "example": "yarn workspace react-native-morro-taxi-rn-components-example",
+    "test": "jest",
+    "typecheck": "tsc",
+    "lint": "eslint \"**/*.{js,ts,tsx}\"",
+    "clean": "del-cli android/build example/android/build example/android/app/build example/ios/build lib",
+    "prepare": "bob build",
+    "release": "release-it",
+    "watch": "chokidar 'src/**/*' -c 'bob build && (cd ../../apps/rider-app && yarn install --force)'"
+  },
+  "keywords": [
+    "react-native",
+    "ios",
+    "android"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chriscoderdr/react-native-morro-taxi-rn-components.git"
+  },
+  "author": "Chris Gomez <christiangomezdev@gmail.com> (https://github.com/chriscoderdr)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/chriscoderdr/react-native-morro-taxi-rn-components/issues"
+  },
+  "homepage": "https://github.com/chriscoderdr/react-native-morro-taxi-rn-components#readme",
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@commitlint/config-conventional": "^17.0.2",
+    "@evilmartians/lefthook": "^1.5.0",
+    "@expo/vector-icons": "^14.0.4",
+    "@react-native/eslint-config": "^0.73.1",
+    "@release-it/conventional-changelog": "^5.0.0",
+    "@types/command-exists": "^1.2.0",
+    "@types/envinfo": "^7.8.1",
+    "@types/ip": "^1.1.0",
+    "@types/jest": "^29.5.5",
+    "@types/prompts": "^2.4.4",
+    "@types/react": "^18.2.44",
+    "@types/semver": "^6.0.2",
+    "@types/wcwidth": "^1.0.0",
+    "chalk": "^4.1.2",
+    "chokidar-cli": "^3.0.0",
+    "command-exists": "^1.2.8",
+    "commitlint": "^17.0.2",
+    "deepmerge": "^4.3.0",
+    "del-cli": "^5.1.0",
+    "envinfo": "^7.10.0",
+    "eslint": "^8.51.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-prettier": "^5.0.1",
+    "execa": "^5.0.0",
+    "expo-location": "~17.0.1",
+    "expo-notifications": "^0.28.19",
+    "hermes-profile-transformer": "^0.0.6",
+    "jest": "^29.7.0",
+    "node-stream-zip": "^1.9.1",
+    "ora": "^5.4.1",
+    "prettier": "^3.0.3",
+    "prop-types": "^15.8.1",
+    "react-native": "0.74.5",
+    "react-native-builder-bob": "^0.30.3",
+    "react-native-phone-number-input": "^2.1.0",
+    "react-native-safe-area-context": "4.10.5",
+    "release-it": "^15.0.0",
+    "semver": "^7.5.2",
+    "strip-ansi": "^5.2.0",
+    "turbo": "^1.10.7",
+    "typescript": "^5.2.2",
+    "wcwidth": "^1.0.1",
+    "yaml": "^2.2.1"
+  },
+  "resolutions": {
+    "@types/react": "^18.2.44"
+  },
+  "peerDependencies": {
+    "@expo/vector-icons": "^14.0.4",
+    "expo-location": "~17.0.1",
+    "expo-notifications": "^0.28.19",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "react-native": "0.74.5",
+    "react-native-phone-number-input": "^2.1.0",
+    "react-native-safe-area-context": "4.10.5"
+  },
+  "jest": {
+    "preset": "react-native",
+    "modulePathIgnorePatterns": [
+      "<rootDir>/example/node_modules",
+      "<rootDir>/lib/"
+    ]
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
+  },
+  "release-it": {
+    "git": {
+      "commitMessage": "chore: release ${version}",
+      "tagName": "v${version}"
+    },
+    "npm": {
+      "publish": true
+    },
+    "github": {
+      "release": true
+    },
+    "plugins": {
+      "@release-it/conventional-changelog": {
+        "preset": "angular"
+      }
+    }
+  },
+  "eslintConfig": {
+    "root": true,
+    "extends": [
+      "@react-native",
+      "prettier"
+    ],
+    "rules": {
+      "react/react-in-jsx-scope": "off",
+      "prettier/prettier": [
+        "error",
+        {
+          "quoteProps": "consistent",
+          "singleQuote": true,
+          "tabWidth": 2,
+          "trailingComma": "es5",
+          "useTabs": false
+        }
+      ]
+    }
+  },
+  "eslintIgnore": [
+    "node_modules/",
+    "lib/"
+  ],
+  "prettier": {
+    "quoteProps": "consistent",
+    "singleQuote": true,
+    "tabWidth": 2,
+    "trailingComma": "es5",
+    "useTabs": false
+  },
+  "react-native-builder-bob": {
+    "source": "src",
+    "output": "lib",
+    "targets": [
+      "codegen",
+      [
+        "commonjs",
+        {
+          "esm": true
+        }
+      ],
+      [
+        "module",
+        {
+          "esm": true
+        }
+      ],
+      [
+        "typescript",
+        {
+          "project": "tsconfig.build.json",
+          "esm": true
+        }
+      ]
+    ]
+  },
+  "codegenConfig": {
+    "name": "RNMorroTaxiRnComponentsViewSpec",
+    "type": "all",
+    "jsSrcsDir": "src",
+    "outputDir": {
+      "ios": "ios/generated",
+      "android": "android/generated"
+    },
+    "android": {
+      "javaPackageName": "com.morrotaxirncomponents"
+    },
+    "includesGeneratedCode": true
+  },
+  "create-react-native-library": {
+    "type": "view-new",
+    "version": "0.42.2"
+  }
+}
