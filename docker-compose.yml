@@ -21,7 +21,7 @@ services:
       YARN_ERROR_LOG_FILE: '/yarn-logs'
       SERVICE_NAME: 'app'
     volumes:
-      - .:/app:ro
+      - .:/app
       - yarn-cache:/yarn-cache
       - root-node-modules:/app/node_modules
       - api-node-modules:/app/apps/api/node_modules
@@ -51,7 +51,7 @@ services:
       YARN_ERROR_LOG_FILE: '/yarn-logs'
       SERVICE_NAME: 'mqtt-listener'
     volumes:
-      - .:/app:ro
+      - .:/app
       - yarn-cache:/yarn-cache
       - root-node-modules:/app/node_modules
       - api-node-modules:/app/apps/api/node_modules
@@ -81,7 +81,7 @@ services:
       YARN_ERROR_LOG_FILE: '/yarn-logs'
       SERVICE_NAME: 'queue-processor'
     volumes:
-      - .:/app:ro
+      - .:/app
       - yarn-cache:/yarn-cache
       - root-node-modules:/app/node_modules
       - api-node-modules:/app/apps/api/node_modules

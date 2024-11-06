@@ -15,8 +15,6 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 
-const queryClient = new QueryClient();
-
 const MAPBOX_ACCESS_TOKEN = config.MAPBOX_ACCESS_TOKEN;
 
 Mapbox.setAccessToken(MAPBOX_ACCESS_TOKEN || '');
@@ -44,9 +42,7 @@ const App = () => {
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
         <GestureHandlerRootView style={{ flex: 1 }}>
-          <QueryClientProvider client={queryClient}>
-            <Setup />
-          </QueryClientProvider>
+          <Setup />
         </GestureHandlerRootView>
       </PersistGate>
     </Provider>

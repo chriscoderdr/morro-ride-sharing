@@ -312,7 +312,7 @@ export const getRideRequests = async (ctx: Context) => {
   const driverId = ctx.state.user.id; // Assumes driver is authenticated, and ID is stored in the token
   logger.info(`Fetching ride requests for driver ${driverId}`);
 
-  console.error('HOLAAAA');
+
   try {
     const rideRequests = await RideRequest.findAll({
       where: { driverId },
