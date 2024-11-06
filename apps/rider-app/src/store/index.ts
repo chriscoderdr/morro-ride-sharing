@@ -29,15 +29,6 @@ const reducer = combineReducers({
 
 const persistedReducer = persistReducer(persistConfig, reducer);
 
-const listenerMiddleware = createListenerMiddleware();
-
-listenerMiddleware.startListening({
-  actionCreator: setTokens,
-  effect: async (action, listenerApi) => {
-    // Dispatch initializePendingRequests when tokens are set
-    listenerApi.dispatch(initializePendingRequests());
-  }
-});
 
 const store = configureStore({
   reducer: persistedReducer,
@@ -54,10 +45,7 @@ const store = configureStore({
         ]
       }
     }).concat(
-      apiSlice.middleware,
-      timeoutMiddleware,
-      fetchRideRequestsMiddleware,
-      listenerMiddleware.middleware
+      apiSlice.middleware
     )
 });
 

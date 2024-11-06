@@ -33,7 +33,7 @@ export {
   export type { IInputTextFieldProps } from './components/input-text-field/props';
   export type { IInputTextProps } from './components/input-text/props';
   export type { IButtonProps } from './components/rounded-button/props';
-  export type { ISignUpFormProps } from './components/sign-up-form/props';
+  export type { IRegisterUser, ISignUpFormProps } from './components/sign-up-form/props';
 
 // export { default as MorroTaxiRnComponentsView } from './MorroTaxiRnComponentsViewNativeComponent';
 // export * from './MorroTaxiRnComponentsViewNativeComponent';

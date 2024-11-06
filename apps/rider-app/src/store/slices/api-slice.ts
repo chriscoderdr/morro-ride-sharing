@@ -14,13 +14,15 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 const API_BASE_URL = config.MORRO_API_BASE_URL;
 
+console.log(`API_BASE_URL: ${API_BASE_URL}`);
+
 export const apiSlice = createApi({
   reducerPath: 'api',
   tagTypes: ['somethingelseKeyApi'],
   baseQuery: fetchBaseQuery({
     baseUrl: API_BASE_URL,
     prepareHeaders: (headers, { getState }) => {
-      const token = (getState() as RootState).auth.accessToken;
+      const token = (getState() as RootState).auth.user?.accessToken;
       if (token) {
         headers.set('Authorization', `Bearer ${token}`);
       }
@@ -28,16 +30,16 @@ export const apiSlice = createApi({
     }
   }),
   endpoints: (builder) => ({
-    registerDriver: builder.mutation<RegisterResponse, DriverData>({
+    registerUser: builder.mutation<RegisterResponse, DriverData>({
       query: (data) => ({
-        url: '/drivers/register',
+        url: '/riders/register',
         method: 'POST',
         body: data
       })
     }),
-    loginDriver: builder.mutation<LoginResponse, LoginData>({
+    loginUser: builder.mutation<LoginResponse, LoginData>({
       query: (data) => ({
-        url: '/drivers/login',
+        url: '/riders/login',
         method: 'POST',
         body: data
       })
@@ -92,8 +94,8 @@ export const apiSlice = createApi({
 });
 
 export const {
-  useRegisterDriverMutation,
-  useLoginDriverMutation,
+  useRegisterUserMutation,
+  useLoginUserMutation,
   useAcceptRideRequestMutation,
   useGetRideRequestsResponseQuery
 } = apiSlice;

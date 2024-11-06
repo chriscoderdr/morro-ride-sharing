@@ -35,5 +35,5 @@ export {
   export type { IInputTextFieldProps } from './input-text-field/props';
   export type { IInputTextProps } from './input-text/props';
   export type { IButtonProps } from './rounded-button/props';
-  export type { ISignUpFormProps } from './sign-up-form/props';
+  export type { IRegisterUser, ISignUpFormProps } from './sign-up-form/props';
 
