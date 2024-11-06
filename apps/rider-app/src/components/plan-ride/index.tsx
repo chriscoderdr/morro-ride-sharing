@@ -2,6 +2,9 @@ import { FlatList, Text, TouchableOpacity, View } from 'react-native';
 import { SearchBox } from '../search-box';
 import { useEffect, useState } from 'react';
 import { RoundedButton } from 'react-native-morro-taxi-rn-components';
+import useLocationManager from '@/src/hooks/use-location-manager';
+import { GeocodingCore, GeocodingResponse } from '@mapbox/search-js-core';
+import config from '@/src/config';
 
 const PlaceItem = ({ item, onPress }) => {
   return (
@@ -20,6 +23,9 @@ export const PlanRide = () => {
   const [focus, setFocus] = useState('drop-off');
   const [selectedPickup, setSelectedPickup] = useState(null);
   const [selectedDropoff, setSelectedDropoff] = useState(null);
+  const userLocation = useLocationManager();
+  const [userCurrentLocationInfo, setUserCurrentLocationInfo] =
+    useState<GeocodingResponse>(null);
 
   const handleOnPickupSuggestions = (suggestions) => {
     setPickupSuggestions(suggestions);
@@ -37,7 +43,31 @@ export const PlanRide = () => {
     setSelectedDropoff(item);
   };
 
-  useEffect(() => {}, []);
+  const handlePlanRide = () => {
+    console.log('Plan ride');
+  };
+
+  useEffect(() => {
+    console.log(userLocation?.location);
+    if (userLocation?.location) {
+      userLocation.stopLocationUpdates();
+      const fetchData = async () => {
+        const userLocationInfo = await getLocatioInfo(userLocation.location);
+        setUserCurrentLocationInfo(userLocationInfo);
+      };
+
+      fetchData().then().catch(console.error);
+    }
+  }, [userLocation.location]);
+
+  const getLocatioInfo = async (location) => {
+    const geocoding = new GeocodingCore({
+      accessToken: config.MAPBOX_ACCESS_TOKEN
+    });
+    const result = await geocoding.reverse(location);
+    console.log(result.features[0].properties.context.country);
+    return result;
+  };
 
   return (
     <View style={{ flex: 1, paddingHorizontal: 20 }}>
@@ -45,22 +75,21 @@ export const PlanRide = () => {
         placeholder={'Current Location'}
         onSuggestions={handleOnPickupSuggestions}
         onFocus={() => setFocus('pickup')}
+        userCurrentLocationInfo={userCurrentLocationInfo}
       />
       <View style={{ marginTop: 30 }} />
       <SearchBox
         placeholder={'Where to?'}
         onSuggestions={handleDropoffSuggestions}
         onFocus={() => setFocus('drop-off')}
+        userCurrentLocationInfo={userCurrentLocationInfo}
       />
       <View style={{ marginTop: 30 }} />
       {selectedPickup && selectedDropoff && (
         <View>
           <Text>From: {selectedPickup.name}</Text>
           <Text>To: {selectedDropoff.name}</Text>
-          <RoundedButton
-            text={'Plan Ride'}
-            onPress={() => console.log('Plan ride')}
-          />
+          <RoundedButton text={'Plan Ride'} onPress={handlePlanRide} />
         </View>
       )}
 

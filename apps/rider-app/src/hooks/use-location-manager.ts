@@ -1,9 +1,11 @@
-import * as Location from "expo-location";
-import { useEffect, useState } from "react";
-import { Alert } from "react-native";
+import * as Location from 'expo-location';
+import { useEffect, useRef, useState } from 'react';
+import { Alert } from 'react-native';
 
 const useLocationManager = (isBackground = false, interval = 3000) => {
   const [location, setLocation] = useState<[number, number] | null>(null);
+  const [isStopped, setIsStopped] = useState(false);
+  const locationIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const checkPermissions = async (
     isBackground = false,
@@ -53,13 +55,17 @@ const useLocationManager = (isBackground = false, interval = 3000) => {
         userLocation.coords.longitude,
         userLocation.coords.latitude
       ];
+      console.log('TESTING H ERE', coords);
+      console.log(`isstopped: ${isStopped}`);
       setLocation(coords);
       return coords;
     }
     return null;
   };
 
-  const startLocationUpdates = async (taskName: string) => {
+  const startLocationUpdates = async (
+    taskName: string = 'location-updates'
+  ) => {
     if ((await checkPermissions()) && isBackground) {
       await Location.startLocationUpdatesAsync(taskName, {
         accuracy: Location.Accuracy.High,
@@ -70,26 +76,38 @@ const useLocationManager = (isBackground = false, interval = 3000) => {
     }
   };
 
-  const stopLocationUpdates = async (taskName: string) => {
-    if ((await checkPermissions()) && isBackground) {
+  const stopLocationUpdates = async (taskName: string = 'location-updates') => {
+    try {
+      console.log(`Stopped location updates for task: ${taskName}`);
+      setIsStopped(true);
+      clearInterval(locationIntervalRef.current);
       await Location.stopLocationUpdatesAsync(taskName);
+    } catch (error) {
+      console.log('Error stopping location updates', error);
     }
   };
 
   useEffect(() => {
-    if (isBackground) {
-      startLocationUpdates('background-location-task');
-    } else {
-      fetchUserLocation();
-      const locationInterval = setInterval(() => {
+    if (!isStopped) {
+      if (isBackground) {
+        startLocationUpdates('background-location-task');
+      } else {
         fetchUserLocation();
-      }, interval);
+        locationIntervalRef.current = setInterval(() => {
+          fetchUserLocation();
+        }, interval);
 
+        return () => {
+          clearInterval(locationIntervalRef.current);
+        };
+      }
+    } else {
       return () => {
-        clearInterval(locationInterval);
+        clearInterval(locationIntervalRef.current);
+        stopLocationUpdates('Location-updates');
       };
     }
-  }, [isBackground, interval]);
+  }, [isStopped]);
 
   return {
     location,
