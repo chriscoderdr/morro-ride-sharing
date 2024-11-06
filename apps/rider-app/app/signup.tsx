@@ -13,11 +13,13 @@ export default function SignUp() {
   const dispatch = useAppDispatch();
   const isLoading = useSelector((state: RootState) => state.auth.loading);
   const error = useSelector((state: RootState) => state.auth.error);
+  const user = useSelector((state: RootState) => state.auth.user);
 
   const onRegisterUser = (data: IRegisterUser) => {
-    dispatch(registerUser(data));
+    dispatch(registerUser({ ...data, bustCache: Date.now() }));
     console.log('Registering user:', data);
     console.log('Error:', error);
+    console.log(`user: ${user}`);
   };
   return (
     <ScrollableFormContainer>

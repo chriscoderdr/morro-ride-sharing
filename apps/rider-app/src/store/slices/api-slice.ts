@@ -1,12 +1,8 @@
 import {
-  AcceptRequestData,
-  AcceptRequestResponse,
   DriverData,
   LoginData,
   LoginResponse,
-  RegisterResponse,
-  StartRequestData,
-  StartRequestResponse
+  RegisterResponse
 } from '@/src/api/models';
 import config from '@/src/config';
 import { RootState } from '@/src/store';
@@ -18,7 +14,6 @@ console.log(`API_BASE_URL: ${API_BASE_URL}`);
 
 export const apiSlice = createApi({
   reducerPath: 'api',
-  tagTypes: ['somethingelseKeyApi'],
   baseQuery: fetchBaseQuery({
     baseUrl: API_BASE_URL,
     prepareHeaders: (headers, { getState }) => {
@@ -34,68 +29,22 @@ export const apiSlice = createApi({
       query: (data) => ({
         url: '/riders/register',
         method: 'POST',
-        body: data
-      })
+        body: data,
+        cache: 'no-cache',
+        params: {
+          'cacheBusting': Date.now()
+        }
+      }),
     }),
     loginUser: builder.mutation<LoginResponse, LoginData>({
       query: (data) => ({
         url: '/riders/login',
         method: 'POST',
-        body: data
+        body: data,
+        cache: 'no-cache'
       })
-    }),
-    acceptRideRequest: builder.mutation<
-      AcceptRequestResponse,
-      AcceptRequestData
-    >({
-      query: (data) => ({
-        url: '/drivers/acceptRequest',
-        method: 'POST',
-        body: data
-      })
-    }),
-    startRideRequest: builder.mutation<StartRequestResponse, StartRequestData>({
-      query: (data) => ({
-        url: '/drivers/startRequest',
-        method: 'POST',
-        body: data
-      })
-    }),
-
-    pickUpRideRequest: builder.mutation<StartRequestResponse, StartRequestData>(
-      {
-        query: (data) => ({
-          url: '/drivers/pickUpRequest',
-          method: 'POST',
-          body: data
-        })
-      }
-    ),
-    completeRideRequest: builder.mutation<void, { rideRequestId: string }>({
-      query: (data) => ({
-        url: '/drivers/completeRequest',
-        method: 'POST',
-        body: data
-      })
-    }),
-    getRideRequestsResponse: builder.query<{ data: any[] }, void>({
-      keepUnusedDataFor: 0,
-      query: () => ({
-        url: `/drivers/rideRequests`,
-        headers: {
-          'Cache-Control': 'no-store',
-          Pragma: 'no-cache'
-        },
-      }),
-      forceRefetch: () => true,
-      providesTags: ['somethingelseKeyApi']
     })
   })
 });
 
-export const {
-  useRegisterUserMutation,
-  useLoginUserMutation,
-  useAcceptRideRequestMutation,
-  useGetRideRequestsResponseQuery
-} = apiSlice;
+export const { useRegisterUserMutation, useLoginUserMutation } = apiSlice;
