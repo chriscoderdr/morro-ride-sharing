@@ -1,3 +1,4 @@
+import { SearchBox } from '@/src/components/search-box';
 import Mapbox, { MapView } from '@rnmapbox/maps';
 import { View } from 'react-native';
 import {
@@ -9,7 +10,10 @@ export default function Home() {
   return (
     <View style={{ flex: 1 }}>
       <PermissionBlocker>
-        <Mapbox.MapView style={{ flex: 1 }}></Mapbox.MapView>
+        <View style={{ flex: 1 }}>
+          <SearchBox  />
+        </View>
+        {/* <Mapbox.MapView style={{ flex: 1 }}></Mapbox.MapView> */}
       </PermissionBlocker>
     </View>
   );
