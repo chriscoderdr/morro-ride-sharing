@@ -27,7 +27,7 @@ const InputTextField = forwardRef<any, IInputTextFieldProps>(
       >
         <Text style={styles.label}>{label}</Text>
         {phoneEntry ? (
-          <InputPhone ref={ref} {...inputProps} />
+          <View ref={ref} {...inputProps} />
         ) : securedEntry ? (
           <ObscuredInputText fullWidth={fullWidth} {...inputProps} />
         ) : (

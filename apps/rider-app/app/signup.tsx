@@ -1,12 +1,12 @@
 import {
-  LoginForm,
-  ScrollableFormContainer
+  ScrollableFormContainer,
+  SignUpForm
 } from 'react-native-morro-taxi-rn-components';
 
-export default function Login() {
+export default function SignUp() {
   return (
     <ScrollableFormContainer>
-      <LoginForm />
+      <SignUpForm />
     </ScrollableFormContainer>
   );
 }

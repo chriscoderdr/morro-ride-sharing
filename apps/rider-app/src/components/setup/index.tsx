@@ -1,22 +1,20 @@
+import { useAppDispatch } from '@/src/hooks/use-app-dispatch';
+import { useAuthToken } from '@/src/hooks/use-auth-token';
 import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake';
 import { Stack, useRouter } from 'expo-router';
 import { useEffect } from 'react';
 
 export const Setup = () => {
   const router = useRouter();
-  //   const authToken = useAuthToken();
-  //   const dispatch = useAppDispatch();
-  //   useEffect(() => {
-  //     dispatch(initializePendingRequests());
-  //   }, [dispatch]);
+  const authToken = useAuthToken();
 
-  //   useEffect(() => {
-  //     if (!authToken) {
-  //       router.replace('/signup');
-  //     } else {
-  //       router.replace('/main');
-  //     }
-  //   }, []);
+  useEffect(() => {
+    if (!authToken) {
+      router.replace('/signup');
+    } else {
+      router.replace('/main');
+    }
+  }, []);
 
   useEffect(() => {
     const keepScreenAwake = async () => {
@@ -31,9 +29,9 @@ export const Setup = () => {
   }, []);
 
   return (
-    <Stack initialRouteName="signup">
-      <Stack.Screen name="signup" options={{ headerShown: false }} />
+    <Stack>
       <Stack.Screen name="login" options={{ headerShown: false }} />
+      <Stack.Screen name="signup" options={{ headerShown: false }} />
       <Stack.Screen name="main" options={{ headerShown: false }} />
     </Stack>
   );
