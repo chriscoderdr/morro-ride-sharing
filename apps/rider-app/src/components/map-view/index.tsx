@@ -1,37 +1,33 @@
 import React from 'react';
-import { Alert, TouchableOpacity, View } from 'react-native';
+import { TouchableOpacity } from 'react-native';
 import Mapbox from '@rnmapbox/maps';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+
 import { useEffect, useRef, useState } from 'react';
 import { Coordinates } from '@mapbox/search-js-core';
 import styles from './styles';
 import MapImages from './map-images';
 import MapPoint from './map-point';
+import MapRoute from './map-route';
+import MapUserLocationPuck from './map-user-location-puck';
+import { handleZoomToUserLocation } from '@/src/utils/maps';
+import { IMapViewProps } from './props';
 
-const MapView = ({ pickup, dropoff }) => {
+const MapView = ({ pickup, dropoff, route }: IMapViewProps) => {
   const [userLocation, setUserLocation] = useState<Coordinates | null>(null);
   const [isMapInitialized, setIsMapInitialized] = useState(false);
   const cameraRef = useRef<Mapbox.Camera>(null);
 
-  const handleZoomToUserLocation = () => {
-    if (userLocation) {
-      cameraRef.current?.setCamera({
-        centerCoordinate: [userLocation.longitude, userLocation.latitude],
-        zoomLevel: 12,
-        animationDuration: 2000
-      });
-    } else {
-      Alert.alert('Location Error', 'Unable to retrieve user location.');
-    }
-  };
-
   useEffect(() => {
     if (userLocation && !isMapInitialized) {
-      handleZoomToUserLocation();
+      handleZoomToUserLocation(userLocation, cameraRef);
       setIsMapInitialized(true);
     }
   }, [userLocation]);
+
+  const onPressMyLocation = () => {
+    handleZoomToUserLocation(userLocation, cameraRef);
+  };
 
   const onUserLocationUpdate = (location: Mapbox.Location) => {
     const userLocation = location.coords;
@@ -47,16 +43,7 @@ const MapView = ({ pickup, dropoff }) => {
         <Mapbox.Camera ref={cameraRef} />
         <Mapbox.UserLocation onUpdate={onUserLocationUpdate} />
         <MapImages />
-        <Mapbox.LocationPuck
-          visible
-          topImage="me"
-          puckBearingEnabled
-          pulsing={{
-            isEnabled: true,
-            color: '#CCCCCC',
-            radius: 50.0
-          }}
-        />
+        <MapUserLocationPuck />
 
         {pickup && (
           <MapPoint
@@ -74,12 +61,10 @@ const MapView = ({ pickup, dropoff }) => {
             title={'Dropoff'}
           />
         )}
+        {route && <MapRoute route={route} />}
       </Mapbox.MapView>
 
-      <TouchableOpacity
-        style={styles.button}
-        onPress={handleZoomToUserLocation}
-      >
+      <TouchableOpacity style={styles.button} onPress={onPressMyLocation}>
         <Ionicons name="locate" size={24} color="white" />
       </TouchableOpacity>
     </>

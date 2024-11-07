@@ -1,6 +1,7 @@
 import Mapbox from '@rnmapbox/maps';
+import { IMapPointProps } from './props';
 
-const MapPoint = ({ coordinates, iconImage, pointId, title }) => {
+const MapPoint = ({ coordinates, iconImage, pointId, title }: IMapPointProps) => {
   const shapeId = `${pointId}Source`;
   const symbolId = `${pointId}Symbol`;
 

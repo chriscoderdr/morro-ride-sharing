@@ -18,6 +18,8 @@
       "apps/*"
     ],
     "nohoist": [
+      "**/@mapbox/mapbox-sdk/",
+      "**/@mapbox/mapbox-sdk/services/direction",
       "**/@mapbox/",
       "**/@mapbox/**",
       "**/react-native-morro-taxi-rn-components",
