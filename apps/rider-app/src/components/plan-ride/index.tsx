@@ -1,4 +1,4 @@
-import { Alert, FlatList, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Text, View } from 'react-native';
 import { SearchBox } from '../search-box';
 import { useEffect, useRef, useState } from 'react';
 import { RoundedButton } from 'react-native-morro-taxi-rn-components';
@@ -12,17 +12,7 @@ import {
 } from '@mapbox/search-js-core';
 import config from '@/src/config';
 import { useCreateRideRequestRideMutation } from '@/src/store/slices/api-slice';
-
-const PlaceItem = ({ item, onPress }) => {
-  return (
-    <TouchableOpacity onPress={() => onPress(item)}>
-      <View style={{ paddingHorizontal: 14, paddingVertical: 8 }}>
-        <Text>{item.name}</Text>
-        <Text>{item.place_formatted}</Text>
-      </View>
-    </TouchableOpacity>
-  );
-};
+import PlaceList from '../place-list';
 
 export const PlanRide = () => {
   const searchSessionTokenRef = useRef<SessionToken | null>(null);
@@ -53,26 +43,30 @@ export const PlanRide = () => {
   };
 
   const handlePlanRide = async () => {
-    console.log('Plan ride');
-    const pickupCoordinates = await retrieveSuggestionCoordinates(
-      selectedPickup
-    );
-    const dropoffCoordinates = await retrieveSuggestionCoordinates(
-      selectedDropoff
-    );
-    const response = await createRideRequest({
-      pickupLocation: {
-        address: selectedPickup.name,
-        latitude: pickupCoordinates.features[0].geometry.coordinates[1],
-        longitude: pickupCoordinates.features[0].geometry.coordinates[0]
-      },
-      dropOffLocation: {
-        address: selectedDropoff.name,
-        latitude: dropoffCoordinates.features[0].geometry.coordinates[1],
-        longitude: dropoffCoordinates.features[0].geometry.coordinates[0]
-      }
-    });
-    Alert.alert('Ride Request', response.data.message);
+    try {
+      const pickupCoordinates = await retrieveSuggestionCoordinates(
+        selectedPickup
+      );
+      const dropoffCoordinates = await retrieveSuggestionCoordinates(
+        selectedDropoff
+      );
+
+      const response = await createRideRequest({
+        pickupLocation: {
+          address: selectedPickup.name,
+          latitude: pickupCoordinates.features[0].geometry.coordinates[1],
+          longitude: pickupCoordinates.features[0].geometry.coordinates[0]
+        },
+        dropOffLocation: {
+          address: selectedDropoff.name,
+          latitude: dropoffCoordinates.features[0].geometry.coordinates[1],
+          longitude: dropoffCoordinates.features[0].geometry.coordinates[0]
+        }
+      });
+      Alert.alert('Ride Request', response.data.message);
+    } catch (error) {
+      Alert.alert('Ride Request Error', error.message);
+    }
   };
 
   const retrieveSuggestionCoordinates = async (place: SearchBoxSuggestion) => {
@@ -88,7 +82,6 @@ export const PlanRide = () => {
   };
 
   useEffect(() => {
-    console.log(userLocation?.location);
     if (userLocation?.location) {
       userLocation.stopLocationUpdates();
       const fetchData = async () => {
@@ -105,7 +98,6 @@ export const PlanRide = () => {
       accessToken: config.MAPBOX_ACCESS_TOKEN
     });
     const result = await geocoding.reverse(location);
-    console.log(result.features[0].properties.context.country);
     return result;
   };
 
@@ -138,39 +130,24 @@ export const PlanRide = () => {
         <View>
           <Text>From: {selectedPickup.name}</Text>
           <Text>To: {selectedDropoff.name}</Text>
-          <RoundedButton text={'Plan Ride'} onPress={handlePlanRide} />
+          <RoundedButton
+            text={isLoading ? 'Planning Ride' : 'Plan Ride'}
+            onPress={handlePlanRide}
+          />
         </View>
       )}
 
       <View style={{ marginTop: 30 }} />
       {pickupSuggestions && focus === 'pickup' && (
-        <FlatList
-          data={pickupSuggestions}
-          ItemSeparatorComponent={() => (
-            <View style={{ height: 1, backgroundColor: '#000000' }} />
-          )}
-          renderItem={({ item }) => (
-            <PlaceItem
-              item={item}
-              key={item.mapbox_id}
-              onPress={handlePickupPlaceItemPress}
-            />
-          )}
+        <PlaceList
+          sugestions={pickupSuggestions}
+          onItemPress={handlePickupPlaceItemPress}
         />
       )}
       {dropoffSuggestions && focus === 'drop-off' && (
-        <FlatList
-          data={dropoffSuggestions}
-          ItemSeparatorComponent={() => (
-            <View style={{ height: 1, backgroundColor: '#000000' }} />
-          )}
-          renderItem={({ item }) => (
-            <PlaceItem
-              item={item}
-              key={item.mapbox_id}
-              onPress={handleDropOffPlaceItemPress}
-            />
-          )}
+        <PlaceList
+          sugestions={dropoffSuggestions}
+          onItemPress={handleDropOffPlaceItemPress}
         />
       )}
     </View>

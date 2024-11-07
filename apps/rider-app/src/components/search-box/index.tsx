@@ -61,10 +61,7 @@ export const SearchBox = forwardRef<TextInput, ISearchBoxProps>(
         radius: latlng ? 0.1 : undefined,
         country: countryCode
       });
-      console.log(`country code: ${countryCode}`);
-      console.log(`proximity: ${latlng.lng}, ${latlng.lat}`);
       onSuggestions(result.suggestions);
-      console.log(`Search result: ${JSON.stringify(result)}`);
     };
 
     useEffect(() => {
@@ -76,10 +73,6 @@ export const SearchBox = forwardRef<TextInput, ISearchBoxProps>(
     const handleSearchQueryChange = (text: string) => {
       setSearchQuery(text);
     };
-
-    useEffect(() => {
-      console.log(searchQuery);
-    }, [searchQuery]);
 
     return (
       <View>

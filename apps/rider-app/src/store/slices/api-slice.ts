@@ -12,8 +12,6 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 const API_BASE_URL = config.MORRO_API_BASE_URL;
 
-console.log(`API_BASE_URL: ${API_BASE_URL}`);
-
 export const apiSlice = createApi({
   reducerPath: 'api',
   baseQuery: fetchBaseQuery({
@@ -66,4 +64,8 @@ export const apiSlice = createApi({
   })
 });
 
-export const { useRegisterUserMutation, useLoginUserMutation, useCreateRideRequestRideMutation } = apiSlice;
+export const {
+  useRegisterUserMutation,
+  useLoginUserMutation,
+  useCreateRideRequestRideMutation
+} = apiSlice;

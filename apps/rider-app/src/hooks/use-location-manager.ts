@@ -55,8 +55,6 @@ const useLocationManager = (isBackground = false, interval = 3000) => {
         userLocation.coords.longitude,
         userLocation.coords.latitude
       ];
-      console.log('TESTING H ERE', coords);
-      console.log(`isstopped: ${isStopped}`);
       setLocation(coords);
       return coords;
     }
@@ -78,7 +76,6 @@ const useLocationManager = (isBackground = false, interval = 3000) => {
 
   const stopLocationUpdates = async (taskName: string = 'location-updates') => {
     try {
-      console.log(`Stopped location updates for task: ${taskName}`);
       setIsStopped(true);
       clearInterval(locationIntervalRef.current);
       await Location.stopLocationUpdatesAsync(taskName);

@@ -161,8 +161,8 @@ class MQTTClientService {
     store.dispatch(
       setRideRequestWithTimeout({
         createdAt: Date.now(),
-        riderName: '',
-        riderPhone: '',
+        riderName: rideRequest.riderName,
+        riderPhone: rideRequest.riderPhone,
         rideRequestId: rideRequest.rideRequestId,
         estimatedPrice: rideRequest.estimatedPrice,
         pickupTimeDistance: rideRequest.pickupTimeDistance,
