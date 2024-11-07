@@ -1,9 +1,15 @@
 import { FlatList, Text, TouchableOpacity, View } from 'react-native';
 import { SearchBox } from '../search-box';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { RoundedButton } from 'react-native-morro-taxi-rn-components';
 import useLocationManager from '@/src/hooks/use-location-manager';
-import { GeocodingCore, GeocodingResponse } from '@mapbox/search-js-core';
+import {
+  GeocodingCore,
+  GeocodingResponse,
+  SearchBoxCore,
+  SearchBoxSuggestion,
+  SessionToken
+} from '@mapbox/search-js-core';
 import config from '@/src/config';
 
 const PlaceItem = ({ item, onPress }) => {
@@ -18,6 +24,7 @@ const PlaceItem = ({ item, onPress }) => {
 };
 
 export const PlanRide = () => {
+  const searchSessionTokenRef = useRef<SessionToken | null>(null);
   const [pickupSuggestions, setPickupSuggestions] = useState([]);
   const [dropoffSuggestions, setDropoffSuggestions] = useState([]);
   const [focus, setFocus] = useState('drop-off');
@@ -27,24 +34,47 @@ export const PlanRide = () => {
   const [userCurrentLocationInfo, setUserCurrentLocationInfo] =
     useState<GeocodingResponse>(null);
 
-  const handleOnPickupSuggestions = (suggestions) => {
+  const handleOnPickupSuggestions = (suggestions: SearchBoxSuggestion[]) => {
     setPickupSuggestions(suggestions);
   };
 
-  const handleDropoffSuggestions = (suggestions) => {
+  const handleDropoffSuggestions = (suggestions: SearchBoxSuggestion[]) => {
     setDropoffSuggestions(suggestions);
   };
 
-  const handleDropOffPlaceItemPress = (item) => {
+  const handleDropOffPlaceItemPress = (item: SearchBoxSuggestion) => {
     setSelectedPickup(item);
   };
 
-  const handlePickupPlaceItemPress = (item) => {
+  const handlePickupPlaceItemPress = (item: SearchBoxSuggestion) => {
     setSelectedDropoff(item);
   };
 
-  const handlePlanRide = () => {
+  const handlePlanRide = async () => {
     console.log('Plan ride');
+    const pickupCoordinates = await retrieveSuggestionCoordinates(
+      selectedPickup
+    );
+    const dropoffCoordinates = await retrieveSuggestionCoordinates(
+      selectedDropoff
+    );
+    console.log(
+      `Pickup: ${JSON.stringify(pickupCoordinates)} | Dropoff: ${JSON.stringify(
+        dropoffCoordinates
+      )}`
+    );
+  };
+
+  const retrieveSuggestionCoordinates = async (place: SearchBoxSuggestion) => {
+    if (!searchSessionTokenRef || searchSessionTokenRef.current === null) {
+      return;
+    }
+    const search = new SearchBoxCore({
+      accessToken: config.MAPBOX_ACCESS_TOKEN
+    });
+    return search.retrieve(place, {
+      sessionToken: searchSessionTokenRef.current
+    });
   };
 
   useEffect(() => {
@@ -69,6 +99,13 @@ export const PlanRide = () => {
     return result;
   };
 
+  useEffect(() => {
+    if (searchSessionTokenRef.current === null) {
+      searchSessionTokenRef.current = new SessionToken();
+      console.log('Search session token', searchSessionTokenRef.current);
+    }
+  }, []);
+
   return (
     <View style={{ flex: 1, paddingHorizontal: 20 }}>
       <SearchBox
@@ -76,6 +113,7 @@ export const PlanRide = () => {
         onSuggestions={handleOnPickupSuggestions}
         onFocus={() => setFocus('pickup')}
         userCurrentLocationInfo={userCurrentLocationInfo}
+        sessionRef={searchSessionTokenRef}
       />
       <View style={{ marginTop: 30 }} />
       <SearchBox
@@ -83,6 +121,7 @@ export const PlanRide = () => {
         onSuggestions={handleDropoffSuggestions}
         onFocus={() => setFocus('drop-off')}
         userCurrentLocationInfo={userCurrentLocationInfo}
+        sessionRef={searchSessionTokenRef}
       />
       <View style={{ marginTop: 30 }} />
       {selectedPickup && selectedDropoff && (

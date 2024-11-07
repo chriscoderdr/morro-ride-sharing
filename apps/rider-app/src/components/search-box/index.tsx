@@ -1,29 +1,42 @@
-import { forwardRef, useEffect, useState } from 'react';
+import { forwardRef, useEffect, useRef, useState } from 'react';
 import { TextInput, View } from 'react-native';
 import { InputText } from 'react-native-morro-taxi-rn-components';
 import {
   GeocodingResponse,
   SearchBoxCore,
+  SearchBoxSuggestion,
   SessionToken
 } from '@mapbox/search-js-core';
 import config from '@/src/config';
 
 interface ISearchBoxProps {
   placeholder: string;
-  onSuggestions: (suggestions: any) => void;
+  onSuggestions: (suggestions: SearchBoxSuggestion[]) => void;
   onFocus?: () => void;
   userCurrentLocationInfo?: GeocodingResponse;
+  sessionRef?: React.MutableRefObject<SessionToken | null>;
 }
 
 export const SearchBox = forwardRef<TextInput, ISearchBoxProps>(
-  ({ placeholder, onSuggestions, onFocus, userCurrentLocationInfo }, ref) => {
+  (
+    {
+      placeholder,
+      onSuggestions,
+      onFocus,
+      userCurrentLocationInfo,
+      sessionRef
+    },
+    ref
+  ) => {
     const [searchQuery, setSearchQuery] = useState('');
 
     const searchPlace = async (query: string) => {
+      if (!sessionRef || !sessionRef.current === null) {
+        return;
+      }
       const search = new SearchBoxCore({
         accessToken: config.MAPBOX_ACCESS_TOKEN
       });
-      const sessionToken = new SessionToken();
       let latlng;
       let countryCode;
       if (
@@ -43,7 +56,7 @@ export const SearchBox = forwardRef<TextInput, ISearchBoxProps>(
         ];
       }
       const result = await search.suggest(query, {
-        sessionToken,
+        sessionToken: sessionRef.current,
         proximity: latlng,
         radius: latlng ? 0.1 : undefined,
         country: countryCode
