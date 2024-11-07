@@ -13,6 +13,7 @@ import {
 import config from '@/src/config';
 import { useCreateRideRequestRideMutation } from '@/src/store/slices/api-slice';
 import PlaceList from '../place-list';
+import { styles } from './styles';
 
 export const PlanRide = () => {
   const searchSessionTokenRef = useRef<SessionToken | null>(null);
@@ -109,7 +110,7 @@ export const PlanRide = () => {
   }, []);
 
   return (
-    <View style={{ flex: 1, paddingHorizontal: 20 }}>
+    <View style={styles.container}>
       <SearchBox
         placeholder={'Current Location'}
         onSuggestions={handleOnPickupSuggestions}
@@ -117,7 +118,7 @@ export const PlanRide = () => {
         userCurrentLocationInfo={userCurrentLocationInfo}
         sessionRef={searchSessionTokenRef}
       />
-      <View style={{ marginTop: 30 }} />
+      <View style={styles.separator} />
       <SearchBox
         placeholder={'Where to?'}
         onSuggestions={handleDropoffSuggestions}
@@ -125,9 +126,9 @@ export const PlanRide = () => {
         userCurrentLocationInfo={userCurrentLocationInfo}
         sessionRef={searchSessionTokenRef}
       />
-      <View style={{ marginTop: 30 }} />
+
       {selectedPickup && selectedDropoff && (
-        <View>
+        <View style={styles.planRideContainer}>
           <Text>From: {selectedPickup.name}</Text>
           <Text>To: {selectedDropoff.name}</Text>
           <RoundedButton
@@ -137,7 +138,7 @@ export const PlanRide = () => {
         </View>
       )}
 
-      <View style={{ marginTop: 30 }} />
+      <View style={styles.listContainers} />
       {pickupSuggestions && focus === 'pickup' && (
         <PlaceList
           sugestions={pickupSuggestions}

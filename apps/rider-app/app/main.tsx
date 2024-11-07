@@ -1,3 +1,4 @@
+import ConfirmRideLocation from '@/src/components/confirm-ride-location';
 import { PlanRide } from '@/src/components/plan-ride';
 import { SearchBox } from '@/src/components/search-box';
 import Mapbox, { MapView } from '@rnmapbox/maps';
@@ -15,7 +16,9 @@ export default function Home() {
       <View style={{ flex: 1 }}>
         <PermissionBlocker>
           <KeyboardDismiss>
-            <PlanRide />
+            <View />
+            {/* <Mapbox.MapView style={{ flex: 1 }} /> */}
+            <ConfirmRideLocation />
           </KeyboardDismiss>
         </PermissionBlocker>
       </View>
