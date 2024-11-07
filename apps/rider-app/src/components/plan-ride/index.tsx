@@ -1,4 +1,4 @@
-import { FlatList, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, FlatList, Text, TouchableOpacity, View } from 'react-native';
 import { SearchBox } from '../search-box';
 import { useEffect, useRef, useState } from 'react';
 import { RoundedButton } from 'react-native-morro-taxi-rn-components';
@@ -11,6 +11,7 @@ import {
   SessionToken
 } from '@mapbox/search-js-core';
 import config from '@/src/config';
+import { useCreateRideRequestRideMutation } from '@/src/store/slices/api-slice';
 
 const PlaceItem = ({ item, onPress }) => {
   return (
@@ -33,6 +34,7 @@ export const PlanRide = () => {
   const userLocation = useLocationManager();
   const [userCurrentLocationInfo, setUserCurrentLocationInfo] =
     useState<GeocodingResponse>(null);
+  const [createRideRequest, { isLoading }] = useCreateRideRequestRideMutation();
 
   const handleOnPickupSuggestions = (suggestions: SearchBoxSuggestion[]) => {
     setPickupSuggestions(suggestions);
@@ -43,11 +45,11 @@ export const PlanRide = () => {
   };
 
   const handleDropOffPlaceItemPress = (item: SearchBoxSuggestion) => {
-    setSelectedPickup(item);
+    setSelectedDropoff(item);
   };
 
   const handlePickupPlaceItemPress = (item: SearchBoxSuggestion) => {
-    setSelectedDropoff(item);
+    setSelectedPickup(item);
   };
 
   const handlePlanRide = async () => {
@@ -58,11 +60,19 @@ export const PlanRide = () => {
     const dropoffCoordinates = await retrieveSuggestionCoordinates(
       selectedDropoff
     );
-    console.log(
-      `Pickup: ${JSON.stringify(pickupCoordinates)} | Dropoff: ${JSON.stringify(
-        dropoffCoordinates
-      )}`
-    );
+    const response = await createRideRequest({
+      pickupLocation: {
+        address: selectedPickup.name,
+        latitude: pickupCoordinates.features[0].geometry.coordinates[1],
+        longitude: pickupCoordinates.features[0].geometry.coordinates[0]
+      },
+      dropOffLocation: {
+        address: selectedDropoff.name,
+        latitude: dropoffCoordinates.features[0].geometry.coordinates[1],
+        longitude: dropoffCoordinates.features[0].geometry.coordinates[0]
+      }
+    });
+    Alert.alert('Ride Request', response.data.message);
   };
 
   const retrieveSuggestionCoordinates = async (place: SearchBoxSuggestion) => {
