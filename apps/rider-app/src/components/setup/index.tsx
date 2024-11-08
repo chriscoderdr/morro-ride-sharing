@@ -36,7 +36,8 @@ export const Setup = () => {
     <Stack>
       <Stack.Screen name="login" options={{ headerShown: false }} />
       <Stack.Screen name="signup" options={{ headerShown: false }} />
-      <Stack.Screen name="main" options={{ headerShown: false }} />
+      <Stack.Screen name="main" options={{ headerShown: false, title: 'Hola' }} />
+      <Stack.Screen name="confirm-ride" options={{ title: 'Plan Ride' }} />
     </Stack>
   );
 };

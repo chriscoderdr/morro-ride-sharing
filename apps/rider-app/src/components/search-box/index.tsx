@@ -67,6 +67,8 @@ export const SearchBox = forwardRef<TextInput, ISearchBoxProps>(
     useEffect(() => {
       if (searchQuery.length > 3) {
         searchPlace(searchQuery);
+      } else if (searchQuery.length == 0) {
+        onSuggestions([]);
       }
     }, [searchQuery]);
 

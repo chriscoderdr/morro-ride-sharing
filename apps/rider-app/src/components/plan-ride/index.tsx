@@ -40,18 +40,21 @@ export const PlanRide = () => {
 
   const handleOnPickupSuggestions = (suggestions: SearchBoxSuggestion[]) => {
     setPickupSuggestions(suggestions);
+    if (suggestions.length === 0) {
+      setSelectedPickup(null);
+    }
   };
 
   const handleDropoffSuggestions = (suggestions: SearchBoxSuggestion[]) => {
     setDropoffSuggestions(suggestions);
+    if (suggestions.length === 0) {
+      setSelectedDropoff(null);
+    }
   };
 
   const handleDropOffPlaceItemPress = (item: SearchBoxSuggestion) => {
     setSelectedDropoff(item);
     searchDropOffRef.current?.setNativeProps({ text: item.name });
-    if (selectedPickup || userCurrentLocationInfo) {
-      handlePlanRide();
-    }
   };
 
   const handlePickupPlaceItemPress = (item: SearchBoxSuggestion) => {
@@ -67,6 +70,9 @@ export const PlanRide = () => {
       let pickup: Place = null;
 
       if (selectedPickup) {
+        console.log(
+          `retrieving coordinates for selected pickup: ${selectedPickup}`
+        );
         const pickupCoordinates =
           await retrieveSuggestionCoordinates(selectedPickup);
         pickup = {
@@ -155,6 +161,12 @@ export const PlanRide = () => {
       console.log('Search session token', searchSessionTokenRef.current);
     }
   }, []);
+
+  useEffect(() => {
+    if (selectedDropoff && searchDropOffRef.current?.isFocused()) {
+      handlePlanRide();
+    }
+  }, [selectedDropoff, selectedPickup]);
 
   return (
     <View style={styles.container}>
