@@ -1,4 +1,4 @@
-import { Alert, Text, View } from 'react-native';
+import { Alert, Text, TextInput, View } from 'react-native';
 import { SearchBox } from '../search-box';
 import { useEffect, useRef, useState } from 'react';
 import { RoundedButton } from 'react-native-morro-taxi-rn-components';
@@ -15,10 +15,16 @@ import { useCreateRideRequestRideMutation } from '@/src/store/slices/api-slice';
 import PlaceList from '../place-list';
 import { styles } from './styles';
 import { useAppDispatch } from '@/src/hooks/use-app-dispatch';
-import { setRidePickup, setRidePlaces } from '@/src/store/slices/ride-slice';
+import {
+  Place,
+  setRidePickup,
+  setRidePlaces
+} from '@/src/store/slices/ride-slice';
 import { useRouter } from 'expo-router';
 
 export const PlanRide = () => {
+  const searchPickupRef = useRef<TextInput | null>(null);
+  const searchDropOffRef = useRef<TextInput | null>(null);
   const searchSessionTokenRef = useRef<SessionToken | null>(null);
   const router = useRouter();
   const dispatch = useAppDispatch();
@@ -42,31 +48,48 @@ export const PlanRide = () => {
 
   const handleDropOffPlaceItemPress = (item: SearchBoxSuggestion) => {
     setSelectedDropoff(item);
+    searchDropOffRef.current?.setNativeProps({ text: item.name });
+    if (selectedPickup || userCurrentLocationInfo) {
+      handlePlanRide();
+    }
   };
 
   const handlePickupPlaceItemPress = (item: SearchBoxSuggestion) => {
     setSelectedPickup(item);
+    searchPickupRef.current?.setNativeProps({ text: item.name });
+    searchDropOffRef.current?.focus();
   };
 
   const handlePlanRide = async () => {
     try {
-      const pickupCoordinates = await retrieveSuggestionCoordinates(
-        selectedPickup
-      );
-      const dropoffCoordinates = await retrieveSuggestionCoordinates(
-        selectedDropoff
-      );
+      const dropoffCoordinates =
+        await retrieveSuggestionCoordinates(selectedDropoff);
+      let pickup: Place = null;
+
+      if (selectedPickup) {
+        const pickupCoordinates =
+          await retrieveSuggestionCoordinates(selectedPickup);
+        pickup = {
+          address: selectedPickup.name,
+          coordinates: [
+            pickupCoordinates.features[0].geometry.coordinates[0],
+            pickupCoordinates.features[0].geometry.coordinates[1]
+          ]
+        };
+      } else {
+        pickup = {
+          address: 'Current Location',
+          coordinates: [
+            userCurrentLocationInfo.features[0].geometry.coordinates[0],
+            userCurrentLocationInfo.features[0].geometry.coordinates[1]
+          ]
+        };
+      }
       dispatch(
         setRidePlaces({
-          pickup: {
-            address: selectedPickup.name,
-            coordinates: [
-              pickupCoordinates.features[0].geometry.coordinates[0],
-              pickupCoordinates.features[0].geometry.coordinates[1]
-            ]
-          },
+          pickup: pickup,
           dropoff: {
-            address: selectedPickup.name,
+            address: pickup.address,
             coordinates: [
               dropoffCoordinates.features[0].geometry.coordinates[0],
               dropoffCoordinates.features[0].geometry.coordinates[1]
@@ -75,19 +98,19 @@ export const PlanRide = () => {
         })
       );
 
-      const response = await createRideRequest({
-        pickupLocation: {
-          address: selectedPickup.name,
-          latitude: pickupCoordinates.features[0].geometry.coordinates[1],
-          longitude: pickupCoordinates.features[0].geometry.coordinates[0]
-        },
-        dropOffLocation: {
-          address: selectedDropoff.name,
-          latitude: dropoffCoordinates.features[0].geometry.coordinates[1],
-          longitude: dropoffCoordinates.features[0].geometry.coordinates[0]
-        }
-      });
-      Alert.alert('Ride Request', response.data.message);
+      // const response = await createRideRequest({
+      //   pickupLocation: {
+      //     address: selectedPickup.name,
+      //     latitude: pickupCoordinates.features[0].geometry.coordinates[1],
+      //     longitude: pickupCoordinates.features[0].geometry.coordinates[0]
+      //   },
+      //   dropOffLocation: {
+      //     address: selectedDropoff.name,
+      //     latitude: dropoffCoordinates.features[0].geometry.coordinates[1],
+      //     longitude: dropoffCoordinates.features[0].geometry.coordinates[0]
+      //   }
+      // });
+      // Alert.alert('Ride Request', response.data.message);
       router.navigate('/confirm-ride');
     } catch (error) {
       Alert.alert('Ride Request Error', error.message);
@@ -141,6 +164,7 @@ export const PlanRide = () => {
         onFocus={() => setFocus('pickup')}
         userCurrentLocationInfo={userCurrentLocationInfo}
         sessionRef={searchSessionTokenRef}
+        ref={searchPickupRef}
       />
       <View style={styles.separator} />
       <SearchBox
@@ -149,18 +173,8 @@ export const PlanRide = () => {
         onFocus={() => setFocus('drop-off')}
         userCurrentLocationInfo={userCurrentLocationInfo}
         sessionRef={searchSessionTokenRef}
+        ref={searchDropOffRef}
       />
-
-      {selectedPickup && selectedDropoff && (
-        <View style={styles.planRideContainer}>
-          <Text>From: {selectedPickup.name}</Text>
-          <Text>To: {selectedDropoff.name}</Text>
-          <RoundedButton
-            text={isLoading ? 'Planning Ride' : 'Plan Ride'}
-            onPress={handlePlanRide}
-          />
-        </View>
-      )}
 
       <View style={styles.listContainers} />
       {pickupSuggestions && focus === 'pickup' && (

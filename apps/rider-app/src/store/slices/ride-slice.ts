@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '@/src/store';
 
-interface Place {
+export interface Place {
   address: string;
   coordinates: [number, number];
 }
