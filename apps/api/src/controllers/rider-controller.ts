@@ -9,6 +9,9 @@ import {
   generateRefreshToken
 } from '../utils/token-utils';
 import mapService from '@/services/map-service';
+import priceCalculator from '@/utils/price-calculator';
+import formatter from '@/utils/formatter';
+import { findNearbyDrivers } from '@/utils/nearby-drivers';
 
 interface RegisterRiderRequestBody {
   name: string;
@@ -38,8 +41,8 @@ interface NearbyDriver {
 }
 
 interface PickupDropOff {
-  time: number;
-  distance: number;
+  time: string;
+  distance: string;
 }
 
 interface EstimateRideRequestResponse {
@@ -196,43 +199,99 @@ export const login = async (ctx: Context) => {
 };
 
 export const estimateRide = async (ctx: Context) => {
-  const { pickupLocation, dropOffLocation } = ctx.request
-    .body as CreateRideRequestBody;
+  try {
+    const { pickupLocation, dropOffLocation } = ctx.request
+      .body as CreateRideRequestBody;
 
-  if (!pickupLocation || !dropOffLocation) {
-    ctx.status = 400;
-    ctx.body = {
-      error:
-        'Pickup location and drop-off location are required for a ride request.'
+    if (!pickupLocation || !dropOffLocation) {
+      ctx.status = 400;
+      ctx.body = {
+        error:
+          'Pickup location and drop-off location are required for a ride request.'
+      };
+      return;
+    }
+
+    if (
+      pickupLocation.latitude === dropOffLocation.latitude &&
+      pickupLocation.longitude === dropOffLocation.longitude
+    ) {
+      ctx.status = 400;
+      ctx.body = {
+        error: 'Pickup and drop-off locations cannot be the same.'
+      };
+      return;
+    }
+
+    const pickupToDropOffRoute = await mapService.getRoute([
+      [pickupLocation.longitude, pickupLocation.latitude],
+      [dropOffLocation.longitude, dropOffLocation.latitude]
+    ]);
+
+    const nearbyDrivers = (
+      await findNearbyDrivers(
+        pickupLocation.longitude,
+        pickupLocation.latitude,
+        5000
+      )
+    ).map((driver) => ({
+      location: {
+        latitude: driver.location?.coordinates[1],
+        longitude: driver.location?.coordinates[0]
+      }
+    }));
+
+    if (nearbyDrivers.length === 0) {
+      ctx.status = 404;
+      ctx.body = { error: 'No drivers available near the pickup location.' };
+      logger.info('No drivers available near the pickup location.');
+      return;
+    }
+
+    logger.info(
+      `Found ${nearbyDrivers.length} drivers near the pickup location.`
+    );
+    const nearestDriver = nearbyDrivers[0];
+
+    const nearestDriverToPickupRoute = await mapService.getRoute([
+      [nearestDriver.location.longitude!, nearestDriver.location.latitude!],
+      [pickupLocation.longitude, pickupLocation.latitude]
+    ]);
+
+    const pickupEstimate = {
+      time: formatter.formatTime(nearestDriverToPickupRoute.duration),
+      distance: formatter.formatDistance(nearestDriverToPickupRoute.distance)
     };
-    return;
+
+    const nearbyDriversMapped = nearbyDrivers.map((driver) => ({
+      location: {
+        latitude: driver.location.latitude!,
+        longitude: driver.location.longitude!
+      }
+    }));
+
+    const response: EstimateRideRequestResponse = {
+      estimatePrice: priceCalculator.calculateRidePrice(
+        pickupToDropOffRoute.distance
+      ),
+
+      nearbyDrivers: nearbyDriversMapped,
+      pickup: pickupEstimate,
+      dropOff: {
+        time: formatter.formatTime(pickupToDropOffRoute.duration),
+        distance: formatter.formatDistance(pickupToDropOffRoute.distance)
+      }
+    };
+
+    ctx.status = 200;
+    ctx.body = response;
+
+    logger.info(
+      `Estimated ride details: Price - ${response.estimatePrice}, Pickup Time - ${pickupEstimate.time}, Drop-off Distance - ${response.dropOff.distance}`
+    );
+  } catch (error: any) {
+    logger.error(`Failed to estimate ride: ${error.message}`);
+    ctx.status = 500;
+    ctx.body = { error: 'Internal server error while estimating ride.' };
   }
-
-  const pickupToDropOffRoute = await mapService.getRoute([
-    [pickupLocation.latitude, pickupLocation.longitude],
-    [dropOffLocation.latitude, dropOffLocation.longitude]
-  ]);
-
-  ctx.status = 200;
-  ctx.body = pickupToDropOffRoute;
-
-  // const response: EstimateRideRequestResponse = {
-  //   estimatePrice: 100,
-  //   nearbyDrivers: [
-  //     { location: { latitude: 14.6, longitude: 120.985 } },
-  //     { location: { latitude: 14.602, longitude: 120.987 } }
-  //   ],
-  //   pickup: {
-  //     time: 5,
-  //     distance: 2
-  //   },
-  //   dropOff: {
-  //     time: 10,
-  //     distance: 5
-  //   }
-  // };
-
-  // ctx.status = 200;
-
-  // ctx.body = response;
 };
