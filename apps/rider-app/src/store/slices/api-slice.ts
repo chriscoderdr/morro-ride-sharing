@@ -4,7 +4,8 @@ import {
   LoginResponse,
   RegisterResponse,
   CreateRideRequestResponse,
-  CreateRideRequestData
+  CreateRideRequestData,
+  RideEstimate
 } from '@/src/api/models';
 import config from '@/src/config';
 import { RootState } from '@/src/store';
@@ -60,6 +61,17 @@ export const apiSlice = createApi({
           cacheBusting: Date.now()
         }
       })
+    }),
+    estimateRide: builder.mutation<RideEstimate, CreateRideRequestData>({
+      query: (data) => ({
+        url: '/riders/estimateRide',
+        method: 'POST',
+        body: data,
+        cache: 'no-cache',
+        params: {
+          cacheBusting: Date.now()
+        }
+      })
     })
   })
 });
@@ -67,5 +79,6 @@ export const apiSlice = createApi({
 export const {
   useRegisterUserMutation,
   useLoginUserMutation,
-  useCreateRideRequestRideMutation
+  useCreateRideRequestRideMutation,
+  useEstimateRideMutation
 } = apiSlice;

@@ -44,6 +44,19 @@ export interface CreateRideRequestData {
   dropOffLocation: Location;
 }
 
+export interface RideEstimate {
+  estimatedPrice: string;
+  nearbyDrivers: any[];
+  pickup: {
+    distance: string;
+    time: string;
+  };
+  dropOff: {
+    distance: string;
+    time: string;
+  };
+}
+
 interface Location {
   latitude: number;
   longitude: number;

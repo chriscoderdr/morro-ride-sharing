@@ -103,23 +103,9 @@ export const PlanRide = () => {
           }
         })
       );
-
-      // const response = await createRideRequest({
-      //   pickupLocation: {
-      //     address: selectedPickup.name,
-      //     latitude: pickupCoordinates.features[0].geometry.coordinates[1],
-      //     longitude: pickupCoordinates.features[0].geometry.coordinates[0]
-      //   },
-      //   dropOffLocation: {
-      //     address: selectedDropoff.name,
-      //     latitude: dropoffCoordinates.features[0].geometry.coordinates[1],
-      //     longitude: dropoffCoordinates.features[0].geometry.coordinates[0]
-      //   }
-      // });
-      // Alert.alert('Ride Request', response.data.message);
       router.navigate('/confirm-ride');
     } catch (error) {
-      Alert.alert('Ride Request Error', error.message);
+      Alert.alert('Error', error.message);
     }
   };
 
@@ -163,7 +149,11 @@ export const PlanRide = () => {
   }, []);
 
   useEffect(() => {
-    if (selectedDropoff && searchDropOffRef.current?.isFocused()) {
+    if (
+      selectedDropoff &&
+      (searchDropOffRef.current?.isFocused() ||
+        !searchPickupRef.current?.isFocused())
+    ) {
       handlePlanRide();
     }
   }, [selectedDropoff, selectedPickup]);

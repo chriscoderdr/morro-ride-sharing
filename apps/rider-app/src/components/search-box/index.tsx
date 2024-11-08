@@ -83,6 +83,9 @@ export const SearchBox = forwardRef<TextInput, ISearchBoxProps>(
           onChangeText={handleSearchQueryChange}
           ref={ref}
           onFocus={onFocus}
+          autoComplete="off"
+          autoCorrect={false}
+          autoCapitalize="none"
         />
       </View>
     );

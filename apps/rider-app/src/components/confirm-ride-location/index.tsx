@@ -6,13 +6,20 @@ import {
   selectCurrentPickup
 } from '@/src/store/slices/ride-slice';
 import { useSelector } from 'react-redux';
-import RideSelection from '../ride-selection';
-import { View } from 'react-native';
+import RideConfirmationCard from '../ride-selection';
+import { Alert, View } from 'react-native';
+import {
+  useCreateRideRequestRideMutation,
+  useEstimateRideMutation
+} from '@/src/store/slices/api-slice';
 
 const ConfirmRideLocation = () => {
   const { route, loading, error, fetchRoute } = useRoute();
   const currentDropoff = useSelector(selectCurrentDropOff);
   const currentPickup = useSelector(selectCurrentPickup);
+  const [createRideRequest, { isLoading }] = useCreateRideRequestRideMutation();
+  const [estimateRide, { isLoading: isLoadingEstimate, data }] =
+    useEstimateRideMutation();
 
   const onInit = () => {
     if (!currentPickup || !currentDropoff) {
@@ -29,11 +36,52 @@ const ConfirmRideLocation = () => {
       }
     ];
     fetchRoute(coordinates);
+    loadRideEstimate().then();
   };
 
   useEffect(() => {
     onInit();
   }, [currentDropoff, currentPickup]);
+
+  const loadRideEstimate = async () => {
+    try {
+      const response = await estimateRide({
+        pickupLocation: {
+          address: currentPickup.address,
+          latitude: currentPickup.coordinates[1],
+          longitude: currentPickup.coordinates[0]
+        },
+        dropOffLocation: {
+          address: currentDropoff.address,
+          latitude: currentDropoff.coordinates[1],
+          longitude: currentDropoff.coordinates[0]
+        }
+      });
+      console.log(response);
+    } catch (error) {
+      Alert.alert('Error', error.message);
+    }
+  };
+
+  const onConfirmLocation = async () => {
+    try {
+      const response = await createRideRequest({
+        pickupLocation: {
+          address: currentPickup.address,
+          latitude: currentPickup.coordinates[1],
+          longitude: currentPickup.coordinates[0]
+        },
+        dropOffLocation: {
+          address: currentDropoff.address,
+          latitude: currentDropoff.coordinates[1],
+          longitude: currentDropoff.coordinates[0]
+        }
+      });
+      Alert.alert('Ride Request', response.data.message);
+    } catch (error) {
+      Alert.alert('Error', error.message);
+    }
+  };
 
   return (
     <View style={{ flex: 1 }}>
@@ -57,7 +105,12 @@ const ConfirmRideLocation = () => {
           justifyContent: 'flex-end'
         }}
       >
-        <RideSelection />
+        {data && (
+          <RideConfirmationCard
+            onPressButton={onConfirmLocation}
+            estimateInfo={data}
+          />
+        )}
       </View>
     </View>
   );
