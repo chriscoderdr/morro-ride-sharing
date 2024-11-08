@@ -2,15 +2,17 @@ import {
   RiderData,
   LoginData,
   LoginResponse,
-  RegisterResponse
+  RegisterResponse,
+  CreateRideRequestResponse,
+  CreateRideRequestData,
+  RideEstimate,
+  RideRequest
 } from '@/src/api/models';
 import config from '@/src/config';
 import { RootState } from '@/src/store';
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 const API_BASE_URL = config.MORRO_API_BASE_URL;
-
-console.log(`API_BASE_URL: ${API_BASE_URL}`);
 
 export const apiSlice = createApi({
   reducerPath: 'api',
@@ -32,19 +34,64 @@ export const apiSlice = createApi({
         body: data,
         cache: 'no-cache',
         params: {
-          'cacheBusting': Date.now()
+          cacheBusting: Date.now()
         }
-      }),
+      })
     }),
     loginUser: builder.mutation<LoginResponse, LoginData>({
       query: (data) => ({
         url: '/riders/login',
         method: 'POST',
         body: data,
-        cache: 'no-cache'
+        cache: 'no-cache',
+        params: {
+          cacheBusting: Date.now()
+        }
+      })
+    }),
+    createRideRequestRide: builder.mutation<
+      CreateRideRequestResponse,
+      CreateRideRequestData
+    >({
+      query: (data) => ({
+        url: '/riders/createRideRequest',
+        method: 'POST',
+        body: data,
+        cache: 'no-cache',
+        params: {
+          cacheBusting: Date.now()
+        }
+      })
+    }),
+    estimateRide: builder.mutation<RideEstimate, CreateRideRequestData>({
+      query: (data) => ({
+        url: '/riders/estimateRide',
+        method: 'POST',
+        body: data,
+        cache: 'no-cache',
+        params: {
+          cacheBusting: Date.now()
+        }
+      })
+    }),
+    currentRideRequest: builder.query<RideRequest, any>({
+      query: (data) => ({
+        url: '/riders/currentRide',
+        method: 'GET',
+        cache: 'no-cache',
+        params: {
+          cacheBusting: Date.now()
+        }
       })
     })
   })
 });
 
-export const { useRegisterUserMutation, useLoginUserMutation } = apiSlice;
+export const {
+  useRegisterUserMutation,
+  useLoginUserMutation,
+  useCreateRideRequestRideMutation,
+  useEstimateRideMutation,
+  useCurrentRideRequestQuery,
+  useLazyCurrentRideRequestQuery
+} = apiSlice;

@@ -35,6 +35,28 @@ export interface LoginResponse extends ApiResponse {
   refreshToken: string;
 }
 
+export interface CreateRideRequestResponse extends ApiResponse {
+  rideRequestId: string;
+}
+
+export interface CreateRideRequestData {
+  pickupLocation: Location;
+  dropOffLocation: Location;
+}
+
+export interface RideEstimate {
+  estimatedPrice: string;
+  nearbyDrivers: any[];
+  pickup: {
+    distance: string;
+    time: string;
+  };
+  dropOff: {
+    distance: string;
+    time: string;
+  };
+}
+
 interface Location {
   latitude: number;
   longitude: number;
@@ -64,4 +86,5 @@ export interface RideRequest {
   riderName?: string | null;
   riderPhone?: string | null;
   updatedAt: number;
+  driver?: any;
 }

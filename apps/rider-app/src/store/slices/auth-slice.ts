@@ -35,7 +35,6 @@ export const loginUser = createAsyncThunk<
     ).unwrap();
     return response;
   } catch (response) {
-    console.log(`debuging error: ${JSON.stringify(response)}`);
     const status = response?.status;
     let errorMessage = '';
     switch (status) {
@@ -63,10 +62,8 @@ export const registerUser = createAsyncThunk<
     const response = await dispatch(
       apiSlice.endpoints.registerUser.initiate(data)
     ).unwrap();
-    console.log(`debugging: ${JSON.stringify(response)}`);
     return response;
   } catch (response) {
-    console.log(`debuging error: ${JSON.stringify(response)}`); // TODO: refactor into a function
     const status = response?.status;
     let errorMessage = '';
     switch (status) {
