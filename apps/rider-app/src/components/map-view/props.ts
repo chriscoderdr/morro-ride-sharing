@@ -1,9 +1,14 @@
-import { LineStringGeometry, MultiLineStringGeometry } from "@/src/services/map-service";
+import {
+  LineStringGeometry,
+  MultiLineStringGeometry
+} from '@/src/services/map-service';
+import { ViewStyle } from 'react-native';
 
 export interface IMapViewProps {
   pickup: [number, number];
   dropoff: [number, number];
   route?: MultiLineStringGeometry | LineStringGeometry;
+  myLocationButtonStyle?: ViewStyle;
 }
 
 export interface IMapPointProps {

@@ -3,6 +3,7 @@ import authReducer from '@/src/store/slices/auth-slice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import { persistReducer, persistStore } from 'redux-persist';
+import rideRequestSlice from '@/src/store/slices/ride-request-slice';
 import rideSlide from '@/src/store/slices/ride-slice';
 
 const persistConfig = {
@@ -14,7 +15,8 @@ const persistConfig = {
 const reducer = combineReducers({
   [apiSlice.reducerPath]: apiSlice.reducer,
   auth: authReducer,
-  ride: rideSlide
+  ride: rideSlide,
+  rideRequest: rideRequestSlice
 });
 
 const persistedReducer = persistReducer(persistConfig, reducer);

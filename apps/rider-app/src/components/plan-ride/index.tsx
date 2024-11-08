@@ -53,11 +53,18 @@ export const PlanRide = () => {
   };
 
   const handleDropOffPlaceItemPress = (item: SearchBoxSuggestion) => {
+    if (selectedDropoff && item.mapbox_id == selectedDropoff.mapbox_id) {
+      handlePlanRide();
+      return;
+    }
     setSelectedDropoff(item);
     searchDropOffRef.current?.setNativeProps({ text: item.name });
   };
 
   const handlePickupPlaceItemPress = (item: SearchBoxSuggestion) => {
+    if (selectedPickup && item.mapbox_id == selectedPickup.mapbox_id) {
+      return;
+    }
     setSelectedPickup(item);
     searchPickupRef.current?.setNativeProps({ text: item.name });
     searchDropOffRef.current?.focus();

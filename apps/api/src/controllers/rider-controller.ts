@@ -2,7 +2,7 @@ import { queueService } from '@/services';
 import bcrypt from 'bcrypt';
 import { Context } from 'koa';
 import { Op } from 'sequelize';
-import { RideRequest, Rider } from '../models';
+import { Driver, RideRequest, Rider } from '../models';
 import logger from '../utils/logger';
 import {
   generateAccessToken,
@@ -12,6 +12,7 @@ import mapService from '@/services/map-service';
 import priceCalculator from '@/utils/price-calculator';
 import formatter from '@/utils/formatter';
 import { findNearbyDrivers } from '@/utils/nearby-drivers';
+import { transformRideData } from '@/utils/ride-data-transformer';
 
 interface RegisterRiderRequestBody {
   name: string;
@@ -293,5 +294,67 @@ export const estimateRide = async (ctx: Context) => {
     logger.error(`Failed to estimate ride: ${error.message}`);
     ctx.status = 500;
     ctx.body = { error: 'Internal server error while estimating ride.' };
+  }
+};
+
+import { Op } from 'sequelize';
+
+export const getCurrentRideRequest = async (ctx: Context) => {
+  const riderId = ctx.state.user.id;
+  logger.info(`Fetching current ride request for rider ${riderId}`);
+
+  try {
+    const currentRideRequest = await RideRequest.findOne({
+      where: {
+        riderId,
+        status: {
+          [Op.ne]: 'dropped-off' // Retrieves rides with any status except 'dropped-off'
+        }
+      },
+      order: [['updatedAt', 'DESC']]
+    });
+
+    if (!currentRideRequest) {
+      ctx.status = 404;
+      ctx.body = { error: 'No current ride request found for this rider.' };
+      return;
+    }
+
+    // Check if a driver is assigned and exists
+    if (currentRideRequest.driverId) {
+      const driver = await Driver.findByPk(currentRideRequest.driverId);
+
+      if (driver) {
+        const transformedRideRequest = await transformRideData(
+          driver,
+          currentRideRequest
+        );
+        ctx.status = 200;
+        ctx.body = { data: transformedRideRequest };
+      } else {
+        logger.warn(`Driver with ID ${currentRideRequest.driverId} not found.`);
+        ctx.status = 200;
+        ctx.body = {
+          data: { status: currentRideRequest.status, driver: null }
+        };
+      }
+    } else {
+      // Return only the ride status if no driver is assigned
+      ctx.status = 200;
+      ctx.body = {
+        data: {
+          status: currentRideRequest.status,
+          rideRequestId: currentRideRequest.id,
+          createdAt: currentRideRequest.createdAt,
+          updatedAt: currentRideRequest.updatedAt
+        }
+      };
+    }
+
+    logger.info(`Fetched current ride request for rider ${riderId}`);
+  } catch (error) {
+    logger.error(error);
+    ctx.status = 500;
+    ctx.body = { error: 'Server error. Please try again later.' };
   }
 };

@@ -13,7 +13,12 @@ import MapUserLocationPuck from './map-user-location-puck';
 import { handleZoomToUserLocation } from '@/src/utils/maps';
 import { IMapViewProps } from './props';
 
-const MapView = ({ pickup, dropoff, route }: IMapViewProps) => {
+const MapView = ({
+  pickup,
+  dropoff,
+  route,
+  myLocationButtonStyle
+}: IMapViewProps) => {
   const [userLocation, setUserLocation] = useState<Coordinates | null>(null);
   const [isMapInitialized, setIsMapInitialized] = useState(false);
   const cameraRef = useRef<Mapbox.Camera>(null);
@@ -64,7 +69,10 @@ const MapView = ({ pickup, dropoff, route }: IMapViewProps) => {
         {route && <MapRoute route={route} />}
       </Mapbox.MapView>
 
-      <TouchableOpacity style={styles.button} onPress={onPressMyLocation}>
+      <TouchableOpacity
+        style={[styles.button, myLocationButtonStyle]}
+        onPress={onPressMyLocation}
+      >
         <Ionicons name="locate" size={24} color="white" />
       </TouchableOpacity>
     </>
