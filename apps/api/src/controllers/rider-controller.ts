@@ -27,6 +27,27 @@ interface CreateRideRequestBody {
   dropOffLocation: RideRequestLocation;
 }
 
+interface Location {
+  latitude: number;
+  longitude: number;
+}
+
+interface NearbyDriver {
+  location: Location;
+}
+
+interface PickupDropOff {
+  time: number;
+  distance: number;
+}
+
+interface EstimateRideRequestResponse {
+  estimatePrice: number;
+  nearbyDrivers: NearbyDriver[];
+  pickup: PickupDropOff;
+  dropOff: PickupDropOff;
+}
+
 // Utility function to send error response
 const sendErrorResponse = (ctx: Context, status: number, message: string) => {
   ctx.status = status;
@@ -171,4 +192,37 @@ export const login = async (ctx: Context) => {
     ctx.status = 500;
     ctx.body = { error: 'Server error. Please try again later.' };
   }
+};
+
+export const estimateRide = async (ctx: Context) => {
+  const { pickupLocation, dropOffLocation } = ctx.request
+    .body as CreateRideRequestBody;
+
+  if (!pickupLocation || !dropOffLocation) {
+    ctx.status = 400;
+    ctx.body = {
+      error:
+        'Pickup location and drop-off location are required for a ride request.'
+    };
+    return;
+  }
+  const response: EstimateRideRequestResponse = {
+    estimatePrice: 100,
+    nearbyDrivers: [
+      { location: { latitude: 14.6, longitude: 120.985 } },
+      { location: { latitude: 14.602, longitude: 120.987 } }
+    ],
+    pickup: {
+      time: 5,
+      distance: 2
+    },
+    dropOff: {
+      time: 10,
+      distance: 5
+    }
+  };
+
+  ctx.status = 200;
+
+  ctx.body = response;
 };

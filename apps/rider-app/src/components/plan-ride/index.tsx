@@ -14,9 +14,14 @@ import config from '@/src/config';
 import { useCreateRideRequestRideMutation } from '@/src/store/slices/api-slice';
 import PlaceList from '../place-list';
 import { styles } from './styles';
+import { useAppDispatch } from '@/src/hooks/use-app-dispatch';
+import { setRidePickup, setRidePlaces } from '@/src/store/slices/ride-slice';
+import { useRouter } from 'expo-router';
 
 export const PlanRide = () => {
   const searchSessionTokenRef = useRef<SessionToken | null>(null);
+  const router = useRouter();
+  const dispatch = useAppDispatch();
   const [pickupSuggestions, setPickupSuggestions] = useState([]);
   const [dropoffSuggestions, setDropoffSuggestions] = useState([]);
   const [focus, setFocus] = useState('drop-off');
@@ -51,6 +56,24 @@ export const PlanRide = () => {
       const dropoffCoordinates = await retrieveSuggestionCoordinates(
         selectedDropoff
       );
+      dispatch(
+        setRidePlaces({
+          pickup: {
+            address: selectedPickup.name,
+            coordinates: [
+              pickupCoordinates.features[0].geometry.coordinates[0],
+              pickupCoordinates.features[0].geometry.coordinates[1]
+            ]
+          },
+          dropoff: {
+            address: selectedPickup.name,
+            coordinates: [
+              dropoffCoordinates.features[0].geometry.coordinates[0],
+              dropoffCoordinates.features[0].geometry.coordinates[1]
+            ]
+          }
+        })
+      );
 
       const response = await createRideRequest({
         pickupLocation: {
@@ -65,6 +88,7 @@ export const PlanRide = () => {
         }
       });
       Alert.alert('Ride Request', response.data.message);
+      router.navigate('/confirm-ride');
     } catch (error) {
       Alert.alert('Ride Request Error', error.message);
     }

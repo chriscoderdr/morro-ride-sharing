@@ -17,7 +17,7 @@ export default function Home() {
         <PermissionBlocker>
           <KeyboardDismiss>
             {/* <Mapbox.MapView style={{ flex: 1 }} /> */}
-            <ConfirmRideLocation />
+            <PlanRide />
           </KeyboardDismiss>
         </PermissionBlocker>
       </View>

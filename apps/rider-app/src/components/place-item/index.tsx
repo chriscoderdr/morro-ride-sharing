@@ -5,7 +5,7 @@ const PlaceItem = ({ item, onPress }) => {
     <TouchableOpacity onPress={() => onPress(item)}>
       <View style={{ paddingHorizontal: 14, paddingVertical: 8 }}>
         <Text>{item.name}</Text>
-        <Text>{item.place_formatted}</Text>
+        <Text>{item.full_address}</Text>
       </View>
     </TouchableOpacity>
   );
