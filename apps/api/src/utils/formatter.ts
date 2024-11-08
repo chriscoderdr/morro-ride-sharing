@@ -1,9 +1,17 @@
 const formatDistance = (distance: number) => {
-  return `${distance} km`;
+  if (distance < 0) {
+    return '0 km';
+  }
+  const distanceInKm = Math.floor(distance / 1000);
+  return `${distanceInKm} km`;
 };
 
 const formatTime = (duration: number) => {
-  return `${duration} minutes`;
+  if (duration < 0) {
+    return '0 minutes';
+  }
+  const timeInMinutes = Math.floor(duration / 60);
+  return `${timeInMinutes} minutes`;
 };
 
 export default { formatDistance, formatTime };

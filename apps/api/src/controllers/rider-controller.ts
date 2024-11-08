@@ -8,6 +8,7 @@ import {
   generateAccessToken,
   generateRefreshToken
 } from '../utils/token-utils';
+import mapService from '@/services/map-service';
 
 interface RegisterRiderRequestBody {
   name: string;
@@ -206,23 +207,32 @@ export const estimateRide = async (ctx: Context) => {
     };
     return;
   }
-  const response: EstimateRideRequestResponse = {
-    estimatePrice: 100,
-    nearbyDrivers: [
-      { location: { latitude: 14.6, longitude: 120.985 } },
-      { location: { latitude: 14.602, longitude: 120.987 } }
-    ],
-    pickup: {
-      time: 5,
-      distance: 2
-    },
-    dropOff: {
-      time: 10,
-      distance: 5
-    }
-  };
+
+  const pickupToDropOffRoute = await mapService.getRoute([
+    [pickupLocation.latitude, pickupLocation.longitude],
+    [dropOffLocation.latitude, dropOffLocation.longitude]
+  ]);
 
   ctx.status = 200;
+  ctx.body = pickupToDropOffRoute;
 
-  ctx.body = response;
+  // const response: EstimateRideRequestResponse = {
+  //   estimatePrice: 100,
+  //   nearbyDrivers: [
+  //     { location: { latitude: 14.6, longitude: 120.985 } },
+  //     { location: { latitude: 14.602, longitude: 120.987 } }
+  //   ],
+  //   pickup: {
+  //     time: 5,
+  //     distance: 2
+  //   },
+  //   dropOff: {
+  //     time: 10,
+  //     distance: 5
+  //   }
+  // };
+
+  // ctx.status = 200;
+
+  // ctx.body = response;
 };

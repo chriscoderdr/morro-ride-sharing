@@ -1,9 +1,10 @@
 const calculateRidePrice = (distance: number): number => {
-  const price = distance * 30;
+  const distanceInKm = distance / 1000;
+  const price = distanceInKm * 30;
   if (price < 100) {
     return 100;
   }
-  return price;
+  return Math.floor(price);
 };
 
 export default { calculateRidePrice };
