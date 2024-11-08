@@ -51,8 +51,12 @@
     "@types/supertest": "^6.0.2",
     "chai": "^5.1.2",
     "chokidar-cli": "^3.0.0",
-    "eslint": "^9.13.0",
+    "eslint": "^9.14.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.2.1",
+    "eslint-plugin-unused-imports": "^4.1.4",
     "mocha": "^10.7.3",
+    "prettier": "^3.3.3",
     "supertest": "^7.0.0"
   }
 }

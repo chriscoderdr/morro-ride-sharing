@@ -18,9 +18,6 @@ export default function Login() {
 
   const onLoginUser = (data: ILoginUser) => {
     dispatch(loginUser({ ...data }));
-    console.log('Login user:', data);
-    console.log('Error:', error);
-    console.log(`user: ${user}`);
   };
 
   const onGoToRegister = () => {
