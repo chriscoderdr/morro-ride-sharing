@@ -17,7 +17,8 @@ const MapView = ({
   pickup,
   dropoff,
   route,
-  myLocationButtonStyle
+  myLocationButtonStyle,
+  points
 }: IMapViewProps) => {
   const [userLocation, setUserLocation] = useState<Coordinates | null>(null);
   const [isMapInitialized, setIsMapInitialized] = useState(false);
@@ -66,6 +67,9 @@ const MapView = ({
             title={'Dropoff'}
           />
         )}
+        {points && points.length > 0
+          ? points.map((point) => <MapPoint {...point} key={point.pointId} />)
+          : null}
         {route && <MapRoute route={route} />}
       </Mapbox.MapView>
 

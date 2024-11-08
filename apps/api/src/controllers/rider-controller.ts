@@ -126,6 +126,28 @@ export const createRideRequest = async (ctx: Context) => {
   }
 
   try {
+    // Check for existing ride requests with a status other than 'dropped-off' or 'pending'
+    const activeRideRequest = await RideRequest.findOne({
+      where: {
+        riderId,
+        status: { [Op.notIn]: ['dropped-off', 'pending', 'declined'] }
+      }
+    });
+
+    if (activeRideRequest) {
+      return sendErrorResponse(
+        ctx,
+        400,
+        'An active ride request already exists. Complete or cancel it before creating a new request.'
+      );
+    }
+
+    // Update all existing pending ride requests for the rider to 'canceled'
+    await RideRequest.update(
+      { status: 'declined' },
+      { where: { riderId, status: 'pending' } }
+    );
+
     // Create new ride request
     const newRideRequest = await RideRequest.create({
       riderId,
@@ -297,8 +319,6 @@ export const estimateRide = async (ctx: Context) => {
   }
 };
 
-import { Op } from 'sequelize';
-
 export const getCurrentRideRequest = async (ctx: Context) => {
   const riderId = ctx.state.user.id;
   logger.info(`Fetching current ride request for rider ${riderId}`);
@@ -308,7 +328,7 @@ export const getCurrentRideRequest = async (ctx: Context) => {
       where: {
         riderId,
         status: {
-          [Op.ne]: 'dropped-off' // Retrieves rides with any status except 'dropped-off'
+          [Op.notIn]: ['pending'] // Retrieves rides with any status except 'dropped-off'
         }
       },
       order: [['updatedAt', 'DESC']]
@@ -330,24 +350,30 @@ export const getCurrentRideRequest = async (ctx: Context) => {
           currentRideRequest
         );
         ctx.status = 200;
-        ctx.body = { data: transformedRideRequest };
+        ctx.body = {
+          ...transformedRideRequest,
+          driver: {
+            name: driver.name,
+            phone: driver.phone,
+            location: driver.location?.coordinates
+          }
+        };
       } else {
         logger.warn(`Driver with ID ${currentRideRequest.driverId} not found.`);
         ctx.status = 200;
         ctx.body = {
-          data: { status: currentRideRequest.status, driver: null }
+          status: currentRideRequest.status,
+          driver: null
         };
       }
     } else {
       // Return only the ride status if no driver is assigned
       ctx.status = 200;
       ctx.body = {
-        data: {
-          status: currentRideRequest.status,
-          rideRequestId: currentRideRequest.id,
-          createdAt: currentRideRequest.createdAt,
-          updatedAt: currentRideRequest.updatedAt
-        }
+        status: currentRideRequest.status,
+        rideRequestId: currentRideRequest.id,
+        createdAt: currentRideRequest.createdAt,
+        updatedAt: currentRideRequest.updatedAt
       };
     }
 

@@ -9,6 +9,7 @@ export interface IMapViewProps {
   dropoff: [number, number];
   route?: MultiLineStringGeometry | LineStringGeometry;
   myLocationButtonStyle?: ViewStyle;
+  points?: IMapPointProps[];
 }
 
 export interface IMapPointProps {

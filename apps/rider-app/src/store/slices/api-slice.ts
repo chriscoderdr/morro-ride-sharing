@@ -5,7 +5,8 @@ import {
   RegisterResponse,
   CreateRideRequestResponse,
   CreateRideRequestData,
-  RideEstimate
+  RideEstimate,
+  RideRequest
 } from '@/src/api/models';
 import config from '@/src/config';
 import { RootState } from '@/src/store';
@@ -72,6 +73,16 @@ export const apiSlice = createApi({
           cacheBusting: Date.now()
         }
       })
+    }),
+    currentRideRequest: builder.query<RideRequest, any>({
+      query: (data) => ({
+        url: '/riders/currentRide',
+        method: 'GET',
+        cache: 'no-cache',
+        params: {
+          cacheBusting: Date.now()
+        }
+      })
     })
   })
 });
@@ -80,5 +91,7 @@ export const {
   useRegisterUserMutation,
   useLoginUserMutation,
   useCreateRideRequestRideMutation,
-  useEstimateRideMutation
+  useEstimateRideMutation,
+  useCurrentRideRequestQuery,
+  useLazyCurrentRideRequestQuery
 } = apiSlice;

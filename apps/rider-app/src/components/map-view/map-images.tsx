@@ -2,6 +2,7 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import Mapbox from '@rnmapbox/maps';
 import { View } from 'react-native';
 import styles from './styles';
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 const MapImages = () => {
   return (
@@ -19,6 +20,11 @@ const MapImages = () => {
       <Mapbox.Image name="dropoffIcon">
         <View style={styles.iconContainer}>
           <MaterialIcons name="location-pin" size={30} color="#5588FF" />
+        </View>
+      </Mapbox.Image>
+      <Mapbox.Image name="carIcon">
+        <View style={styles.iconContainer}>
+          <Ionicons name="car" size={30} color="#5588FF" />
         </View>
       </Mapbox.Image>
     </Mapbox.Images>

@@ -86,4 +86,5 @@ export interface RideRequest {
   riderName?: string | null;
   riderPhone?: string | null;
   updatedAt: number;
+  driver?: any;
 }

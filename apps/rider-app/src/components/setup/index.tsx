@@ -36,8 +36,12 @@ export const Setup = () => {
     <Stack>
       <Stack.Screen name="login" options={{ headerShown: false }} />
       <Stack.Screen name="signup" options={{ headerShown: false }} />
-      <Stack.Screen name="main" options={{  title: 'Where to?' }} />
-      <Stack.Screen name="confirm-ride" options={{ title: 'Plan Ride' }} />
+      <Stack.Screen name="main" options={{ title: 'Where to?' }} />
+      <Stack.Screen
+        name="confirm-ride"
+        options={{ title: 'Plan Ride', headerShown: false }}
+      />
+      <Stack.Screen name="lookup-driver" options={{ headerShown: false }} />
     </Stack>
   );
 };
