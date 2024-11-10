@@ -39,7 +39,7 @@ $RNMapboxMapsDownloadToken = 'sk.eyJ1IjoiY2dvbWV6bWVuZGV6IiwiYSI6ImNtMndhbDAwZjA
 $RNMapboxMapsImpl = 'mapbox'
 $RNMapboxMapsVersion = '11.7.1'
 # @generated end @rnmapbox/maps-rnmapboxmapsimpl
-target 'riderapp' do
+target 'MorroTaxi' do
   use_expo_modules!
   config = use_native_modules!
 

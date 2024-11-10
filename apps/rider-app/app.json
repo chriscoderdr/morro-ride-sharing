@@ -1,29 +1,25 @@
 {
   "expo": {
-    "name": "rider-app",
+    "name": "MorroTaxi",
     "slug": "rider-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "morrotaxiriderapp",
     "userInterfaceStyle": "automatic",
-    "associatedDomains": [
-      "applinks:taxi.chriscoder.com"
-    ],
     "splash": {
       "image": "./assets/images/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#181A20"
     },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.chriscoder.riderapp",
       "infoPlist": {
-        "UIBackgroundModes": [
-          "location",
-          "fetch",
-          "remote-notification"
-        ]
+        "UIBackgroundModes": ["location", "fetch"],
+        "NSAppTransportSecurity": {
+          "NSAllowsArbitraryLoads": true
+        }
       }
     },
     "android": {

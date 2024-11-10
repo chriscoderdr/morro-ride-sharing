@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "540033724311",
+    "project_id": "morrotaxi-9cdb5",
+    "storage_bucket": "morrotaxi-9cdb5.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:540033724311:android:6ea191ad0ee297f4f15ed2",
+        "android_client_info": {
+          "package_name": "com.chriscoder.driverapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD7MJqlXv8s3uEfS1_8gLzYL3UXEE_XCLg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

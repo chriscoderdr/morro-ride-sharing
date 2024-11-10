@@ -52,6 +52,7 @@ const LoginForm: React.FC = () => {
         );
         router.push('/main');
       } catch (err: any) {
+        console.log(`Login failed: ${JSON.stringify(err)}`);
         const errorMessage =
           err?.data?.error || 'Login failed. Please try again.';
         Alert.alert('Login Error', errorMessage);
