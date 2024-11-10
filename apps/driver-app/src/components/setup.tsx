@@ -2,7 +2,6 @@ import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake';
 import { Stack, useRouter } from 'expo-router';
 import { useEffect } from 'react';
 import { useAppDispatch } from '../hooks/use-app-dispatch';
-import { useAuthToken } from '../hooks/use-auth-token';
 import { initializePendingRequests } from '../store/middleware/timeout-middleware';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store';
