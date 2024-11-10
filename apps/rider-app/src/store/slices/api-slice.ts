@@ -1,11 +1,11 @@
 import {
-  RiderData,
+  CreateRideRequestData,
+  CreateRideRequestResponse,
   LoginData,
   LoginResponse,
   RegisterResponse,
-  CreateRideRequestResponse,
-  CreateRideRequestData,
   RideEstimate,
+  RiderData,
   RideRequest
 } from '@/src/api/models';
 import config from '@/src/config';
@@ -19,10 +19,6 @@ export const apiSlice = createApi({
   reducerPath: 'api',
   baseQuery: fetchBaseQuery({
     baseUrl: API_BASE_URL,
-    validateStatus: (response) => {
-      console.log(`validating status: ${JSON.stringify(response)}`);
-      return response?.status == 200;
-    },
     prepareHeaders: (headers, { getState }) => {
       const token = (getState() as RootState).auth.user?.accessToken;
       if (token) {
