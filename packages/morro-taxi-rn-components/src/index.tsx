@@ -11,6 +11,8 @@ import RoundedButton from './components/rounded-button';
 import ScrollableFormContainer from './components/scrollable-form-container';
 import SignUpForm from './components/sign-up-form';
 import TestComponent from './components/test-component';
+import MapView from './components/map-view';
+import MapService from './services/map-service';
 
 export {
   Checkbox,
@@ -26,6 +28,8 @@ export {
   ScrollableFormContainer,
   SignUpForm,
   TestComponent,
+  MapView,
+  MapService,
 };
 
 export type { ICheckboxProps } from './components/checkbox/props';

@@ -108,7 +108,8 @@
     "turbo": "^1.10.7",
     "typescript": "^5.2.2",
     "wcwidth": "^1.0.1",
-    "yaml": "^2.2.1"
+    "yaml": "^2.2.1",
+    "@rnmapbox/maps": "^10.1.33"
   },
   "resolutions": {
     "@types/react": "^18.2.44"
