@@ -29,6 +29,7 @@ class MQTTClientService {
 
   connect = (onSuccess: () => void, onFailure: (error: Error) => void) => {
     store.dispatch(startConnecting());
+    console.log(`Connecting to MQTT broker at ${config.MQTT_BROKER_URL}...`);
     this.client.connect({
       useSSL: false,
       keepAliveInterval: 30,
@@ -65,11 +66,12 @@ class MQTTClientService {
     }
   };
 
-  private getDriverId = () => store.getState().auth.driverId as string;
+  private getDriverId = () => store.getState().auth?.user?.driverId as string;
 
   private hasDriverId = () => this.getDriverId()?.length > 0;
 
-  private getAccessToken = () => store.getState().auth.accessToken as string;
+  private getAccessToken = () =>
+    store.getState().auth?.user?.accessToken as string;
 
   private getTopic = (topic: string) => {
     const driverId = this.getDriverId();

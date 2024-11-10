@@ -1,11 +1,9 @@
+import { useRouter } from 'expo-router';
 import React, { useEffect } from 'react';
 import { Alert, View } from 'react-native';
 import { useSelector } from 'react-redux';
-import { useRouter } from 'expo-router';
 
-import MapView from '../map-view';
 import useRoute from '@/src/hooks/use-route';
-import RideConfirmationCard from '../ride-selection';
 import {
   useCreateRideRequestRideMutation,
   useEstimateRideMutation
@@ -14,8 +12,10 @@ import {
   selectCurrentDropOff,
   selectCurrentPickup
 } from '@/src/store/slices/ride-slice';
-import { GenericCard } from 'react-native-morro-taxi-rn-components';
+import { GenericCard, MapView } from 'react-native-morro-taxi-rn-components';
 import AnimatedCard from '../animated-ride-request-card';
+
+import RideConfirmationCard from '../ride-selection';
 
 const ConfirmRideLocation = () => {
   const router = useRouter();
@@ -63,11 +63,17 @@ const ConfirmRideLocation = () => {
           longitude: currentDropoff.coordinates[0]
         }
       });
-      if (response.error) {
-        Alert.alert('Error', 'Something went wrong. Please try again later.');
+      if (
+        response.error &&
+        !(response.error as string)
+          .toLowerCase()
+          .startsWith('no drivers available')
+      ) {
+        Alert.alert('Error', response?.error + '');
       }
+      console.log(`estimateResponse: ${JSON.stringify(response)}`);
     } catch (error) {
-      Alert.alert('Error', error.message);
+      console.log(`Error fetching ride estimate: ${JSON.stringify(error)}`);
     }
   };
 
@@ -144,16 +150,6 @@ const ConfirmRideLocation = () => {
             <GenericCard
               title="Loading..."
               subtitle="Please wait while we fetch the ride estimate"
-            />
-          </AnimatedCard>
-        )}
-        {rideRequestError && (
-          <AnimatedCard>
-            <GenericCard
-              title="Error"
-              subtitle="Something went wrong. Please try again later."
-              onPressButton={onConfirmLocation}
-              buttonText="Try Again"
             />
           </AnimatedCard>
         )}

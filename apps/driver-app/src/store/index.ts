@@ -1,5 +1,8 @@
 import { apiSlice } from '@/src/store/slices/api-slice';
-import authReducer, { setTokens } from '@/src/store/slices/auth-slice';
+import authReducer, {
+  loginDriver,
+  registerDriver
+} from '@/src/store/slices/auth-slice';
 import mqttReducer from '@/src/store/slices/mqtt-slice';
 import rideRequestReducer from '@/src/store/slices/ride-request-slice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -32,9 +35,14 @@ const persistedReducer = persistReducer(persistConfig, reducer);
 const listenerMiddleware = createListenerMiddleware();
 
 listenerMiddleware.startListening({
-  actionCreator: setTokens,
+  actionCreator: loginDriver.fulfilled,
   effect: async (action, listenerApi) => {
-    // Dispatch initializePendingRequests when tokens are set
+    listenerApi.dispatch(initializePendingRequests());
+  }
+});
+listenerMiddleware.startListening({
+  actionCreator: registerDriver.fulfilled,
+  effect: async (action, listenerApi) => {
     listenerApi.dispatch(initializePendingRequests());
   }
 });
@@ -56,8 +64,8 @@ const store = configureStore({
     }).concat(
       apiSlice.middleware,
       timeoutMiddleware,
-      fetchRideRequestsMiddleware,
-      listenerMiddleware.middleware
+      fetchRideRequestsMiddleware
+      // listenerMiddleware.middleware
     )
 });
 

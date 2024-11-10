@@ -12,20 +12,18 @@ PODS:
     - ExpoModulesCore
   - EXNotifications (0.28.19):
     - ExpoModulesCore
-  - EXPermissions (14.4.0):
+  - Expo (51.0.39):
     - ExpoModulesCore
-  - Expo (51.0.38):
-    - ExpoModulesCore
-  - expo-dev-client (4.0.28):
+  - expo-dev-client (4.0.29):
     - EXManifests
     - expo-dev-launcher
     - expo-dev-menu
     - expo-dev-menu-interface
     - EXUpdatesInterface
-  - expo-dev-launcher (4.0.28):
+  - expo-dev-launcher (4.0.29):
     - DoubleConversion
     - EXManifests
-    - expo-dev-launcher/Main (= 4.0.28)
+    - expo-dev-launcher/Main (= 4.0.29)
     - expo-dev-menu
     - expo-dev-menu-interface
     - ExpoModulesCore
@@ -51,7 +49,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - expo-dev-launcher/Main (4.0.28):
+  - expo-dev-launcher/Main (4.0.29):
     - DoubleConversion
     - EXManifests
     - expo-dev-launcher/Unsafe
@@ -80,7 +78,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - expo-dev-launcher/Unsafe (4.0.28):
+  - expo-dev-launcher/Unsafe (4.0.29):
     - DoubleConversion
     - EXManifests
     - expo-dev-menu
@@ -108,10 +106,10 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - expo-dev-menu (5.0.22):
+  - expo-dev-menu (5.0.23):
     - DoubleConversion
-    - expo-dev-menu/Main (= 5.0.22)
-    - expo-dev-menu/ReactNativeCompatibles (= 5.0.22)
+    - expo-dev-menu/Main (= 5.0.23)
+    - expo-dev-menu/ReactNativeCompatibles (= 5.0.23)
     - glog
     - hermes-engine
     - RCT-Folly (= 2024.01.01.00)
@@ -131,8 +129,8 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - expo-dev-menu-interface (1.8.3)
-  - expo-dev-menu/Main (5.0.22):
+  - expo-dev-menu-interface (1.8.4)
+  - expo-dev-menu/Main (5.0.23):
     - DoubleConversion
     - EXManifests
     - expo-dev-menu-interface
@@ -158,7 +156,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - expo-dev-menu/ReactNativeCompatibles (5.0.22):
+  - expo-dev-menu/ReactNativeCompatibles (5.0.23):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -179,7 +177,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - expo-dev-menu/SafeAreaView (5.0.22):
+  - expo-dev-menu/SafeAreaView (5.0.23):
     - DoubleConversion
     - ExpoModulesCore
     - glog
@@ -201,7 +199,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - expo-dev-menu/Vendored (5.0.22):
+  - expo-dev-menu/Vendored (5.0.23):
     - DoubleConversion
     - expo-dev-menu/SafeAreaView
     - glog
@@ -229,7 +227,7 @@ PODS:
     - ExpoModulesCore
   - ExpoFont (12.0.10):
     - ExpoModulesCore
-  - ExpoHead (3.5.23):
+  - ExpoHead (3.5.24):
     - ExpoModulesCore
   - ExpoKeepAwake (13.0.2):
     - ExpoModulesCore
@@ -262,7 +260,7 @@ PODS:
     - ExpoModulesCore
   - ExpoWebBrowser (13.0.3):
     - ExpoModulesCore
-  - EXSplashScreen (0.27.6):
+  - EXSplashScreen (0.27.7):
     - DoubleConversion
     - ExpoModulesCore
     - glog
@@ -295,13 +293,13 @@ PODS:
   - hermes-engine (0.74.5):
     - hermes-engine/Pre-built (= 0.74.5)
   - hermes-engine/Pre-built (0.74.5)
-  - MapboxCommon (24.3.1)
-  - MapboxCoreMaps (11.3.0):
-    - MapboxCommon (~> 24.3)
-  - MapboxMaps (11.3.0):
-    - MapboxCommon (= 24.3.1)
-    - MapboxCoreMaps (= 11.3.0)
-    - Turf (= 2.8.0)
+  - MapboxCommon (24.7.1)
+  - MapboxCoreMaps (11.7.1):
+    - MapboxCommon (~> 24.7)
+  - MapboxMaps (11.7.1):
+    - MapboxCommon (= 24.7.1)
+    - MapboxCoreMaps (= 11.7.1)
+    - Turf (= 3.0.0)
   - RCT-Folly (2024.01.01.00):
     - boost
     - DoubleConversion
@@ -1230,6 +1228,27 @@ PODS:
   - React-Mapbuffer (0.74.5):
     - glog
     - React-debug
+  - react-native-morro-taxi-rn-components (1.0.1):
+    - DoubleConversion
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2024.01.01.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Codegen
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Yoga
   - react-native-safe-area-context (4.10.5):
     - React-Core
   - React-nativeconfig (0.74.5)
@@ -1461,7 +1480,7 @@ PODS:
     - React-logger (= 0.74.5)
     - React-perflogger (= 0.74.5)
     - React-utils (= 0.74.5)
-  - RNCAsyncStorage (2.0.0):
+  - RNCAsyncStorage (1.23.1):
     - React-Core
   - RNGestureHandler (2.16.2):
     - DoubleConversion
@@ -1485,13 +1504,13 @@ PODS:
     - ReactCommon/turbomodule/core
     - Yoga
   - rnmapbox-maps (10.1.33):
-    - MapboxMaps (= 11.3.0)
+    - MapboxMaps (= 11.7.1)
     - React
     - React-Core
     - rnmapbox-maps/DynamicLibrary (= 10.1.33)
     - Turf
   - rnmapbox-maps/DynamicLibrary (10.1.33):
-    - MapboxMaps (= 11.3.0)
+    - MapboxMaps (= 11.7.1)
     - React
     - React-Core
     - Turf
@@ -1538,10 +1557,10 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNSVG (15.8.0):
+  - RNSVG (15.2.0):
     - React-Core
   - SocketRocket (0.7.0)
-  - Turf (2.8.0)
+  - Turf (3.0.0)
   - UMAppLoader (4.6.0)
   - Yoga (0.0.0)
 
@@ -1554,7 +1573,6 @@ DEPENDENCIES:
   - EXLocation (from `../node_modules/expo-location/ios`)
   - EXManifests (from `../node_modules/expo-manifests/ios`)
   - EXNotifications (from `../node_modules/expo-notifications/ios`)
-  - EXPermissions (from `../node_modules/expo-permissions/ios`)
   - Expo (from `../node_modules/expo`)
   - expo-dev-client (from `../node_modules/expo-dev-client/ios`)
   - expo-dev-launcher (from `../node_modules/expo-dev-launcher`)
@@ -1602,6 +1620,7 @@ DEPENDENCIES:
   - React-jsitracing (from `../node_modules/react-native/ReactCommon/hermes/executor/`)
   - React-logger (from `../node_modules/react-native/ReactCommon/logger`)
   - React-Mapbuffer (from `../node_modules/react-native/ReactCommon`)
+  - react-native-morro-taxi-rn-components (from `../node_modules/react-native-morro-taxi-rn-components`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - React-nativeconfig (from `../node_modules/react-native/ReactCommon`)
   - React-NativeModulesApple (from `../node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios`)
@@ -1660,8 +1679,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/expo-manifests/ios"
   EXNotifications:
     :path: "../node_modules/expo-notifications/ios"
-  EXPermissions:
-    :path: "../node_modules/expo-permissions/ios"
   Expo:
     :path: "../node_modules/expo"
   expo-dev-client:
@@ -1753,6 +1770,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/logger"
   React-Mapbuffer:
     :path: "../node_modules/react-native/ReactCommon"
+  react-native-morro-taxi-rn-components:
+    :path: "../node_modules/react-native-morro-taxi-rn-components"
   react-native-safe-area-context:
     :path: "../node_modules/react-native-safe-area-context"
   React-nativeconfig:
@@ -1827,31 +1846,30 @@ SPEC CHECKSUMS:
   EXLocation: 43e9b582ca63a23c6f0a18d8cbe2145b3a388b55
   EXManifests: c1fab4c3237675e7b0299ea8df0bcb14baca4f42
   EXNotifications: 85496c9fab09d759d0e4ff594bca078ab817c40c
-  EXPermissions: 51c6115893689c3e9787f4819aa67ceeae601038
-  Expo: 9b6666ef2fedcfc89c5b9be2aa1ce12b81f9e7f5
-  expo-dev-client: e25e1c63686cc097d9701354e475b2b60038b83b
-  expo-dev-launcher: 8a308596a1a2fa9c4480eccdb8d0c1d1035bbfdf
-  expo-dev-menu: 9c3004c35de890a799fd88f73b106c5e2c5b6d6d
-  expo-dev-menu-interface: be32c09f1e03833050f0ee290dcc86b3ad0e73e4
+  Expo: 8c995afb875c15bf8439af0b20bcb9ed8f90d0bd
+  expo-dev-client: 0cec8ec81fd01c10d9afcd9f6de3768b10644aee
+  expo-dev-launcher: c510982f3437742353389750748520580af0ee43
+  expo-dev-menu: 12b319a9bc73d76a1ed47ce52055b5356edb971d
+  expo-dev-menu-interface: 5764ad537419c1a5e8f66f668e29c81e8aca290c
   ExpoAsset: 323700f291684f110fb55f0d4022a3362ea9f875
   ExpoFileSystem: 80bfe850b1f9922c16905822ecbf97acd711dc51
   ExpoFont: 00756e6c796d8f7ee8d211e29c8b619e75cbf238
-  ExpoHead: fcb28a68ed4ba28f177394d2dfb8a0a8824cd103
+  ExpoHead: a79e263b73039b41940c220dd67b83572e7cac09
   ExpoKeepAwake: 3b8815d9dd1d419ee474df004021c69fdd316d08
   ExpoModulesCore: 831ece8311a489418746925820bbffdda587d6f4
   ExpoSecureStore: 060cebcb956b80ddae09821610ac1aa9e1ac74cd
   ExpoSystemUI: d4f065a016cae6721b324eb659cdee4d4cf0cb26
   ExpoWebBrowser: 7595ccac6938eb65b076385fd23d035db9ecdc8e
-  EXSplashScreen: 17a656c08a0095be15b620c52e61dfdb665863d2
+  EXSplashScreen: 3cad09949c2ca6730cbb2801b8c51cb87692425a
   EXTaskManager: 9c3520305c3aa1b4a12a7c6d1e3f85f2779c06e9
   EXUpdatesInterface: 996527fd7d1a5d271eb523258d603f8f92038f24
   FBLazyVector: ac12dc084d1c8ec4cc4d7b3cf1b0ebda6dab85af
   fmt: 4c2741a687cc09f0634a2e2c72a838b99f1ff120
   glog: fdfdfe5479092de0c4bdbebedd9056951f092c4f
   hermes-engine: 8c1577f3fdb849cbe7729c2e7b5abc4b845e88f8
-  MapboxCommon: e6d0d15f1e34278e21bae28bdc548d378757b51e
-  MapboxCoreMaps: 0e3eab0bd5787e833d48261fa1d01f356d6c4ad8
-  MapboxMaps: 5aba2ba70a85d08e0ea00ad011ca3d2965e69a59
+  MapboxCommon: 0ba7bc2bbf20b6e7687747a9959ef5f82adffd85
+  MapboxCoreMaps: 02656fd04e2e2ad8c7db39adba301cef55a4c2cf
+  MapboxMaps: 3a77eda93f83ad27c178df86122dc3ad8645078d
   RCT-Folly: 02617c592a293bd6d418e0a88ff4ee1f88329b47
   RCTDeprecation: 3afceddffa65aee666dafd6f0116f1d975db1584
   RCTRequired: ec1239bc9d8bf63e10fb92bd8b26171a9258e0c1
@@ -1876,6 +1894,7 @@ SPEC CHECKSUMS:
   React-jsitracing: 3b6060bbf5317663667e1dd93560c7943ab86ccc
   React-logger: 257858bd55f3a4e1bc0cf07ddc8fb9faba6f8c7c
   React-Mapbuffer: 6c1cacdbf40b531f549eba249e531a7d0bfd8e7f
+  react-native-morro-taxi-rn-components: 1ef470194a80763d575db0ced9cdae37821d0980
   react-native-safe-area-context: a240ad4b683349e48b1d51fed1611138d1bdad97
   React-nativeconfig: ba9a2e54e2f0882cf7882698825052793ed4c851
   React-NativeModulesApple: 8d11ff8955181540585c944cf48e9e7236952697
@@ -1900,17 +1919,17 @@ SPEC CHECKSUMS:
   React-runtimescheduler: cfbe85c3510c541ec6dc815c7729b41304b67961
   React-utils: f242eb7e7889419d979ca0e1c02ccc0ea6e43b29
   ReactCommon: f7da14a8827b72704169a48c929bcde802698361
-  RNCAsyncStorage: d35c79ffba52c1013013e16b1fc295aec2feabb6
+  RNCAsyncStorage: 826b603ae9c0f88b5ac4e956801f755109fa4d5c
   RNGestureHandler: 2282cfbcf86c360d29f44ace393203afd5c6cff7
-  rnmapbox-maps: f28bfc278a0bcb8e3c3483f1813ede8eb9c6f5fa
+  rnmapbox-maps: a1bd9bf7535374077344074d282e52ce23b74e08
   RNReanimated: 35f9ac9c3ac42d0497ebd1cce5c39d7687a8493e
   RNScreens: b32a9ff15bea7fcdbe5dff6477bc503f792b1208
-  RNSVG: 8b1a777d54096b8c2a0fd38fc9d5a454332bbb4d
+  RNSVG: 43b64ed39c14ce830d840903774154ca0c1f27ec
   SocketRocket: abac6f5de4d4d62d24e11868d7a2f427e0ef940d
-  Turf: aa2ede4298009639d10db36aba1a7ebaad072a5e
+  Turf: a1604e74adce15c58462c9ae2acdbf049d5be35e
   UMAppLoader: f17a5ee8e85b536ace0fc254b447a37ed198d57e
   Yoga: 950bbfd7e6f04790fdb51149ed51df41f329fcc8
 
-PODFILE CHECKSUM: b038e9c978f80fcf39e812937f1b1500cce1815a
+PODFILE CHECKSUM: a5e15250b41d19328db9fe9ba189b54b335af624
 
 COCOAPODS: 1.15.2

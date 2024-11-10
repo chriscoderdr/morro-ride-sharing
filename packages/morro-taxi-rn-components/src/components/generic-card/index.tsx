@@ -13,7 +13,7 @@ const GenericCard: React.FC<IGenericCardProps> = ({
   children,
   buttonText,
   onPressButton,
-  buttonType = 'primary', // Default to 'primary'
+  buttonType = 'primary',
   containerStyle,
   buttonStyle,
   buttonTextStyle

@@ -20,7 +20,7 @@ export const apiSlice = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: API_BASE_URL,
     prepareHeaders: (headers, { getState }) => {
-      const token = (getState() as RootState).auth.accessToken;
+      const token = (getState() as RootState).auth?.user?.accessToken;
       if (token) {
         headers.set('Authorization', `Bearer ${token}`);
       }
@@ -83,7 +83,7 @@ export const apiSlice = createApi({
         headers: {
           'Cache-Control': 'no-store',
           Pragma: 'no-cache'
-        },
+        }
       }),
       forceRefetch: () => true,
       providesTags: ['somethingelseKeyApi']

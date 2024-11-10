@@ -11,6 +11,7 @@ import RoundedButton from './rounded-button';
 import ScrollableFormContainer from './scrollable-form-container';
 import SignUpForm from './sign-up-form';
 import TestComponent from './test-component';
+import MapView from './map-view';
 
 export {
   Checkbox,
@@ -26,6 +27,7 @@ export {
   ScrollableFormContainer,
   SignUpForm,
   TestComponent,
+  MapView,
 };
 
 export type { ICheckboxProps } from './checkbox/props';

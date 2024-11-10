@@ -19,7 +19,7 @@ const useForegroundLocation = () => {
     ) {
       mqttClient.publishLocation(location[1], location[0]);
     }
-  }, [location, mqttClient, isConnected, status]);
+  }, [location, mqttClient, isConnected, status, accessToken]);
 
   return isConnected;
 };

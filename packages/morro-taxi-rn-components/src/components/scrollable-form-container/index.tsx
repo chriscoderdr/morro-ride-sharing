@@ -4,7 +4,7 @@ import { ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const ScrollableFormContainer = ({
-  children
+  children,
 }: {
   children: React.ReactElement;
 }) => {
@@ -16,7 +16,7 @@ const ScrollableFormContainer = ({
       >
         <ScrollView
           contentContainerStyle={{
-            flexGrow: 1
+            flexGrow: 1,
           }}
         >
           <KeyboardDismiss>
@@ -30,8 +30,8 @@ const ScrollableFormContainer = ({
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1
-  }
+    flex: 1,
+  },
 });
 
 export default ScrollableFormContainer;

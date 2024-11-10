@@ -1,5 +1,3 @@
-import { useAppDispatch } from '@/src/hooks/use-app-dispatch';
-import { useAuthToken } from '@/src/hooks/use-auth-token';
 import { RootState } from '@/src/store';
 import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake';
 import { Stack, useRouter } from 'expo-router';
@@ -39,9 +37,9 @@ export const Setup = () => {
       <Stack.Screen name="main" options={{ title: 'Where to?' }} />
       <Stack.Screen
         name="confirm-ride"
-        options={{ title: 'Plan Ride', headerShown: false }}
+        options={{ title: 'Plan Ride' }}
       />
-      <Stack.Screen name="lookup-driver" options={{ headerShown: false }} />
+      <Stack.Screen name="lookup-driver" />
     </Stack>
   );
 };

@@ -44,7 +44,7 @@ if (getRNMinorVersion() >= 75) {
   }
 }
 
-rootProject.name = 'rider-app'
+rootProject.name = 'MorroTaxi'
 
 dependencyResolutionManagement {
   versionCatalogs {

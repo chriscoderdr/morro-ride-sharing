@@ -1,37 +1,38 @@
 {
   "expo": {
-    "name": "driver-app",
+    "name": "MorroTaxi Driver",
     "slug": "driver-app",
-    "bundleidentifier": "com.chriscoder.driverapp",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "morrotaxidriverapp",
     "userInterfaceStyle": "automatic",
-    "associatedDomains": [
-      "applinks:taxi.chriscoder.com"
-    ],
+
     "splash": {
       "image": "./assets/images/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#181A20"
     },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.chriscoder.driverapp",
       "infoPlist": {
-        "UIBackgroundModes": [
-          "location",
-          "fetch",
-          "remote-notification"
-        ]
+        "UIBackgroundModes": ["location", "fetch"],
+        "NSAppTransportSecurity": {
+          "NSAllowsArbitraryLoads": true
+        }
       }
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/app-icon.png",
+        "foregroundImage": "./assets/images/icon.png",
         "backgroundColor": "#ffffff"
       },
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_BACKGROUND_LOCATION"
+      ],
       "package": "com.chriscoder.driverapp"
     },
     "web": {
@@ -44,7 +45,7 @@
         "@rnmapbox/maps",
         {
           "RNMapboxMapsImpl": "mapbox",
-          "RNMapboxMapsVersion": "11.3.0",
+          "RNMapboxMapsVersion": "11.7.1",
           "RNMapboxMapsDownloadToken": "sk.eyJ1IjoiY2dvbWV6bWVuZGV6IiwiYSI6ImNtMndhbDAwZjAzMXQyanNkMHF2NjR3bmUifQ.f6E28fydW9bkhLBP7L_lCQ"
         }
       ],

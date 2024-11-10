@@ -1,61 +1,165 @@
 import * as Location from 'expo-location';
 import * as Notifications from 'expo-notifications';
-import React, { useEffect, useState } from 'react';
-import { Alert, AppState, Linking, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useEffect, useState } from 'react';
+import {
+  Alert,
+  AppState,
+  Linking,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import { IPermissionBlockerProps } from './props';
+import { styles } from './styles';
+import { withTimeout } from '../../utils';
 
-const PermissionBlocker = ({ children }: { children: React.ReactNode }) => {
+const PermissionBlocker = ({
+  children,
+  title = 'Permissions Required',
+  subtitle = 'This app requires some permissions to work properly.',
+  alertTitle = 'Permissions Required',
+  alertSubtitle = 'Please grant the required permissions in your settings.',
+  requireLocation = false,
+  requireBackgroundLocation = false,
+  requireNotification = false,
+}: IPermissionBlockerProps) => {
   const [permissionsGranted, setPermissionsGranted] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     checkPermissions();
 
-    // Add an event listener for app state changes
-    const subscription = AppState.addEventListener('change', handleAppStateChange);
+    const subscription = AppState.addEventListener(
+      'change',
+      handleAppStateChange
+    );
     return () => subscription.remove();
   }, []);
 
   const handleAppStateChange = (nextAppState: string) => {
     if (nextAppState === 'active') {
-      checkPermissions(); // Re-check permissions when app comes back to the foreground
+      checkPermissions();
     }
   };
 
   const checkPermissions = async () => {
-    const { status: locationStatus } = await Location.getForegroundPermissionsAsync();
-    const { status: backgroundStatus } = await Location.getBackgroundPermissionsAsync();
-    const { status: notificationStatus } = await Notifications.getPermissionsAsync();
+    let locationDenied = false;
+    let backgroundDenied = false;
+    let notificationDenied = false;
 
-    setPermissionsGranted(
-      locationStatus === 'granted' &&
-      backgroundStatus === 'granted' &&
-      notificationStatus === 'granted'
-    );
+    try {
+      if (requireLocation) {
+        const { status: locationStatus } = await withTimeout(
+          Location.getForegroundPermissionsAsync(),
+          3000
+        );
+        if (locationStatus === 'denied') locationDenied = true;
+      }
+      if (requireBackgroundLocation) {
+        const { status: backgroundStatus } = await withTimeout(
+          Location.getBackgroundPermissionsAsync(),
+          3000
+        );
+        if (backgroundStatus === 'denied') backgroundDenied = true;
+      }
+      if (requireNotification) {
+        const { status: notificationStatus } = await withTimeout(
+          Notifications.getPermissionsAsync(),
+          3000
+        );
+        if (notificationStatus === 'denied') notificationDenied = true;
+      }
+
+      const allPermissionsGranted =
+        !locationDenied && !backgroundDenied && !notificationDenied;
+      setPermissionsGranted(allPermissionsGranted);
+    } catch (error) {
+      console.error('Error checking permissions or timeout occurred:', error);
+      showSettingsAlert();
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleRequestPermissions = async () => {
-    const { status: locationStatus } = await Location.requestForegroundPermissionsAsync();
-    const { status: backgroundStatus } = await Location.requestBackgroundPermissionsAsync();
-    const { status: notificationStatus } = await Notifications.requestPermissionsAsync();
+    let permissionDenied = false;
 
-    if (
-      locationStatus === 'granted' &&
-      backgroundStatus === 'granted' &&
-      notificationStatus === 'granted'
-    ) {
-      setPermissionsGranted(true);
-    } else {
+    try {
+      if (requireLocation) {
+        const { status: locationStatus } = await withTimeout(
+          Location.getForegroundPermissionsAsync(),
+          3000
+        );
+        if (locationStatus === 'denied') {
+          permissionDenied = true;
+        } else if (locationStatus !== 'granted') {
+          const { status: newLocationStatus } = await withTimeout(
+            Location.requestForegroundPermissionsAsync(),
+            3000
+          );
+          if (newLocationStatus !== 'granted') permissionDenied = true;
+        }
+      }
+
+      if (requireBackgroundLocation) {
+        const { status: backgroundStatus } = await withTimeout(
+          Location.getBackgroundPermissionsAsync(),
+          3000
+        );
+        if (backgroundStatus === 'denied') {
+          permissionDenied = true;
+        } else if (backgroundStatus !== 'granted') {
+          const { status: newBackgroundStatus } = await withTimeout(
+            Location.requestBackgroundPermissionsAsync(),
+            3000
+          );
+          if (newBackgroundStatus !== 'granted') permissionDenied = true;
+        }
+      }
+
+      if (requireNotification) {
+        const { status: notificationStatus } = await withTimeout(
+          Notifications.getPermissionsAsync(),
+          3000
+        );
+        if (notificationStatus === 'denied') {
+          permissionDenied = true;
+        } else if (notificationStatus !== 'granted') {
+          const { status: newNotificationStatus } = await withTimeout(
+            Notifications.requestPermissionsAsync(),
+            3000
+          );
+          if (newNotificationStatus !== 'granted') permissionDenied = true;
+        }
+      }
+
+      if (permissionDenied) {
+        showSettingsAlert();
+      } else {
+        setPermissionsGranted(true);
+      }
+    } catch (error) {
+      console.error('Error requesting permissions or timeout occurred:', error);
       Alert.alert(
-        'Permissions Required',
-        'We need location, background location, and notification permissions to provide ride services.',
-        [
-          {
-            text: 'Go to Settings',
-            onPress: () => Linking.openSettings(),
-          },
-        ]
+        'Error',
+        'An error occurred while requesting permissions or the request timed out.'
       );
     }
   };
+
+  const showSettingsAlert = () => {
+    Alert.alert(alertTitle, alertSubtitle, [
+      {
+        text: 'Go to Settings',
+        onPress: () => Linking.openSettings(),
+      },
+      { text: 'Cancel', style: 'cancel' },
+    ]);
+  };
+
+  if (isLoading) {
+    return null;
+  }
 
   if (permissionsGranted) {
     return <>{children}</>;
@@ -63,52 +167,16 @@ const PermissionBlocker = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <View style={styles.overlay}>
-  <Text style={styles.title}>Permissions Required</Text>
-  <Text style={styles.message}>
-    To receive ride requests and navigate to passengers, we need access to notifications, location, and background location. Please enable these permissions in your settings to start accepting rides.
-  </Text>
-  <TouchableOpacity style={styles.button} onPress={handleRequestPermissions}>
-    <Text style={styles.buttonText}>Grant Permissions</Text>
-  </TouchableOpacity>
-</View>
-
+      <Text style={styles.title}>{title}</Text>
+      <Text style={styles.message}>{subtitle}</Text>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={handleRequestPermissions}
+      >
+        <Text style={styles.buttonText}>Grant Permissions</Text>
+      </TouchableOpacity>
+    </View>
   );
 };
-
-const styles = StyleSheet.create({
-  overlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
-    paddingHorizontal: 20,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#FFFFFF',
-    marginBottom: 20,
-  },
-  message: {
-    fontSize: 16,
-    color: '#FFFFFF',
-    textAlign: 'center',
-    marginBottom: 30,
-  },
-  button: {
-    backgroundColor: '#007AFF',
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    borderRadius: 8,
-  },
-  buttonText: {
-    fontSize: 16,
-    color: '#FFFFFF',
-  },
-});
 
 export default PermissionBlocker;
