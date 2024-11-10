@@ -3,9 +3,10 @@ import { View, Dimensions } from 'react-native';
 import { useRouter } from 'expo-router';
 
 import RideProcessCard from '../ride-process-card';
-import MapView from '@/src/components/map-view';
+
 import useRoute from '@/src/hooks/use-route';
 import { useLazyCurrentRideRequestQuery } from '@/src/store/slices/api-slice';
+import { MapView } from 'react-native-morro-taxi-rn-components';
 
 const RideProcess = () => {
   const router = useRouter();

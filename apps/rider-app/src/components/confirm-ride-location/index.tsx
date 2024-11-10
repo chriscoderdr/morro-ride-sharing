@@ -12,9 +12,9 @@ import {
   selectCurrentDropOff,
   selectCurrentPickup
 } from '@/src/store/slices/ride-slice';
-import { GenericCard } from 'react-native-morro-taxi-rn-components';
+import { GenericCard, MapView } from 'react-native-morro-taxi-rn-components';
 import AnimatedCard from '../animated-ride-request-card';
-import MapView from '../map-view';
+
 import RideConfirmationCard from '../ride-selection';
 
 const ConfirmRideLocation = () => {
@@ -63,15 +63,17 @@ const ConfirmRideLocation = () => {
           longitude: currentDropoff.coordinates[0]
         }
       });
-      if (!response || !response.data || !response.data) {
-        console.log(
-          `Error fetching ride estimate: ${JSON.stringify(response)}`
-        );
-        Alert.alert('Error', 'Something went wrong. Please try again later.');
+      if (
+        response.error &&
+        !(response.error as string)
+          .toLowerCase()
+          .startsWith('no drivers available')
+      ) {
+        Alert.alert('Error', response?.error + '');
       }
+      console.log(`estimateResponse: ${JSON.stringify(response)}`);
     } catch (error) {
       console.log(`Error fetching ride estimate: ${JSON.stringify(error)}`);
-      Alert.alert('Error', error.message);
     }
   };
 
@@ -148,16 +150,6 @@ const ConfirmRideLocation = () => {
             <GenericCard
               title="Loading..."
               subtitle="Please wait while we fetch the ride estimate"
-            />
-          </AnimatedCard>
-        )}
-        {rideRequestError && (
-          <AnimatedCard>
-            <GenericCard
-              title="Error"
-              subtitle="Something went wrong. Please try again later."
-              onPressButton={onConfirmLocation}
-              buttonText="Try Again"
             />
           </AnimatedCard>
         )}

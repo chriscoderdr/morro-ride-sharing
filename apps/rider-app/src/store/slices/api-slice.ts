@@ -10,6 +10,7 @@ import {
 } from '@/src/api/models';
 import config from '@/src/config';
 import { RootState } from '@/src/store';
+import { transformErrorResponse } from '@/src/utils/responses';
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 const API_BASE_URL = config.MORRO_API_BASE_URL;
@@ -18,6 +19,10 @@ export const apiSlice = createApi({
   reducerPath: 'api',
   baseQuery: fetchBaseQuery({
     baseUrl: API_BASE_URL,
+    validateStatus: (response) => {
+      console.log(`validating status: ${JSON.stringify(response)}`);
+      return response?.status == 200;
+    },
     prepareHeaders: (headers, { getState }) => {
       const token = (getState() as RootState).auth.user?.accessToken;
       if (token) {
@@ -36,7 +41,8 @@ export const apiSlice = createApi({
         params: {
           cacheBusting: Date.now()
         }
-      })
+      }),
+      transformErrorResponse: transformErrorResponse
     }),
     loginUser: builder.mutation<LoginResponse, LoginData>({
       query: (data) => ({
@@ -47,7 +53,8 @@ export const apiSlice = createApi({
         params: {
           cacheBusting: Date.now()
         }
-      })
+      }),
+      transformErrorResponse: transformErrorResponse
     }),
     createRideRequestRide: builder.mutation<
       CreateRideRequestResponse,
@@ -61,7 +68,8 @@ export const apiSlice = createApi({
         params: {
           cacheBusting: Date.now()
         }
-      })
+      }),
+      transformErrorResponse: transformErrorResponse
     }),
     estimateRide: builder.mutation<RideEstimate, CreateRideRequestData>({
       query: (data) => ({
@@ -72,7 +80,8 @@ export const apiSlice = createApi({
         params: {
           cacheBusting: Date.now()
         }
-      })
+      }),
+      transformErrorResponse: transformErrorResponse
     }),
     currentRideRequest: builder.query<RideRequest, any>({
       query: (data) => ({
@@ -82,7 +91,8 @@ export const apiSlice = createApi({
         params: {
           cacheBusting: Date.now()
         }
-      })
+      }),
+      transformErrorResponse: transformErrorResponse
     })
   })
 });

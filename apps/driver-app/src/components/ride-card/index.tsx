@@ -95,7 +95,7 @@ const RideCard: React.FC<RideCardProps> = ({
       buttonText={buttonText}
       onPressButton={onPressButton}
       buttonType={
-        type === 'declined' || type === 'dropped-off' ? 'secondary' : 'primary'
+        type === 'declined' || type === 'picked-up' ? 'secondary' : 'primary'
       }
     >
       <View style={styles.riderInfoContainer}>
