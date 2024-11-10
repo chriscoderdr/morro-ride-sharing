@@ -13,7 +13,7 @@ const RoundedButton: React.FC<IButtonProps> = ({
   borderRadius = 10,
   type = 'primary',
   testID,
-  disabled = false
+  disabled = false,
 }) => {
   const buttonBackgroundColor =
     backgroundColor ?? (type === 'primary' ? '#000000' : '#FFFFFF');
@@ -26,8 +26,8 @@ const RoundedButton: React.FC<IButtonProps> = ({
     size === 'small'
       ? styles.small
       : size === 'large'
-      ? styles.large
-      : styles.medium;
+        ? styles.large
+        : styles.medium;
   const fullWidthStyle: ViewStyle = fullWidth ? { alignSelf: 'stretch' } : {};
   const opacityStyle = disabled ? { opacity: 0.5 } : {};
 
@@ -39,7 +39,7 @@ const RoundedButton: React.FC<IButtonProps> = ({
         fullWidthStyle,
         borderStyle,
         opacityStyle,
-        { backgroundColor: buttonBackgroundColor, borderRadius }
+        { backgroundColor: buttonBackgroundColor, borderRadius },
       ]}
       onPress={!disabled ? onPress : undefined}
       testID={testID}

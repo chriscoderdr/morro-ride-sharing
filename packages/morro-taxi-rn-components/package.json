@@ -5,6 +5,7 @@
   "source": "./src/index.tsx",
   "main": "./lib/commonjs/index.js",
   "module": "./lib/module/index.js",
+  "private": true,
   "exports": {
     ".": {
       "import": {
@@ -44,7 +45,7 @@
     "clean": "del-cli android/build example/android/build example/android/app/build example/ios/build lib",
     "prepare": "bob build",
     "release": "release-it",
-    "watch": "chokidar 'src/**/*' -c 'bob build && (cd ../../apps/rider-app && yarn install --force)'"
+    "watch": "chokidar 'src/**/*' -c 'bob build && echo \"Build finished\"'"
   },
   "keywords": [
     "react-native",
