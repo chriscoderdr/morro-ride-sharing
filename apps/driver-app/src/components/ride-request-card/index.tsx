@@ -1,8 +1,8 @@
-import GenericCard from '@/src/components/generic-card';
 import React from 'react';
 import { Text, View } from 'react-native';
 import { IRideRequestCardProps } from './props';
 import { styles } from './styles';
+import { GenericCard } from 'react-native-morro-taxi-rn-components';
 
 const RideRequestCard: React.FC<IRideRequestCardProps> = ({
   rideRequest,

@@ -1,8 +1,8 @@
-import GenericCard from '@/src/components/generic-card';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Text, View } from 'react-native';
 import { ITripCompleteCardProps } from './props';
 import { styles } from './styles';
+import { GenericCard } from 'react-native-morro-taxi-rn-components';
 
 const TripCompleteCard = ({
   rideRequest,

@@ -1,6 +1,3 @@
-import Checkbox from '@/src/components/checkbox';
-import InputTextField from '@/src/components/input-text-field';
-import RoundedButton from '@/src/components/rounded-button';
 import { useAppDispatch } from '@/src/hooks/use-app-dispatch';
 import { useRegisterDriverMutation } from '@/src/store/slices/api-slice';
 import { setTokens } from '@/src/store/slices/auth-slice';
@@ -15,6 +12,11 @@ import React, { useRef, useState } from 'react';
 import { Alert, Keyboard, Text, View } from 'react-native';
 import PhoneInput from 'react-native-phone-number-input';
 import { styles } from './styles';
+import {
+  Checkbox,
+  InputTextField,
+  RoundedButton
+} from 'react-native-morro-taxi-rn-components';
 
 const SignUpForm: React.FC = () => {
   const [name, setName] = useState('');

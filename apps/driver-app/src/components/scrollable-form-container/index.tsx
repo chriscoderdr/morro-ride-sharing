@@ -1,6 +1,6 @@
-import KeyboardDismiss from '@/src/components/keyboard-dismiss';
 import { KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
+import { KeyboardDismiss } from 'react-native-morro-taxi-rn-components';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const ScrollableFormContainer = ({

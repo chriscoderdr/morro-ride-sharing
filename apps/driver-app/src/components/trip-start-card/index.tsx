@@ -1,9 +1,9 @@
-import GenericCard from '@/src/components/generic-card';
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { Image, Text, TouchableOpacity, View } from 'react-native';
 import { ITripStartCardProps } from './props';
 import { styles } from './styles';
+import { GenericCard } from 'react-native-morro-taxi-rn-components';
 
 const TripStartCard: React.FC<ITripStartCardProps> = ({
   rideRequest,

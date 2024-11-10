@@ -1950,11 +1950,6 @@
   dependencies:
     levn "^0.4.1"
 
-"@evilmartians/lefthook@^1.5.0":
-  version "1.8.2"
-  resolved "https://registry.yarnpkg.com/@evilmartians/lefthook/-/lefthook-1.8.2.tgz#6ccc23195098c85cee810609093ffea7a63cad84"
-  integrity sha512-SZdQk3W9q7tcJwnSwEMUubQqVIK7SHxv52hEAnV7o3nPI+xKcmd+rN0hZIJg07wjBaJRAjzdvoQySKQQYPW5Qw==
-
 "@expo-google-fonts/inter@^0.2.3":
   version "0.2.3"
   resolved "https://registry.npmjs.org/@expo-google-fonts/inter/-/inter-0.2.3.tgz"
@@ -15781,9 +15776,6 @@ react-native-helmet-async@2.0.4:
     invariant "^2.2.4"
     react-fast-compare "^3.2.2"
     shallowequal "^1.1.0"
-
-"react-native-morro-taxi-rn-components@file:./packages/morro-taxi-rn-components":
-  version "1.0.1"
 
 react-native-phone-number-input@^2.1.0:
   version "2.1.0"

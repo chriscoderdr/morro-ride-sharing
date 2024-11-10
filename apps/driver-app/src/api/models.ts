@@ -83,3 +83,9 @@ export interface RideRequest {
   riderPhone?: string | null;
   updatedAt: number;
 }
+
+export interface User {
+  driverId: string;
+  accessToken: string;
+  refreshToken: string;
+}
