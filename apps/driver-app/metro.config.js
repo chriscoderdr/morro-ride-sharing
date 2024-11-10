@@ -21,8 +21,6 @@ config.resolver.nodeModulesPaths = [
 config.resolver.blacklistRE = exclusionList([
   /node_modules\/.*\/node_modules\/react-native\/.*/,                       // Exclude nested react-native instances
   /react-native-morro-taxi-rn-components\/node_modules\/.*/,                // Exclude all nested node_modules inside react-native-morro-taxi-rn-components
-  /node_modules\/.*\/node_modules\/@rnmapbox\/maps\/.*/,
-  /node_modules\/.*\/node_modules\/@expo\/vector-icons\/Ionicons\/.*/
 ]);
 
 module.exports = config;

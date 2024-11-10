@@ -8,9 +8,6 @@ const handleZoomToUserLocation = (userLocation: any, cameraRef: any) => {
       animationDuration: 2000,
     });
   } else {
-    console.log(
-      `Unable to retrieve user location: ${userLocation} | ${cameraRef.current}`
-    );
     Alert.alert('Location Error', 'Unable to retrieve user location.');
   }
 };

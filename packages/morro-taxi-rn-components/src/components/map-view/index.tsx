@@ -1,14 +1,14 @@
+import Ionicons from '@expo/vector-icons/Ionicons';
+import Mapbox from '@rnmapbox/maps';
 import { forwardRef, useEffect, useRef, useState } from 'react';
 import { TouchableOpacity, View } from 'react-native';
-import Mapbox from '@rnmapbox/maps';
-import Ionicons from '@expo/vector-icons/Ionicons';
-import styles from './styles';
+import { handleZoomToUserLocation } from '../../utils/map';
 import MapImages from './map-images';
 import MapPoint from './map-point';
 import MapRoute from './map-route';
 import MapUserLocationPuck from './map-user-location-puck';
-import { handleZoomToUserLocation } from '../../utils/map';
 import { IMapViewProps } from './props';
+import styles from './styles';
 
 const MapView = forwardRef<Mapbox.Camera, IMapViewProps>(
   (
@@ -42,12 +42,10 @@ const MapView = forwardRef<Mapbox.Camera, IMapViewProps>(
     }, [userLocation]);
 
     const onPressMyLocation = () => {
-      console.log(`onPressMyLocation: ${userLocation} | ${cameraRef}`);
       handleZoomToUserLocation(userLocation, cameraRef);
     };
 
     const handleOnUserLocationUpdate = (location: Mapbox.Location) => {
-      console.log(`onUserLocationUpdate: ${location}`);
       const userLocation = location.coords;
       setUserLocation({
         longitude: userLocation.longitude,

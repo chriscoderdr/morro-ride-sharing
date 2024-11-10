@@ -11,7 +11,6 @@ import {
 } from 'react-native';
 import { IPermissionBlockerProps } from './props';
 import { styles } from './styles';
-import { withTimeout } from '../../utils';
 
 const PermissionBlocker = ({
   children,
@@ -28,7 +27,6 @@ const PermissionBlocker = ({
 
   useEffect(() => {
     checkPermissions();
-
     const subscription = AppState.addEventListener(
       'change',
       handleAppStateChange
@@ -43,39 +41,22 @@ const PermissionBlocker = ({
   };
 
   const checkPermissions = async () => {
-    let locationDenied = false;
-    let backgroundDenied = false;
-    let notificationDenied = false;
-
     try {
-      if (requireLocation) {
-        const { status: locationStatus } = await withTimeout(
-          Location.getForegroundPermissionsAsync(),
-          3000
-        );
-        if (locationStatus === 'denied') locationDenied = true;
-      }
-      if (requireBackgroundLocation) {
-        const { status: backgroundStatus } = await withTimeout(
-          Location.getBackgroundPermissionsAsync(),
-          3000
-        );
-        if (backgroundStatus === 'denied') backgroundDenied = true;
-      }
-      if (requireNotification) {
-        const { status: notificationStatus } = await withTimeout(
-          Notifications.getPermissionsAsync(),
-          3000
-        );
-        if (notificationStatus === 'denied') notificationDenied = true;
-      }
+      const { status: locationStatus } =
+        await Location.getForegroundPermissionsAsync();
+      const { status: backgroundStatus } =
+        await Location.getBackgroundPermissionsAsync();
+      const { status: notificationStatus } =
+        await Notifications.getPermissionsAsync();
 
       const allPermissionsGranted =
-        !locationDenied && !backgroundDenied && !notificationDenied;
+        (!requireLocation || locationStatus === 'granted') &&
+        (!requireBackgroundLocation || backgroundStatus === 'granted') &&
+        (!requireNotification || notificationStatus === 'granted');
+
       setPermissionsGranted(allPermissionsGranted);
     } catch (error) {
-      console.error('Error checking permissions or timeout occurred:', error);
-      showSettingsAlert();
+      console.error('Error checking permissions:', error);
     } finally {
       setIsLoading(false);
     }
@@ -84,66 +65,46 @@ const PermissionBlocker = ({
   const handleRequestPermissions = async () => {
     let permissionDenied = false;
 
-    try {
-      if (requireLocation) {
-        const { status: locationStatus } = await withTimeout(
-          Location.getForegroundPermissionsAsync(),
-          3000
-        );
-        if (locationStatus === 'denied') {
-          permissionDenied = true;
-        } else if (locationStatus !== 'granted') {
-          const { status: newLocationStatus } = await withTimeout(
-            Location.requestForegroundPermissionsAsync(),
-            3000
-          );
-          if (newLocationStatus !== 'granted') permissionDenied = true;
-        }
+    if (requireLocation) {
+      const { status: locationStatus } =
+        await Location.getForegroundPermissionsAsync();
+      if (locationStatus === 'denied') {
+        permissionDenied = true;
+      } else if (locationStatus !== 'granted') {
+        const { status: newLocationStatus } =
+          await Location.requestForegroundPermissionsAsync();
+        if (newLocationStatus !== 'granted') permissionDenied = true;
       }
+    }
 
-      if (requireBackgroundLocation) {
-        const { status: backgroundStatus } = await withTimeout(
-          Location.getBackgroundPermissionsAsync(),
-          3000
-        );
-        if (backgroundStatus === 'denied') {
-          permissionDenied = true;
-        } else if (backgroundStatus !== 'granted') {
-          const { status: newBackgroundStatus } = await withTimeout(
-            Location.requestBackgroundPermissionsAsync(),
-            3000
-          );
-          if (newBackgroundStatus !== 'granted') permissionDenied = true;
-        }
+    if (requireBackgroundLocation) {
+      const { status: backgroundStatus } =
+        await Location.getBackgroundPermissionsAsync();
+      if (backgroundStatus === 'denied') {
+        permissionDenied = true;
+      } else if (backgroundStatus !== 'granted') {
+        const { status: newBackgroundStatus } =
+          await Location.requestBackgroundPermissionsAsync();
+        if (newBackgroundStatus !== 'granted') permissionDenied = true;
       }
+    }
 
-      if (requireNotification) {
-        const { status: notificationStatus } = await withTimeout(
-          Notifications.getPermissionsAsync(),
-          3000
-        );
-        if (notificationStatus === 'denied') {
-          permissionDenied = true;
-        } else if (notificationStatus !== 'granted') {
-          const { status: newNotificationStatus } = await withTimeout(
-            Notifications.requestPermissionsAsync(),
-            3000
-          );
-          if (newNotificationStatus !== 'granted') permissionDenied = true;
-        }
+    if (requireNotification) {
+      const { status: notificationStatus } =
+        await Notifications.getPermissionsAsync();
+      if (notificationStatus === 'denied') {
+        permissionDenied = true;
+      } else if (notificationStatus !== 'granted') {
+        const { status: newNotificationStatus } =
+          await Notifications.requestPermissionsAsync();
+        if (newNotificationStatus !== 'granted') permissionDenied = true;
       }
+    }
 
-      if (permissionDenied) {
-        showSettingsAlert();
-      } else {
-        setPermissionsGranted(true);
-      }
-    } catch (error) {
-      console.error('Error requesting permissions or timeout occurred:', error);
-      Alert.alert(
-        'Error',
-        'An error occurred while requesting permissions or the request timed out.'
-      );
+    if (permissionDenied) {
+      showSettingsAlert();
+    } else {
+      setPermissionsGranted(true);
     }
   };
 
