@@ -7852,6 +7852,11 @@ crypt@0.0.2, crypt@~0.0.1:
   resolved "https://registry.npmjs.org/crypt/-/crypt-0.0.2.tgz"
   integrity sha512-mCxBlsHFYh9C+HVpiEacem8FEBnMXgU9gy4zmNC+SXAZNB/1idgp/aulFJ4FgCi7GPEVbfyng092GqL2k2rmow==
 
+crypto-js@^4.2.0:
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/crypto-js/-/crypto-js-4.2.0.tgz#4d931639ecdfd12ff80e8186dba6af2c2e856631"
+  integrity sha512-KALDyEYgpY+Rlob/iriUtjV6d5Eq+Y191A5g4UqLAi8CyGP9N1+FdVbkc1SxKc2r4YAYqG8JzO2KGL+AizD70Q==
+
 crypto-random-string@^1.0.0:
   version "1.0.0"
   resolved "https://registry.npmjs.org/crypto-random-string/-/crypto-random-string-1.0.0.tgz"
@@ -15776,6 +15781,9 @@ react-native-helmet-async@2.0.4:
     invariant "^2.2.4"
     react-fast-compare "^3.2.2"
     shallowequal "^1.1.0"
+
+"react-native-morro-taxi-rn-components@file:./packages/morro-taxi-rn-components":
+  version "1.0.1"
 
 react-native-phone-number-input@^2.1.0:
   version "2.1.0"

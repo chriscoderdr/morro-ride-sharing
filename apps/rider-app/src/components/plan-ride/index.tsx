@@ -102,7 +102,7 @@ export const PlanRide = () => {
         setRidePlaces({
           pickup: pickup,
           dropoff: {
-            address: pickup.address,
+            address: selectedDropoff.name,
             coordinates: [
               dropoffCoordinates.features[0].geometry.coordinates[0],
               dropoffCoordinates.features[0].geometry.coordinates[1]

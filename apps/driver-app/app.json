@@ -20,7 +20,8 @@
         "UIBackgroundModes": ["location", "fetch"],
         "NSAppTransportSecurity": {
           "NSAllowsArbitraryLoads": true
-        }
+        },
+        "LSApplicationQueriesSchemes": ["tel"]
       }
     },
     "android": {

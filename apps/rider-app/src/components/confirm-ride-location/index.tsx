@@ -9,6 +9,7 @@ import {
   useEstimateRideMutation
 } from '@/src/store/slices/api-slice';
 import {
+  createRideRequest,
   selectCurrentDropOff,
   selectCurrentPickup
 } from '@/src/store/slices/ride-slice';
@@ -16,17 +17,17 @@ import { GenericCard, MapView } from 'react-native-morro-taxi-rn-components';
 import AnimatedCard from '../animated-ride-request-card';
 
 import RideConfirmationCard from '../ride-selection';
+import { useAppDispatch } from '@/src/hooks/use-app-dispatch';
+import { RootState } from '@/src/store';
 
 const ConfirmRideLocation = () => {
   const router = useRouter();
   const { route, fetchRoute } = useRoute();
   const currentPickup = useSelector(selectCurrentPickup);
   const currentDropoff = useSelector(selectCurrentDropOff);
+  const dispatch = useAppDispatch();
+  const riderequest = useSelector((state: RootState) => state.ride);
 
-  const [
-    createRideRequest,
-    { data: rideRequestResponse, error: rideRequestError }
-  ] = useCreateRideRequestRideMutation();
   const [
     estimateRide,
     { data: estimateData, error: estimateError, isLoading: isLoadingEstimate }
@@ -48,6 +49,12 @@ const ConfirmRideLocation = () => {
       loadRideEstimate();
     }
   }, [currentPickup, currentDropoff]);
+
+  useEffect(() => {
+    if (riderequest?.rideRequestId && riderequest?.status != 'completed') {
+      router.replace('/lookup-driver');
+    }
+  }, [riderequest]);
 
   const loadRideEstimate = async () => {
     try {
@@ -88,29 +95,27 @@ const ConfirmRideLocation = () => {
     try {
       console.log(`Creating ride request...`);
 
-      const response = await createRideRequest({
-        pickupLocation: {
-          address: currentPickup.address,
-          latitude: currentPickup.coordinates[1],
-          longitude: currentPickup.coordinates[0]
-        },
-        dropOffLocation: {
-          address: currentDropoff.address,
-          latitude: currentDropoff.coordinates[1],
-          longitude: currentDropoff.coordinates[0]
-        }
-      });
-      console.log(`createRideRequest response: ${JSON.stringify(response)}`);
-
-      // Navigate to the DriverLookup screen with rideRequestId when successful
-      if (response?.data?.rideRequestId) {
-        router.push('/lookup-driver');
-      }
+      dispatch(
+        createRideRequest({
+          pickupLocation: {
+            address: currentPickup.address,
+            latitude: currentPickup.coordinates[1],
+            longitude: currentPickup.coordinates[0]
+          },
+          dropOffLocation: {
+            address: currentDropoff.address,
+            latitude: currentDropoff.coordinates[1],
+            longitude: currentDropoff.coordinates[0]
+          }
+        })
+      );
     } catch (error) {
       console.log(`Error creating ride request: ${JSON.stringify(error)}`);
       Alert.alert('Error', error.message);
     }
   };
+
+  console.log(`currentPickup: ${JSON.stringify(estimateError)}`);
 
   return (
     <View style={{ flex: 1 }}>
@@ -134,14 +139,12 @@ const ConfirmRideLocation = () => {
       <View
         style={{ position: 'absolute', bottom: 0, width: '100%', padding: 20 }}
       >
-        {(estimateData || estimateError) && !rideRequestResponse && (
+        {!isLoadingEstimate && estimateData && (
           <AnimatedCard>
             <RideConfirmationCard
               onPressButton={onConfirmLocation}
               estimateInfo={estimateData}
-              noDriversAvailable={
-                !estimateData || estimateData?.nearbyDrivers.length === 0
-              }
+              noDriversAvailable={estimateData.nearbyDrivers.length === 0}
             />
           </AnimatedCard>
         )}
@@ -150,6 +153,16 @@ const ConfirmRideLocation = () => {
             <GenericCard
               title="Loading..."
               subtitle="Please wait while we fetch the ride estimate"
+            />
+          </AnimatedCard>
+        )}
+        {estimateError && (
+          <AnimatedCard>
+            <GenericCard
+              title="No available drivers"
+              subtitle={estimateError as string}
+              onPressButton={loadRideEstimate}
+              buttonText="Retry"
             />
           </AnimatedCard>
         )}

@@ -25,6 +25,7 @@
     "@react-navigation/native": "^6.0.2",
     "@reduxjs/toolkit": "^2.3.0",
     "@rnmapbox/maps": "^10.1.33",
+    "crypto-js": "^4.2.0",
     "expo": "~51.0.39",
     "expo-constants": "~16.0.2",
     "expo-dev-client": "~4.0.29",

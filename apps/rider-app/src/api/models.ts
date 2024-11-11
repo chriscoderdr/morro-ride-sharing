@@ -1,5 +1,6 @@
 export interface ApiResponse {
   message: string;
+  error: string | null;
 }
 
 export interface RiderData {
@@ -44,7 +45,7 @@ export interface CreateRideRequestData {
   dropOffLocation: Location;
 }
 
-export interface RideEstimate {
+export interface RideEstimate extends ApiResponse {
   estimatedPrice: string;
   nearbyDrivers: any[];
   pickup: {
