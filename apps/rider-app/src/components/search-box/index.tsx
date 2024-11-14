@@ -1,9 +1,7 @@
-import { forwardRef, useEffect, useState } from 'react';
+import { forwardRef, useCallback, useEffect, useState } from 'react';
 import { TextInput, View } from 'react-native';
 import { InputText } from 'react-native-morro-taxi-rn-components';
-import {
-  SearchBoxCore,
-} from '@mapbox/search-js-core';
+import { SearchBoxCore } from '@mapbox/search-js-core';
 import config from '@/src/config';
 import { debounce } from '@/src/utils/debouce';
 import { ISearchBoxProps } from './props';
@@ -64,7 +62,12 @@ export const SearchBox = forwardRef<TextInput, ISearchBoxProps>(
       onSuggestions(result.suggestions);
     };
 
-    const debouncedSearchPlace = debounce(searchPlace, 500);
+    const noop = () => {};
+
+    const debouncedSearchPlace = useCallback(
+      debounce(searchPlace || noop, 500),
+      [searchPlace]
+    );
 
     useEffect(() => {
       if (searchQuery.length > 3) {

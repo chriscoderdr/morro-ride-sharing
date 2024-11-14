@@ -1,8 +1,9 @@
 "use strict";
 
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Text, TouchableOpacity } from 'react-native';
 import { styles } from "./styles.js";
+import { debounce } from "../../utils/index.js";
 import { jsx as _jsx } from "react/jsx-runtime";
 const RoundedButton = ({
   text,
@@ -29,12 +30,19 @@ const RoundedButton = ({
   const opacityStyle = disabled ? {
     opacity: 0.5
   } : {};
+  const noop = () => {};
+  const debouncedOnPress = useCallback(onPress ? debounce(onPress, 500) : noop, [onPress]);
+  const handleOnPress = () => {
+    if (!disabled) {
+      debouncedOnPress();
+    }
+  };
   return /*#__PURE__*/_jsx(TouchableOpacity, {
     style: [styles.button, buttonSizeStyle, fullWidthStyle, borderStyle, opacityStyle, {
       backgroundColor: buttonBackgroundColor,
       borderRadius
     }],
-    onPress: !disabled ? onPress : undefined,
+    onPress: handleOnPress,
     testID: testID,
     disabled: disabled,
     children: /*#__PURE__*/_jsx(Text, {

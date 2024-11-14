@@ -15,7 +15,8 @@ import SignUpForm from "./components/sign-up-form/index.js";
 import TestComponent from "./components/test-component/index.js";
 import MapView from "./components/map-view/index.js";
 import MapService from "./services/map-service.js";
-export { Checkbox, GenericCard, InputPhone, InputText, InputTextField, KeyboardDismiss, LoginForm, ObscuredInputText, PermissionBlocker, RoundedButton, ScrollableFormContainer, SignUpForm, TestComponent, MapView, MapService };
+import utils from "./utils/index.js";
+export { Checkbox, GenericCard, InputPhone, InputText, InputTextField, KeyboardDismiss, LoginForm, ObscuredInputText, PermissionBlocker, RoundedButton, ScrollableFormContainer, SignUpForm, TestComponent, MapView, MapService, utils };
 
 // export { default as MorroTaxiRnComponentsView } from './MorroTaxiRnComponentsViewNativeComponent';
 // export * from './MorroTaxiRnComponentsViewNativeComponent';

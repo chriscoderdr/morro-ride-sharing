@@ -53,11 +53,7 @@ const RideProcess = () => {
 
   useEffect(() => {
     if (!currentRide?.rideRequestId || currentRide.status === 'completed') {
-      if (router.canDismiss() && router.canGoBack()) {
-        router.dismissAll();
-      } else {
-        router.replace('/main');
-      }
+      router.replace('/main');
     }
   }, [currentRide, router]);
 

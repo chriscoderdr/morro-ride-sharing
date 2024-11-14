@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Text, TouchableOpacity, ViewStyle } from 'react-native';
 import { IButtonProps } from './props';
 import { styles } from './styles';
+import { debounce } from '../../utils';
 
 const RoundedButton: React.FC<IButtonProps> = ({
   text,
@@ -31,6 +32,19 @@ const RoundedButton: React.FC<IButtonProps> = ({
   const fullWidthStyle: ViewStyle = fullWidth ? { alignSelf: 'stretch' } : {};
   const opacityStyle = disabled ? { opacity: 0.5 } : {};
 
+  const noop = () => {};
+
+  const debouncedOnPress = useCallback(
+    onPress ? debounce(onPress, 500) : noop,
+    [onPress]
+  );
+
+  const handleOnPress = () => {
+    if (!disabled) {
+      debouncedOnPress();
+    }
+  };
+
   return (
     <TouchableOpacity
       style={[
@@ -41,7 +55,7 @@ const RoundedButton: React.FC<IButtonProps> = ({
         opacityStyle,
         { backgroundColor: buttonBackgroundColor, borderRadius },
       ]}
-      onPress={!disabled ? onPress : undefined}
+      onPress={handleOnPress}
       testID={testID}
       disabled={disabled}
     >

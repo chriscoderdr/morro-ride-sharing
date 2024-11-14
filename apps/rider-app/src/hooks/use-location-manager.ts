@@ -101,7 +101,9 @@ const useLocationManager = (isBackground = false, interval = 3000) => {
     } else {
       return () => {
         clearInterval(locationIntervalRef.current);
-        stopLocationUpdates('Location-updates');
+        if (isBackground) {
+          stopLocationUpdates('Location-updates');
+        }
       };
     }
   }, [isStopped]);

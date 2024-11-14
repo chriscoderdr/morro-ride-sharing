@@ -1,3 +1,5 @@
+import { debounce } from './debounce';
+
 const withTimeout = (promise: any, ms: any) => {
   return Promise.race([
     promise,
@@ -7,4 +9,5 @@ const withTimeout = (promise: any, ms: any) => {
   ]);
 };
 
-export { withTimeout };
+export { withTimeout, debounce };
+export default { withTimeout, debounce };
