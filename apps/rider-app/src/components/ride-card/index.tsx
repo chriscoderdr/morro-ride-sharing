@@ -1,8 +1,6 @@
-import { RideRequest } from '@/src/api/models';
-
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
-import { Image, Text, TouchableOpacity, View } from 'react-native';
+import { Text, TouchableOpacity, View } from 'react-native';
 import { styles } from './styles';
 import { GenericCard } from 'react-native-morro-taxi-rn-components';
 import {

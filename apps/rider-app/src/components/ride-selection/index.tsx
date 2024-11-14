@@ -1,4 +1,3 @@
-import { View } from 'react-native';
 import { GenericCard } from 'react-native-morro-taxi-rn-components';
 
 const RideConfirmationCard = ({

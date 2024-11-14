@@ -1,7 +1,6 @@
-import { Alert, Text, TextInput, View } from 'react-native';
+import { Alert, TextInput, View } from 'react-native';
 import { SearchBox } from '../search-box';
 import { useEffect, useRef, useState } from 'react';
-import { RoundedButton } from 'react-native-morro-taxi-rn-components';
 import useLocationManager from '@/src/hooks/use-location-manager';
 import {
   GeocodingCore,
@@ -11,15 +10,10 @@ import {
   SessionToken
 } from '@mapbox/search-js-core';
 import config from '@/src/config';
-import { useCreateRideRequestRideMutation } from '@/src/store/slices/api-slice';
 import PlaceList from '../place-list';
 import { styles } from './styles';
 import { useAppDispatch } from '@/src/hooks/use-app-dispatch';
-import {
-  Place,
-  setRidePickup,
-  setRidePlaces
-} from '@/src/store/slices/ride-slice';
+import { Place, setRidePlaces } from '@/src/store/slices/ride-slice';
 import { useRouter } from 'expo-router';
 
 export const PlanRide = () => {

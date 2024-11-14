@@ -1,5 +1,5 @@
-import { useEffect } from "react";
-import useLocationManager from "./use-location-manager";
+import { useEffect } from 'react';
+import useLocationManager from './use-location-manager';
 
 const useUserLocation = () => {
   const { location, fetchUserLocation } = useLocationManager(false);

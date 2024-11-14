@@ -37,7 +37,7 @@ export const apiSlice = createApi({
         params: {
           cacheBusting: Date.now()
         }
-      }),
+      })
     }),
     loginUser: builder.mutation<LoginResponse, LoginData>({
       query: (data) => ({
@@ -48,7 +48,7 @@ export const apiSlice = createApi({
         params: {
           cacheBusting: Date.now()
         }
-      }),
+      })
     }),
     createRideRequestRide: builder.mutation<
       CreateRideRequestResponse,

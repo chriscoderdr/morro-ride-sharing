@@ -1,14 +1,6 @@
-import { RideRequest } from '@/src/api/models';
 import { useAppDispatch } from '@/src/hooks/use-app-dispatch';
 
-import {
-  Alert,
-  Dimensions,
-  FlatList,
-  Linking,
-  Platform,
-  View
-} from 'react-native';
+import { Alert, Linking, Platform, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import AnimatedRideRequestCard from '../animated-ride-request-card';
 import RideCard from '../ride-card';

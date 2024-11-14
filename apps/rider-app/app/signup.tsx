@@ -1,6 +1,5 @@
 import { useAppDispatch } from '@/src/hooks/use-app-dispatch';
 import { RootState } from '@/src/store';
-import { useRegisterUserMutation } from '@/src/store/slices/api-slice';
 import { registerUser } from '@/src/store/slices/auth-slice';
 import { useRouter } from 'expo-router';
 import {

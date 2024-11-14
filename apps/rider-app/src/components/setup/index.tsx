@@ -1,6 +1,6 @@
 import { useAppDispatch } from '@/src/hooks/use-app-dispatch';
 import { RootState } from '@/src/store';
-import { clearAllErrors, clearError } from '@/src/store/slices/error-slice';
+import { clearAllErrors } from '@/src/store/slices/error-slice';
 import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake';
 import { Stack, useRouter } from 'expo-router';
 import { useEffect } from 'react';

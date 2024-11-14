@@ -3,10 +3,8 @@ import { RootState } from '@/src/store';
 import { apiSlice } from './api-slice';
 import {
   CreateRideRequestData,
-  CreateRideRequestResponse,
-  RideRequest
+  CreateRideRequestResponse
 } from '@/src/api/models';
-import { useRouter } from 'expo-router';
 import { Alert } from 'react-native';
 import { addError, clearAllErrors } from './error-slice';
 

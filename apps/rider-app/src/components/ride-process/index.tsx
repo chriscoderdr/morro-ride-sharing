@@ -1,5 +1,5 @@
 import React, { useEffect, useCallback } from 'react';
-import { View, Dimensions } from 'react-native';
+import { View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSelector } from 'react-redux';
 

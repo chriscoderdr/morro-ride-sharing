@@ -4,10 +4,7 @@ import { Alert, View } from 'react-native';
 import { useSelector } from 'react-redux';
 
 import useRoute from '@/src/hooks/use-route';
-import {
-  useCreateRideRequestRideMutation,
-  useEstimateRideMutation
-} from '@/src/store/slices/api-slice';
+import { useEstimateRideMutation } from '@/src/store/slices/api-slice';
 import {
   createRideRequest,
   selectCurrentDropOff,

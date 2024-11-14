@@ -1,5 +1,4 @@
 import { PlanRide } from '@/src/components/plan-ride';
-import Mapbox from '@rnmapbox/maps';
 import { View } from 'react-native';
 import { MapView } from 'react-native-morro-taxi-rn-components';
 

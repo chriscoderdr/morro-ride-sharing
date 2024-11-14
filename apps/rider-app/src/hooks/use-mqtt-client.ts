@@ -1,5 +1,5 @@
-import getMQTTClient from "@/src/utils/mqtt-client";
-import { useEffect, useState } from "react";
+import getMQTTClient from '@/src/utils/mqtt-client';
+import { useEffect, useState } from 'react';
 
 const useMQTTClient = () => {
   const [isConnected, setIsConnected] = useState(false);

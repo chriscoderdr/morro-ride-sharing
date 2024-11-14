@@ -1,4 +1,4 @@
-import { forwardRef, useEffect, useRef, useState } from 'react';
+import { forwardRef, useEffect, useState } from 'react';
 import { TextInput, View } from 'react-native';
 import { InputText } from 'react-native-morro-taxi-rn-components';
 import {
