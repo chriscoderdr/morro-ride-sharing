@@ -43,10 +43,11 @@ export interface CreateRideRequestResponse extends ApiResponse {
 export interface CreateRideRequestData {
   pickupLocation: Location;
   dropOffLocation: Location;
+  estimatePrice: string;
 }
 
 export interface RideEstimate extends ApiResponse {
-  estimatedPrice: string;
+  estimatePrice: string;
   nearbyDrivers: any[];
   pickup: {
     distance: string;
@@ -72,7 +73,7 @@ interface TimeDistance {
 export interface RideRequest {
   createdAt: number;
   rideRequestId: string;
-  estimatedPrice: string | null;
+  estimatePrice: string | null;
   pickupTimeDistance: TimeDistance | null;
   pickupLocation: Location | null;
   tripTimeDistance: TimeDistance | null;

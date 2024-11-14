@@ -9,8 +9,18 @@ interface IPlanRideStyles {
 
 export const styles = StyleSheet.create<IPlanRideStyles>({
   container: {
-    flex: 1,
-    paddingHorizontal: 20
+    position: 'absolute',
+    top: 50,
+    left: 10,
+    right: 10,
+    padding: 16,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 8,
+    elevation: 5, // For shadow on Android
+    shadowColor: '#000', // For shadow on iOS
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4
   },
   separator: {
     marginVertical: 15

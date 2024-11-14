@@ -1,6 +1,6 @@
 import { useAppDispatch } from '@/src/hooks/use-app-dispatch';
 import { RootState } from '@/src/store';
-import { clearRide } from '@/src/store/slices/ride-slice';
+import { clearAllErrors, clearError } from '@/src/store/slices/error-slice';
 import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake';
 import { Stack, useRouter } from 'expo-router';
 import { useEffect } from 'react';
@@ -17,8 +17,8 @@ export const Setup = () => {
   );
   const ride = useSelector((state: RootState) => state.ride);
 
-  // dispatch(clearRide());
   useEffect(() => {
+    dispatch(clearAllErrors());
     if (!isAuthenticated) {
       router.replace('/signup');
     } else {
@@ -46,11 +46,8 @@ export const Setup = () => {
     <Stack>
       <Stack.Screen name="login" options={{ headerShown: false }} />
       <Stack.Screen name="signup" options={{ headerShown: false }} />
-      <Stack.Screen
-        name="main"
-        options={{ title: 'Where to?', headerBackButtonMenuEnabled: false }}
-      />
-      <Stack.Screen name="confirm-ride" options={{ title: 'Plan Ride' }} />
+      <Stack.Screen name="main" options={{ headerShown: false }} />
+      <Stack.Screen name="confirm-ride" options={{ headerShown: false }} />
       <Stack.Screen name="lookup-driver" options={{ headerShown: false }} />
     </Stack>
   );

@@ -68,7 +68,8 @@ const ConfirmRideLocation = () => {
           address: currentDropoff.address,
           latitude: currentDropoff.coordinates[1],
           longitude: currentDropoff.coordinates[0]
-        }
+        },
+        estimatePrice: ''
       });
       if (
         response.error &&
@@ -106,16 +107,18 @@ const ConfirmRideLocation = () => {
             address: currentDropoff.address,
             latitude: currentDropoff.coordinates[1],
             longitude: currentDropoff.coordinates[0]
-          }
+          },
+          estimatePrice: estimateData.estimatePrice
         })
       );
     } catch (error) {
-      console.log(`Error creating ride request: ${JSON.stringify(error)}`);
       Alert.alert('Error', error.message);
     }
   };
 
-  console.log(`currentPickup: ${JSON.stringify(estimateError)}`);
+  const onCancel = () => {
+    router.dismissAll();
+  };
 
   return (
     <View style={{ flex: 1 }}>
@@ -145,6 +148,7 @@ const ConfirmRideLocation = () => {
               onPressButton={onConfirmLocation}
               estimateInfo={estimateData}
               noDriversAvailable={estimateData.nearbyDrivers.length === 0}
+              onPressCancelButton={onCancel}
             />
           </AnimatedCard>
         )}
@@ -163,6 +167,9 @@ const ConfirmRideLocation = () => {
               subtitle={estimateError as string}
               onPressButton={loadRideEstimate}
               buttonText="Retry"
+              onPressSecondaryButton={onCancel}
+              secondaryButtonText="Cancel"
+              secondaryButtonType="secondary"
             />
           </AnimatedCard>
         )}

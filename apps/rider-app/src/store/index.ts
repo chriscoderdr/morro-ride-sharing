@@ -1,5 +1,6 @@
 import { apiSlice } from '@/src/store/slices/api-slice';
 import authReducer from '@/src/store/slices/auth-slice';
+import errorReducer from '@/src/store/slices/error-slice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import { persistReducer, persistStore } from 'redux-persist';
@@ -15,7 +16,8 @@ const persistConfig = {
 const reducer = combineReducers({
   [apiSlice.reducerPath]: apiSlice.reducer,
   auth: authReducer,
-  ride: rideSlide
+  ride: rideSlide,
+  error: errorReducer
 });
 
 const persistedReducer = persistReducer(persistConfig, reducer);

@@ -7,6 +7,8 @@ import {
   RideRequest
 } from '@/src/api/models';
 import { useRouter } from 'expo-router';
+import { Alert } from 'react-native';
+import { addError, clearAllErrors } from './error-slice';
 
 export interface Place {
   address: string;
@@ -32,6 +34,7 @@ export interface RideState {
     | 'completed'
     | 'declined'
     | null;
+  estimatePrice: string | null;
 }
 
 const initialState: RideState = {
@@ -40,7 +43,8 @@ const initialState: RideState = {
   driver: null,
   pickup: null,
   dropoff: null,
-  status: 'pending'
+  status: 'pending',
+  estimatePrice: null
 };
 
 const rideSlice = createSlice({
@@ -66,6 +70,7 @@ const rideSlice = createSlice({
           action.payload.dropOff.latitude
         ]
       };
+      state.estimatePrice = action.payload.estimatePrice;
       console.log(`createRide: ${JSON.stringify(action.payload)}`);
       console.log(`createRide: ${JSON.stringify(state)}`);
     },
@@ -95,6 +100,7 @@ const rideSlice = createSlice({
       state.driver = null;
       state.status = null;
       state.rideRequestId = null;
+      state.estimatePrice = null;
     },
     updateRide: (state, action: PayloadAction<any>) => {
       if (
@@ -110,6 +116,7 @@ const rideSlice = createSlice({
         state.driver = null;
         state.status = null;
         state.rideRequestId = null;
+        state.estimatePrice = null;
       }
     },
     completeRide: (state) => {
@@ -134,11 +141,13 @@ export const createRideRequest = createAsyncThunk<
         createRide({
           rideRequestId: response.rideRequestId,
           pickup: data?.pickupLocation,
-          dropOff: data?.dropOffLocation
+          dropOff: data?.dropOffLocation,
+          estimatePrice: data?.estimatePrice
         })
       );
       return response;
     } catch (error) {
+      Alert.alert('Error', error);
       console.error('Error creatingRideRequest:', error);
       return rejectWithValue(error);
     }
@@ -163,10 +172,12 @@ export const fetchRideRequest = createAsyncThunk<
         driver: response.driver
       })
     );
+    dispatch(clearAllErrors());
     console.log(`fetchRideRequest: ${JSON.stringify(response)}`);
     return response;
   } catch (error) {
-    console.error('Error fetchingRideRequest:', error);
+    dispatch(clearAllErrors());
+    dispatch(addError(error));
     return rejectWithValue(error);
   }
 });

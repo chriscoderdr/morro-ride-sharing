@@ -70,7 +70,7 @@ const RideCard: React.FC<RideCardProps> = ({
       case 'dropped-off':
         return {
           title: 'Trip Completed',
-          subtitle: 'Your trip is complete',
+          subtitle: `Your trip is complete\n Pay the driver ₱${ride.estimatePrice}`,
           buttonText: 'Done',
           action: () => {
             dispatch(completeRide());

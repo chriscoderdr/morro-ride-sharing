@@ -11,7 +11,7 @@ const RideProcessCard = ({ currentRide, onCancelRideRequest }) => {
       return 'Please wait while we look for drivers near your pickup location.';
     }
 
-    const { driver, pickupTimeDistance, tripTimeDistance, estimatedPrice } =
+    const { driver, pickupTimeDistance, tripTimeDistance, estimatePrice } =
       currentRide;
 
     if (!driver) {
@@ -22,7 +22,7 @@ const RideProcessCard = ({ currentRide, onCancelRideRequest }) => {
       `Driver: ${driver.name}\nPhone: ${driver.phone}\n\n` +
       `Pickup ETA: ${pickupTimeDistance?.time} (${pickupTimeDistance?.distance})\n` +
       `Trip ETA: ${tripTimeDistance?.time} (${tripTimeDistance?.distance})\n\n` +
-      `Estimated Fare: ₱${estimatedPrice}`
+      `Estimated Fare: ₱${estimatePrice}`
     );
   };
 
@@ -59,6 +59,8 @@ const RideProcessCard = ({ currentRide, onCancelRideRequest }) => {
           subtitle={renderSubtitle()}
           buttonText={isCancelable ? 'Cancel Ride' : 'Close'}
           onPressButton={isCancelable ? onCancelRideRequest : null}
+          secondaryButtonText="close"
+          onPressSecondaryButton={onCancelRideRequest}
           containerStyle={{
             minHeight: 250,
             width: screenWidth * 0.9,

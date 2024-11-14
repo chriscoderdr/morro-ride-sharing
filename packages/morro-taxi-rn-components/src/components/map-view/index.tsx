@@ -1,8 +1,8 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import Mapbox from '@rnmapbox/maps';
 import { forwardRef, useEffect, useRef, useState } from 'react';
-import { TouchableOpacity, View } from 'react-native';
-import { handleZoomToUserLocation } from '../../utils/map';
+import { Alert, TouchableOpacity, View } from 'react-native';
+import { handleZoomToUserLocation, openNavigationApp } from '../../utils/map';
 import MapImages from './map-images';
 import MapPoint from './map-point';
 import MapRoute from './map-route';
@@ -19,6 +19,8 @@ const MapView = forwardRef<Mapbox.Camera, IMapViewProps>(
       myLocationButtonStyle,
       points,
       onUserLocationUpdate,
+      navigationButtonStyle,
+      showNavigationButton = false,
     }: IMapViewProps,
     ref
   ) => {
@@ -43,6 +45,14 @@ const MapView = forwardRef<Mapbox.Camera, IMapViewProps>(
 
     const onPressMyLocation = () => {
       handleZoomToUserLocation(userLocation, cameraRef);
+    };
+
+    const onPressNavigate = () => {
+      if (pickup && dropoff && userLocation) {
+        openNavigationApp(userLocation, pickup, dropoff);
+      } else {
+        Alert.alert('Navigation Error', 'No pickup or destination specified');
+      }
     };
 
     const handleOnUserLocationUpdate = (location: Mapbox.Location) => {
@@ -85,7 +95,14 @@ const MapView = forwardRef<Mapbox.Camera, IMapViewProps>(
             : null}
           {route && <MapRoute route={route} />}
         </Mapbox.MapView>
-
+        {showNavigationButton && pickup && dropoff && (
+          <TouchableOpacity
+            style={[styles.navigateButton, navigationButtonStyle]}
+            onPress={onPressNavigate}
+          >
+            <Ionicons name="navigate" size={24} color="white" />
+          </TouchableOpacity>
+        )}
         <TouchableOpacity
           style={[styles.button, myLocationButtonStyle]}
           onPress={onPressMyLocation}

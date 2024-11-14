@@ -16,10 +16,11 @@ import { RootState } from '@/src/store';
 import { GenericCard } from 'react-native-morro-taxi-rn-components';
 import { clearRide } from '@/src/store/slices/ride-slice';
 import { useRouter } from 'expo-router';
+import { clearAllErrors } from '@/src/store/slices/error-slice';
 
 const RideRequestDashboard = () => {
   const currentRide = useSelector((state: RootState) => state.ride);
-  const screenWidth = Dimensions.get('window').width;
+  const errors = useSelector((state: RootState) => state.error);
   const router = useRouter();
   const dispatch = useAppDispatch();
 
@@ -69,71 +70,91 @@ const RideRequestDashboard = () => {
 
   return (
     <View>
-      {currentRide?.status === 'pending' && (
-        <AnimatedRideRequestCard key={currentRide.rideRequestId}>
-          <RideCard
-            ride={currentRide}
-            type="pending"
-            onCallRider={handleCallRider}
-            onCompleteTrip={handleCompleteTrip}
-            onAccept={handleAcceptRide}
-            onPickUpRider={handleConfirmPickup}
-            onStartRide={handleStartRide}
+      {errors?.errors &&
+        errors.errors.length > 0 &&
+        errors.errors.map((error) => (
+          <GenericCard
+            title={error}
+            subtitle={error.description}
+            buttonType="secondary"
+            buttonText="Dismiss"
+            onPressButton={() => {
+              dispatch(clearAllErrors());
+            }}
           />
-        </AnimatedRideRequestCard>
-      )}
-      {currentRide?.status === 'accepted' && (
-        <AnimatedRideRequestCard key={currentRide.rideRequestId}>
-          <RideCard
-            ride={currentRide}
-            type="accepted"
-            onCallRider={handleCallRider}
-            onCompleteTrip={handleCompleteTrip}
-            onAccept={handleAcceptRide}
-            onPickUpRider={handleConfirmPickup}
-            onStartRide={handleStartRide}
-          />
-        </AnimatedRideRequestCard>
-      )}
-      {currentRide?.status === 'started' && (
-        <AnimatedRideRequestCard key={currentRide.rideRequestId}>
-          <RideCard
-            ride={currentRide}
-            type="started"
-            onCallRider={handleCallRider}
-            onCompleteTrip={handleCompleteTrip}
-            onAccept={handleAcceptRide}
-            onPickUpRider={handleConfirmPickup}
-            onStartRide={handleStartRide}
-          />
-        </AnimatedRideRequestCard>
-      )}
-      {currentRide?.status === 'picked-up' && (
-        <AnimatedRideRequestCard key={currentRide.rideRequestId}>
-          <RideCard
-            ride={currentRide}
-            type="picked-up"
-            onCallRider={handleCallRider}
-            onCompleteTrip={handleCompleteTrip}
-            onAccept={handleAcceptRide}
-            onPickUpRider={handleConfirmPickup}
-            onStartRide={handleStartRide}
-          />
-        </AnimatedRideRequestCard>
-      )}
-      {currentRide?.status === 'dropped-off' && (
-        <AnimatedRideRequestCard key={currentRide.rideRequestId}>
-          <RideCard
-            ride={currentRide}
-            type="dropped-off"
-            onCallRider={handleCallRider}
-            onCompleteTrip={handleCompleteTrip}
-            onAccept={handleAcceptRide}
-            onPickUpRider={handleConfirmPickup}
-            onStartRide={handleStartRide}
-          />
-        </AnimatedRideRequestCard>
-      )}
+        ))}
+      <View style={{ marginVertical: 10 }} />
+      {!errors.errors ||
+        (errors.errors.length == 0 && currentRide?.status === 'pending' && (
+          <AnimatedRideRequestCard key={currentRide.rideRequestId}>
+            <RideCard
+              ride={currentRide}
+              type="pending"
+              onCallRider={handleCallRider}
+              onCompleteTrip={handleCompleteTrip}
+              onAccept={handleAcceptRide}
+              onPickUpRider={handleConfirmPickup}
+              onStartRide={handleStartRide}
+            />
+          </AnimatedRideRequestCard>
+        ))}
+      {!errors.errors ||
+        (errors.errors.length == 0 && currentRide?.status === 'accepted' && (
+          <AnimatedRideRequestCard key={currentRide.rideRequestId}>
+            <RideCard
+              ride={currentRide}
+              type="accepted"
+              onCallRider={handleCallRider}
+              onCompleteTrip={handleCompleteTrip}
+              onAccept={handleAcceptRide}
+              onPickUpRider={handleConfirmPickup}
+              onStartRide={handleStartRide}
+            />
+          </AnimatedRideRequestCard>
+        ))}
+      {!errors.errors ||
+        (errors.errors.length == 0 && currentRide?.status === 'started' && (
+          <AnimatedRideRequestCard key={currentRide.rideRequestId}>
+            <RideCard
+              ride={currentRide}
+              type="started"
+              onCallRider={handleCallRider}
+              onCompleteTrip={handleCompleteTrip}
+              onAccept={handleAcceptRide}
+              onPickUpRider={handleConfirmPickup}
+              onStartRide={handleStartRide}
+            />
+          </AnimatedRideRequestCard>
+        ))}
+      {!errors.errors &&
+        errors.errors.length == 0 &&
+        currentRide?.status === 'picked-up' && (
+          <AnimatedRideRequestCard key={currentRide.rideRequestId}>
+            <RideCard
+              ride={currentRide}
+              type="picked-up"
+              onCallRider={handleCallRider}
+              onCompleteTrip={handleCompleteTrip}
+              onAccept={handleAcceptRide}
+              onPickUpRider={handleConfirmPickup}
+              onStartRide={handleStartRide}
+            />
+          </AnimatedRideRequestCard>
+        )}
+      {!errors?.errors ||
+        (errors.errors.length == 0 && currentRide?.status === 'dropped-off' && (
+          <AnimatedRideRequestCard key={currentRide.rideRequestId}>
+            <RideCard
+              ride={currentRide}
+              type="dropped-off"
+              onCallRider={handleCallRider}
+              onCompleteTrip={handleCompleteTrip}
+              onAccept={handleAcceptRide}
+              onPickUpRider={handleConfirmPickup}
+              onStartRide={handleStartRide}
+            />
+          </AnimatedRideRequestCard>
+        ))}
     </View>
   );
 };

@@ -17,6 +17,15 @@ interface ISearchBoxProps {
   sessionRef?: React.MutableRefObject<SessionToken | null>;
 }
 
+// Debounce function
+function debounce(func: (...args: any[]) => void, delay: number) {
+  let timer: NodeJS.Timeout;
+  return (...args: any[]) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => func(...args), delay);
+  };
+}
+
 export const SearchBox = forwardRef<TextInput, ISearchBoxProps>(
   (
     {
@@ -31,7 +40,7 @@ export const SearchBox = forwardRef<TextInput, ISearchBoxProps>(
     const [searchQuery, setSearchQuery] = useState('');
 
     const searchPlace = async (query: string) => {
-      if (!sessionRef || !sessionRef.current === null) {
+      if (!sessionRef || sessionRef.current === null) {
         return;
       }
       const search = new SearchBoxCore({
@@ -59,15 +68,27 @@ export const SearchBox = forwardRef<TextInput, ISearchBoxProps>(
         sessionToken: sessionRef.current,
         proximity: latlng,
         radius: latlng ? 0.1 : undefined,
-        country: countryCode
+        country: countryCode,
+        types: new Set([
+          'poi',
+          'address',
+          'place',
+          'locality',
+          'region',
+          'district'
+        ]) as any,
+        navigation_profile: 'driving'
       });
       onSuggestions(result.suggestions);
     };
 
+    // Create a debounced version of searchPlace
+    const debouncedSearchPlace = debounce(searchPlace, 500);
+
     useEffect(() => {
       if (searchQuery.length > 3) {
-        searchPlace(searchQuery);
-      } else if (searchQuery.length == 0) {
+        debouncedSearchPlace(searchQuery);
+      } else if (searchQuery.length === 0) {
         onSuggestions([]);
       }
     }, [searchQuery]);

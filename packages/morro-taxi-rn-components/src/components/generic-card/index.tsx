@@ -16,13 +16,19 @@ const GenericCard: React.FC<IGenericCardProps> = ({
   buttonType = 'primary',
   containerStyle,
   buttonStyle,
-  buttonTextStyle
+  buttonTextStyle,
+  secondaryButtonText,
+  onPressSecondaryButton,
+  secondaryButtonType = 'secondary',
+  secondaryButtonStyle,
+  secondaryButtonTextStyle
 }) => {
   return (
     <View style={[styles.container, containerStyle]}>
       {title && <Text style={styles.title}>{title}</Text>}
       {subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
       {children}
+      
       {buttonText && onPressButton && (
         <TouchableOpacity
           style={[
@@ -35,6 +41,23 @@ const GenericCard: React.FC<IGenericCardProps> = ({
           onPress={onPressButton}
         >
           <Text style={[styles.buttonText, buttonTextStyle]}>{buttonText}</Text>
+        </TouchableOpacity>
+      )}
+
+      {secondaryButtonText && onPressSecondaryButton && (
+        <TouchableOpacity
+          style={[
+            styles.button,
+            secondaryButtonType === 'primary'
+              ? styles.primaryButton
+              : styles.secondaryButton,
+            secondaryButtonStyle
+          ]}
+          onPress={onPressSecondaryButton}
+        >
+          <Text style={[styles.buttonText, secondaryButtonTextStyle]}>
+            {secondaryButtonText}
+          </Text>
         </TouchableOpacity>
       )}
     </View>

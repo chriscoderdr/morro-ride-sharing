@@ -164,7 +164,7 @@ class MQTTClientService {
         riderName: rideRequest.riderName,
         riderPhone: rideRequest.riderPhone,
         rideRequestId: rideRequest.rideRequestId,
-        estimatedPrice: rideRequest.estimatedPrice,
+        estimatePrice: rideRequest.estimatePrice,
         pickupTimeDistance: rideRequest.pickupTimeDistance,
         pickupLocation: rideRequest.pickupLocation,
         tripTimeDistance: rideRequest.tripTimeDistance,

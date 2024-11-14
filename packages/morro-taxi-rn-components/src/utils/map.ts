@@ -18,8 +18,16 @@ const openNavigationApp = (userLocation: any, pickup: any, dropOff: any) => {
     return;
   }
 
-  const { latitude: pickupLat, longitude: pickupLng } = pickup;
-  const { latitude: dropOffLat, longitude: dropOffLng } = dropOff;
+  const pickupLat = pickup[1];
+  const pickupLng = pickup[0];
+
+  const dropOffLat = dropOff[1];
+  const dropOffLng = dropOff[0];
+
+  const userLat = userLocation?.latitude;
+  const userLng = userLocation?.longitude;
+
+  console.log(`User Location: ${userLat}, ${userLng} | Pickup: ${pickupLat}, ${pickupLng} | Dropoff: ${dropOffLat}, ${dropOffLng}`);
 
   Alert.alert(
     'Choose Navigation App',
@@ -29,7 +37,7 @@ const openNavigationApp = (userLocation: any, pickup: any, dropOff: any) => {
         text: 'Google Maps',
         onPress: () =>
           Linking.openURL(
-            `https://www.google.com/maps/dir/?api=1&origin=${userLocation?.latitude},${userLocation?.longitude}&waypoints=${pickupLat},${pickupLng}&destination=${dropOffLat},${dropOffLng}&travelmode=driving`
+            `https://www.google.com/maps/dir/?api=1&origin=${userLat},${userLng}&waypoints=${pickupLat},${pickupLng}&destination=${dropOffLat},${dropOffLng}&travelmode=driving`
           ),
       },
       {
