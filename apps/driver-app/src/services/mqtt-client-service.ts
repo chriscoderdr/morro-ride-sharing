@@ -131,7 +131,7 @@ class MQTTClientService {
       this.dispatchRideRequestWithTimeout(rideRequest);
     } catch (error) {
       console.error('Failed to process incoming message:', error);
-      setTimeout(() => this.onMessageArrived(message), 1000); // Retry processing message
+      setTimeout(() => this.onMessageArrived(message), 1000);
     }
   };
 

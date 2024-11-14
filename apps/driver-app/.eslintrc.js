@@ -1,9 +1,5 @@
 module.exports = {
-  extends: [
-    'expo',
-    'eslint:recommended',
-    'plugin:prettier/recommended'
-  ],
+  extends: [],
   plugins: ['prettier'],
   rules: {
     'prettier/prettier': [

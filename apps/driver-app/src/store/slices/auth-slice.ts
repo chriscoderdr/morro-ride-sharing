@@ -24,7 +24,6 @@ const initialState: AuthState = {
   error: null
 };
 
-// Thunk for logging in the driver
 export const loginDriver = createAsyncThunk<
   LoginResponse,
   LoginData,
@@ -32,7 +31,7 @@ export const loginDriver = createAsyncThunk<
 >('drivers/login', async (data, { dispatch, rejectWithValue }) => {
   try {
     const response = await dispatch(
-      apiSlice.endpoints.loginDriver.initiate(data) // Assumes API endpoint name is `loginUser`
+      apiSlice.endpoints.loginDriver.initiate(data)
     ).unwrap();
     return response;
   } catch (response: any) {
@@ -53,7 +52,6 @@ export const loginDriver = createAsyncThunk<
   }
 });
 
-// Thunk for registering the driver
 export const registerDriver = createAsyncThunk<
   RegisterResponse,
   DriverData,
@@ -61,7 +59,7 @@ export const registerDriver = createAsyncThunk<
 >('drivers/register', async (data, { dispatch, rejectWithValue }) => {
   try {
     const response = await dispatch(
-      apiSlice.endpoints.registerDriver.initiate(data) // Assumes API endpoint name is `registerUser`
+      apiSlice.endpoints.registerDriver.initiate(data)
     ).unwrap();
     return response;
   } catch (response: any) {
@@ -136,9 +134,7 @@ const authSlice = createSlice({
         state.loading = false;
         state.error = action.error.message || 'Failed to register';
       })
-      .addDefaultCase((state) => {
-        state.loading = false;
-      });
+      .addDefaultCase((state) => {});
   }
 });
 

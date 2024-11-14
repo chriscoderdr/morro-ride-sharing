@@ -1,4 +1,5 @@
-import { RideRequest } from '@/src/store/slices/ride-request-slice';
+import { RideRequest } from "@/src/api/models";
+
 
 export interface IRideRequestManagerProps {
   rideRequests: RideRequest[];

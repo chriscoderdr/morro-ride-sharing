@@ -98,7 +98,7 @@ const RideRequestDashboard = () => {
             />
           </AnimatedRideRequestCard>
         ))}
-      {!errors.errors &&
+      {!errors.errors ||
         errors.errors.length == 0 &&
         currentRide?.status === 'picked-up' && (
           <AnimatedRideRequestCard key={currentRide.rideRequestId}>
