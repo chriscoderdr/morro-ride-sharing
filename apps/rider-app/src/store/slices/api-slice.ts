@@ -19,6 +19,7 @@ export const apiSlice = createApi({
   reducerPath: 'api',
   baseQuery: fetchBaseQuery({
     baseUrl: API_BASE_URL,
+    timeout: 5000,
     prepareHeaders: (headers, { getState }) => {
       const token = (getState() as RootState).auth.user?.accessToken;
       if (token) {
@@ -37,8 +38,7 @@ export const apiSlice = createApi({
         params: {
           cacheBusting: Date.now()
         }
-      }),
-      transformErrorResponse: transformErrorResponse
+      })
     }),
     loginUser: builder.mutation<LoginResponse, LoginData>({
       query: (data) => ({
@@ -49,8 +49,7 @@ export const apiSlice = createApi({
         params: {
           cacheBusting: Date.now()
         }
-      }),
-      transformErrorResponse: transformErrorResponse
+      })
     }),
     createRideRequestRide: builder.mutation<
       CreateRideRequestResponse,

@@ -326,10 +326,7 @@ export const getCurrentRideRequest = async (ctx: Context) => {
   try {
     const currentRideRequest = await RideRequest.findOne({
       where: {
-        riderId,
-        status: {
-          [Op.notIn]: ['pending'] // Retrieves rides with any status except 'dropped-off'
-        }
+        riderId
       },
       order: [['updatedAt', 'DESC']]
     });

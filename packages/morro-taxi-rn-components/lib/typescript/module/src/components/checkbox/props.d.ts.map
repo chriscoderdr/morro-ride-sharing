@@ -1,0 +1,1 @@
+{"version":3,"file":"props.d.ts","sourceRoot":"","sources":["../../../../../../src/components/checkbox/props.ts"],"names":[],"mappings":"AAAA,MAAM,WAAW,cAAc;IAC3B,OAAO,CAAC,EAAE,OAAO,CAAC;IAClB,QAAQ,CAAC,EAAE,CAAC,OAAO,EAAE,OAAO,KAAK,IAAI,CAAC;IACtC,KAAK,CAAC,EAAE,MAAM,CAAC;IACf,OAAO,CAAC,EAAE,MAAM,CAAC;IACjB,MAAM,CAAC,EAAE,MAAM,CAAC;CACjB"}

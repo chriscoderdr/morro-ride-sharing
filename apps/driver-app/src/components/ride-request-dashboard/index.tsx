@@ -9,8 +9,8 @@ import {
 } from '@/src/store/slices/ride-request-slice';
 import { Alert, FlatList, Linking, Platform, View } from 'react-native';
 import { useSelector } from 'react-redux';
-import AnimatedRideRequestCard from '../animated-ride-request-card';
 import RideCard from '../ride-card';
+import { AnimatedCard } from 'react-native-morro-taxi-rn-components';
 
 const RideRequestDashboard = () => {
   const rideRequests = useSelector(
@@ -65,7 +65,7 @@ const RideRequestDashboard = () => {
         ItemSeparatorComponent={() => <View style={{ height: 20 }} />}
         renderItem={({ item }) => {
           return (
-            <AnimatedRideRequestCard key={item.rideRequestId}>
+            <AnimatedCard key={item.rideRequestId}>
               <RideCard
                 rideRequest={item}
                 type="pending"
@@ -75,13 +75,12 @@ const RideRequestDashboard = () => {
                 onPickUpRider={handleConfirmPickup}
                 onStartRide={handleStartRide}
               />
-            </AnimatedRideRequestCard>
+            </AnimatedCard>
           );
         }}
       />
-      {/* Show the active ride based on its status */}
       {currentRide?.status === 'accepted' && (
-        <AnimatedRideRequestCard key={currentRide.rideRequestId}>
+        <AnimatedCard key={currentRide.rideRequestId}>
           <RideCard
             rideRequest={currentRide}
             type="accepted"
@@ -91,11 +90,11 @@ const RideRequestDashboard = () => {
             onPickUpRider={handleConfirmPickup}
             onStartRide={handleStartRide}
           />
-        </AnimatedRideRequestCard>
+        </AnimatedCard>
       )}
 
       {currentRide?.status === 'started' && (
-        <AnimatedRideRequestCard key={currentRide.rideRequestId}>
+        <AnimatedCard key={currentRide.rideRequestId}>
           <RideCard
             rideRequest={currentRide}
             type="started"
@@ -105,11 +104,11 @@ const RideRequestDashboard = () => {
             onPickUpRider={handleConfirmPickup}
             onStartRide={handleStartRide}
           />
-        </AnimatedRideRequestCard>
+        </AnimatedCard>
       )}
 
       {currentRide?.status === 'picked-up' && (
-        <AnimatedRideRequestCard key={currentRide.rideRequestId}>
+        <AnimatedCard key={currentRide.rideRequestId}>
           <RideCard
             rideRequest={currentRide}
             type="picked-up"
@@ -119,7 +118,7 @@ const RideRequestDashboard = () => {
             onPickUpRider={handleConfirmPickup}
             onStartRide={handleStartRide}
           />
-        </AnimatedRideRequestCard>
+        </AnimatedCard>
       )}
     </View>
   );

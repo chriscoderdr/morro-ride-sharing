@@ -64,8 +64,8 @@ const store = configureStore({
     }).concat(
       apiSlice.middleware,
       timeoutMiddleware,
-      fetchRideRequestsMiddleware
-      // listenerMiddleware.middleware
+      fetchRideRequestsMiddleware,
+      listenerMiddleware.middleware
     )
 });
 

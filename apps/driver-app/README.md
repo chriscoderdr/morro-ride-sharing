@@ -1,50 +1,144 @@
-# Welcome to your Expo app 👋
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+# Morro Taxi Driver App - Developer Documentation
 
-## Get started
+This README provides instructions for setting up the development environment and running the **Driver App** for Morro Taxi.
 
-1. Install dependencies
+## Table of Contents
 
-   ```bash
-   yarn install
-   ```
+- [Overview](#overview)
+- [Tech Stack](#tech-stack)
+- [Prerequisites](#prerequisites)
+- [Installation](#installation)
+- [Configuration](#configuration)
+- [Running the Driver App](#running-the-driver-app)
+- [Testing](#testing)
+- [Additional Notes](#additional-notes)
+- [Known Issues](#known-issues)
 
-2. Start the app
+---
 
-   ```bash
-    npx expo start
-   ```
+## Overview
 
-In the output, you'll find options to open the app in a
+The **Driver App** in the Morro Taxi ecosystem allows drivers to receive ride requests, view pickup and drop-off locations, and update their real-time location. This README is specific to the `driver-app` within the Morro Taxi project.
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## Tech Stack
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+- **Frontend**: React Native, Expo, Mapbox
+- **State Management**: Redux Toolkit with Tanstack Query (React Query)
+- **Communication**: MQTT (for real-time updates)
 
-## Get a fresh project
+## Prerequisites
 
-When you're ready, run:
+- **Node.js** (v14+)
+- **Yarn** (v1 package manager)
+- **Android Studio** (for Android emulation)
+- **Xcode** (for iOS emulation, macOS only)
+- **Gradle, Java, and Android SDK** (for building Android projects)
+- **Mapbox Account** with Access Token (for maps)
+
+## Installation
+
+### 1. Clone the Repository
+
+If you haven't already cloned the main repository, do so with:
 
 ```bash
-npm run reset-project
+git clone https://github.com/chriscoderdr/morro-ride-sharing.git
+cd morro-taxi
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+### 2. Navigate to `driver-app` Directory
 
-## Learn more
+Navigate to the `driver-app` subproject within the workspace:
 
-To learn more about developing your project with Expo, look at the following resources:
+```bash
+cd apps/driver-app
+```
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+### 3. Install Dependencies
 
-## Join the community
+The project uses Yarn Workspaces, so all dependencies should be installed from the root project directory:
 
-Join our community of developers creating universal apps.
+```bash
+yarn install
+```
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## Configuration
+
+### Environment Variables
+
+The **Driver App** requires a `.env` file for essential environment variables. Create `.env` in `apps/driver-app` and add the following variables:
+
+```env
+# Mapbox
+EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN=<your_mapbox_access_token>
+EXPO_PUBLIC_MAPBOX_SEARCH_ACCESS_TOKEN=<your_mapbox_access_token>
+
+# MQTT
+EXPO_PUBLIC_MQTT_BROKER_URL=<mqtt_broker_url>
+EXPO_PUBLIC_MQTT_PORT=8883
+EXPO_PUBLIC_MQTT_TOPIC_RIDE_REQUESTS=/drivers/$driver_id$/location
+EXPO_PUBLIC_MQTT_TOPIC_DRIVER_LOCATION=/drivers/$driver_id$/location
+
+# API
+EXPO_PUBLIC_MORRO_API_BASE_URL=http://localhost:3000
+```
+
+Replace placeholder values with actual tokens and API endpoints.
+
+## Running the Driver App
+
+### 1. Running with Expo
+
+Start the Expo development server to run the app in an emulator or physical device:
+
+```bash
+yarn start
+```
+
+Alternatively, you can use Expo commands for specific platforms:
+
+```bash
+npx expo run:android       # Runs on Android
+npx expo run:ios           # Runs on iOS (macOS only)
+```
+
+### 2. Running the iOS App
+
+Open `MorroTaxiDriver.xcworkspace` in `apps/driver-app/ios` using Xcode:
+
+- **Path**: `apps/driver-app/ios/MorroTaxiDriver.xcworkspace`
+
+Then, build and run the app directly on an iOS simulator or connected device.
+
+### 3. Running the Android App
+
+You can compile and build the Android app using Gradle commands:
+
+```bash
+cd android
+./gradlew assembleDebug      # For a debug build
+./gradlew assembleRelease    # For a release build
+```
+
+## Testing
+
+We use **Detox** for end-to-end testing.
+
+To run Detox tests for the Driver App:
+
+```bash
+yarn test:detox
+```
+
+## Additional Notes
+
+- **Mapbox Configuration**: Ensure Mapbox tokens are set in `.env`.
+- **Code Formatting**: We use Prettier and ESLint. Run `yarn format` and `yarn lint` to check.
+
+## Known Issues
+
+- **Unexpected Behaviors with Shared Dependencies**: Occasionally, issues may arise due to `node_modules` in the shared `morro-taxi-rn-components` package. If issues occur, try deleting `node_modules` in the shared package and reinstalling.
+- **Changes in Shared Project**: After updating the shared `morro-taxi-rn-components` package, run `yarn prepare` in the package directory, then force reinstall dependencies in the `driver-app` using `yarn install --force`.
+
+---

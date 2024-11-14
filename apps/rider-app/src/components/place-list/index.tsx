@@ -1,14 +1,13 @@
-import { View } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 import PlaceItem from '../place-item';
+import { IPlaceListProps } from './props';
+import { ItemSeparator } from './item-separator';
 
-const PlaceList = ({ sugestions, onItemPress }) => {
+const PlaceList = ({ sugestions, onItemPress }: IPlaceListProps) => {
   return (
     <FlatList
       data={sugestions}
-      ItemSeparatorComponent={() => (
-        <View style={{ height: 1, backgroundColor: '#000000' }} />
-      )}
+      ItemSeparatorComponent={ItemSeparator}
       renderItem={({ item }) => (
         <PlaceItem item={item} key={item.mapbox_id} onPress={onItemPress} />
       )}

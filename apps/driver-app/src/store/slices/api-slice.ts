@@ -16,9 +16,9 @@ const API_BASE_URL = config.MORRO_API_BASE_URL;
 
 export const apiSlice = createApi({
   reducerPath: 'api',
-  tagTypes: ['somethingelseKeyApi'],
   baseQuery: fetchBaseQuery({
     baseUrl: API_BASE_URL,
+    timeout: 5000,
     prepareHeaders: (headers, { getState }) => {
       const token = (getState() as RootState).auth?.user?.accessToken;
       if (token) {
@@ -85,8 +85,7 @@ export const apiSlice = createApi({
           Pragma: 'no-cache'
         }
       }),
-      forceRefetch: () => true,
-      providesTags: ['somethingelseKeyApi']
+      forceRefetch: () => true
     })
   })
 });

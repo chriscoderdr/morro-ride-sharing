@@ -1,9 +1,11 @@
 import { Text, View, TouchableOpacity } from 'react-native';
+import { IPlaceItemProps } from './props';
+import { styles } from './styles';
 
-const PlaceItem = ({ item, onPress }) => {
+const PlaceItem = ({ item, onPress }: IPlaceItemProps) => {
   return (
     <TouchableOpacity onPress={() => onPress(item)}>
-      <View style={{ paddingHorizontal: 14, paddingVertical: 8 }}>
+      <View style={styles.container}>
         <Text>{item.name}</Text>
         <Text>{item.full_address}</Text>
       </View>

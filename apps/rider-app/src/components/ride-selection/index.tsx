@@ -1,10 +1,10 @@
-import { View } from 'react-native';
 import { GenericCard } from 'react-native-morro-taxi-rn-components';
 
 const RideConfirmationCard = ({
   onPressButton,
   estimateInfo,
-  noDriversAvailable
+  noDriversAvailable,
+  onPressCancelButton
 }) => {
   const title = noDriversAvailable
     ? 'No Drivers Available'
@@ -25,6 +25,8 @@ const RideConfirmationCard = ({
       buttonType="primary"
       buttonText={buttonText}
       onPressButton={onPressButton}
+      onPressSecondaryButton={onPressCancelButton}
+      secondaryButtonText="Cancel"
     />
   );
 };

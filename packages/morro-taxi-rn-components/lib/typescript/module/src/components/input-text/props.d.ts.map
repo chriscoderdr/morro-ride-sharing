@@ -1,0 +1,1 @@
+{"version":3,"file":"props.d.ts","sourceRoot":"","sources":["../../../../../../src/components/input-text/props.tsx"],"names":[],"mappings":";AAAA,OAAO,EAAE,cAAc,EAAE,MAAM,cAAc,CAAC;AAE9C,MAAM,WAAW,eAAgB,SAAQ,cAAc;IACrD,aAAa,CAAC,EAAE,KAAK,CAAC,SAAS,CAAC;IAChC,WAAW,CAAC,EAAE,MAAM,IAAI,CAAC;IACzB,SAAS,CAAC,EAAE,OAAO,CAAC;CACrB"}

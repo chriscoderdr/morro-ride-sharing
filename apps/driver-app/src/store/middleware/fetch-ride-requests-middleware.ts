@@ -1,4 +1,3 @@
-// In fetchRideRequestsMiddleware.ts
 import { RideRequest } from '@/src/api/models';
 import config from '@/src/config';
 import { Middleware } from '@reduxjs/toolkit';
@@ -35,13 +34,12 @@ const fetchAndUpdateRideRequests = async (
   getState: () => RootState
 ) => {
   try {
-    // Make a direct Axios request to fetch ride requests
     const response = await axios.get(
       config.MORRO_API_BASE_URL + '/drivers/rideRequests',
       {
         baseURL: config.MORRO_API_BASE_URL,
         headers: {
-          Authorization: `Bearer ${getState().auth.accessToken}`
+          Authorization: `Bearer ${getState().auth.user?.accessToken}`
         }
       }
     );
@@ -75,7 +73,6 @@ const fetchAndUpdateRideRequests = async (
   }
 };
 
-// Helper function to check if a ride request has changed
 const hasChanged = (existingRequest: RideRequest, newRequest: RideRequest) => {
   return (
     existingRequest.status !== newRequest.status ||

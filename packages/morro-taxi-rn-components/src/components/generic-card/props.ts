@@ -10,4 +10,11 @@ export interface IGenericCardProps {
   containerStyle?: ViewStyle;
   buttonStyle?: ViewStyle;
   buttonTextStyle?: TextStyle;
+  
+  // New props for the optional secondary button
+  secondaryButtonText?: string;
+  onPressSecondaryButton?: () => void;
+  secondaryButtonType?: 'primary' | 'secondary';
+  secondaryButtonStyle?: ViewStyle;
+  secondaryButtonTextStyle?: TextStyle;
 }

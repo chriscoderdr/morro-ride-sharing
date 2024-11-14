@@ -23,7 +23,7 @@ export interface MapServiceInterface {
   getRoute: (coordinates: Coordinates[]) => Promise<RouteGeometry | undefined>;
 }
 
-const client = MapboxClient({ accessToken: config.MAPBOX_ACCESS_TOKEN });
+const client = MapboxClient({ accessToken: config.MAPBOX_SEARCH_ACCESS_TOKEN });
 const directionsService = Directions(client);
 
 const getRoute: MapServiceInterface['getRoute'] = async (

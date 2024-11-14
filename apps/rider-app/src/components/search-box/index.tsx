@@ -1,21 +1,10 @@
-import { forwardRef, useEffect, useRef, useState } from 'react';
+import { forwardRef, useCallback, useEffect, useState } from 'react';
 import { TextInput, View } from 'react-native';
 import { InputText } from 'react-native-morro-taxi-rn-components';
-import {
-  GeocodingResponse,
-  SearchBoxCore,
-  SearchBoxSuggestion,
-  SessionToken
-} from '@mapbox/search-js-core';
+import { SearchBoxCore } from '@mapbox/search-js-core';
 import config from '@/src/config';
-
-interface ISearchBoxProps {
-  placeholder: string;
-  onSuggestions: (suggestions: SearchBoxSuggestion[]) => void;
-  onFocus?: () => void;
-  userCurrentLocationInfo?: GeocodingResponse;
-  sessionRef?: React.MutableRefObject<SessionToken | null>;
-}
+import { debounce } from '@/src/utils/debouce';
+import { ISearchBoxProps } from './props';
 
 export const SearchBox = forwardRef<TextInput, ISearchBoxProps>(
   (
@@ -31,7 +20,7 @@ export const SearchBox = forwardRef<TextInput, ISearchBoxProps>(
     const [searchQuery, setSearchQuery] = useState('');
 
     const searchPlace = async (query: string) => {
-      if (!sessionRef || !sessionRef.current === null) {
+      if (!sessionRef || sessionRef.current === null) {
         return;
       }
       const search = new SearchBoxCore({
@@ -59,15 +48,31 @@ export const SearchBox = forwardRef<TextInput, ISearchBoxProps>(
         sessionToken: sessionRef.current,
         proximity: latlng,
         radius: latlng ? 0.1 : undefined,
-        country: countryCode
+        country: countryCode,
+        types: new Set([
+          'poi',
+          'address',
+          'place',
+          'locality',
+          'region',
+          'district'
+        ]) as any,
+        navigation_profile: 'driving'
       });
       onSuggestions(result.suggestions);
     };
 
+    const noop = () => {};
+
+    const debouncedSearchPlace = useCallback(
+      debounce(searchPlace || noop, 500),
+      [searchPlace]
+    );
+
     useEffect(() => {
       if (searchQuery.length > 3) {
-        searchPlace(searchQuery);
-      } else if (searchQuery.length == 0) {
+        debouncedSearchPlace(searchQuery);
+      } else if (searchQuery.length === 0) {
         onSuggestions([]);
       }
     }, [searchQuery]);

@@ -35,6 +35,7 @@ export const loginUser = createAsyncThunk<
     ).unwrap();
     return response;
   } catch (response) {
+    console.log(response);
     const status = response?.status;
     let errorMessage = '';
     switch (status) {
@@ -90,6 +91,9 @@ const authSlice = createSlice({
     logout: (state) => {
       state.isAuthenticated = false;
       state.user = null;
+    },
+    loading: (state) => {
+      state.loading = true;
     }
   },
   extraReducers: (builder) => {
@@ -138,9 +142,7 @@ const authSlice = createSlice({
         state.loading = false;
         state.error = action.error.message || 'Failed to register';
       })
-      .addDefaultCase((state, action) => {
-        state.loading = false;
-      });
+      .addDefaultCase((state, _action) => {});
   }
 });
 

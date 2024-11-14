@@ -4,14 +4,13 @@ import { useEffect, useState } from 'react';
 import { Alert, Platform } from 'react-native';
 
 const useNotificationPermissions = () => {
-  const [permissionStatus, setPermissionStatus] = useState<Notifications.PermissionStatus | null>(null);
+  const [permissionStatus, setPermissionStatus] =
+    useState<Notifications.PermissionStatus | null>(null);
 
   const requestPermissions = async () => {
-    
     const settings = await Notifications.getPermissionsAsync();
     let finalStatus = settings.status;
 
-    
     if (finalStatus === 'denied') {
       Alert.alert(
         'Enable Notifications',
@@ -19,18 +18,17 @@ const useNotificationPermissions = () => {
         [
           {
             text: 'Cancel',
-            style: 'cancel',
+            style: 'cancel'
           },
           {
             text: 'Open Settings',
-            onPress: () => Linking.openSettings(),
-          },
+            onPress: () => Linking.openSettings()
+          }
         ]
       );
       return false;
     }
 
-    
     if (finalStatus !== 'granted') {
       const { status } = await Notifications.requestPermissionsAsync();
       finalStatus = status;
@@ -38,7 +36,6 @@ const useNotificationPermissions = () => {
 
     setPermissionStatus(finalStatus);
 
-    
     if (finalStatus !== 'granted') {
       if (Platform.OS === 'ios') {
         Alert.alert(

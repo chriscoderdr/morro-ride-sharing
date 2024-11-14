@@ -1,0 +1,1 @@
+{"version":3,"file":"props.d.ts","sourceRoot":"","sources":["../../../../../../src/components/login-form/props.ts"],"names":[],"mappings":"AAAA,MAAM,WAAW,eAAe;IAC9B,SAAS,EAAE,CAAC,IAAI,EAAE,UAAU,KAAK,IAAI,CAAC;IACtC,SAAS,EAAE,OAAO,CAAC;IACnB,cAAc,CAAC,EAAE,MAAM,IAAI,CAAC;CAC7B;AAED,MAAM,WAAW,UAAU;IACzB,KAAK,EAAE,MAAM,CAAC;IACd,QAAQ,EAAE,MAAM,CAAC;CAClB"}

@@ -2,6 +2,7 @@ import { StyleSheet, ViewStyle } from 'react-native';
 
 interface IMapViewStyles {
   button: ViewStyle;
+  navigateButton: ViewStyle;
   iconContainer: ViewStyle;
 }
 
@@ -15,7 +16,7 @@ const styles: IMapViewStyles = StyleSheet.create({
     borderRadius: 25,
     backgroundColor: '#007AFF',
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
   iconContainer: {
     borderColor: '#FFFFFF',
@@ -25,8 +26,19 @@ const styles: IMapViewStyles = StyleSheet.create({
     borderRadius: 20,
     backgroundColor: '#FFFFFF',
     justifyContent: 'center',
-    alignItems: 'center'
-  }
+    alignItems: 'center',
+  },
+  navigateButton: {
+    position: 'absolute',
+    bottom: 100,
+    right: 10,
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: '#007AFF',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });
 
 export default styles;

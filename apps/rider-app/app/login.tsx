@@ -12,17 +12,18 @@ import { useSelector } from 'react-redux';
 export default function Login() {
   const dispatch = useAppDispatch();
   const isLoading = useSelector((state: RootState) => state.auth.loading);
-  const error = useSelector((state: RootState) => state.auth.error);
-  const user = useSelector((state: RootState) => state.auth.user);
   const router = useRouter();
 
   const onLoginUser = (data: ILoginUser) => {
+    console.log(`data: ${JSON.stringify(data)}`);
     dispatch(loginUser({ ...data }));
   };
 
   const onGoToRegister = () => {
     router.navigate('/signup');
   };
+
+  console.log(`loading: ${isLoading}`);
 
   return (
     <ScrollableFormContainer>

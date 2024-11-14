@@ -90,7 +90,7 @@ const RideCard: React.FC<RideCardProps> = ({
 
   return (
     <GenericCard
-      title={type === 'pending' ? `$${estimatedPrice}` : getDistanceDisplay()}
+      title={type === 'pending' ? `₱${estimatedPrice}` : getDistanceDisplay()}
       subtitle={type === 'pending' ? `${getDistanceDisplay()}` : undefined}
       buttonText={buttonText}
       onPressButton={onPressButton}
@@ -98,27 +98,24 @@ const RideCard: React.FC<RideCardProps> = ({
         type === 'declined' || type === 'picked-up' ? 'secondary' : 'primary'
       }
     >
-      <View style={styles.riderInfoContainer}>
-        <View style={styles.riderDetails}>
-          <Text style={styles.riderName}>Rider: {riderName}</Text>
-          {type !== 'pending' &&
-            type !== 'declined' &&
-            type !== 'dropped-off' && (
-              <TouchableOpacity
-                style={styles.callButton}
-                onPress={() => onCallRider && onCallRider(riderPhone || '')}
-              >
-                <Ionicons name="call-outline" size={24} color="#007AFF" />
-                <Text style={styles.callButtonText}>Call</Text>
-              </TouchableOpacity>
-            )}
+      {riderName && (
+        <View style={styles.riderInfoContainer}>
+          <View style={styles.riderDetails}>
+            <Text style={styles.riderName}>Rider: {riderName}</Text>
+            {type !== 'pending' &&
+              type !== 'declined' &&
+              type !== 'dropped-off' && (
+                <TouchableOpacity
+                  style={styles.callButton}
+                  onPress={() => onCallRider && onCallRider(riderPhone || '')}
+                >
+                  <Ionicons name="call-outline" size={24} color="#007AFF" />
+                  <Text style={styles.callButtonText}>Call</Text>
+                </TouchableOpacity>
+              )}
+          </View>
         </View>
-
-        <Image
-          source={{ uri: 'https://placekitten.com/50/50' }}
-          style={styles.riderIcon}
-        />
-      </View>
+      )}
       {type === 'pending' && pickupLocation && (
         <View style={styles.infoContainer}>
           <Text style={styles.infoText}>{pickupLocation.address}</Text>

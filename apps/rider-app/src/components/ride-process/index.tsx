@@ -1,96 +1,75 @@
 import React, { useEffect, useCallback } from 'react';
-import { View, Dimensions } from 'react-native';
+import { View } from 'react-native';
 import { useRouter } from 'expo-router';
-
-import RideProcessCard from '../ride-process-card';
+import { useSelector } from 'react-redux';
 
 import useRoute from '@/src/hooks/use-route';
-import { useLazyCurrentRideRequestQuery } from '@/src/store/slices/api-slice';
 import { MapView } from 'react-native-morro-taxi-rn-components';
+import RideRequestDashboard from '../ride-dashboard';
+import { useAppDispatch } from '@/src/hooks/use-app-dispatch';
+import { RootState } from '@/src/store';
+import { fetchRideRequest } from '@/src/store/slices/ride-slice';
+import { styles } from './styles';
 
 const RideProcess = () => {
   const router = useRouter();
+  const dispatch = useAppDispatch();
   const { route, fetchRoute } = useRoute();
-  const [fetchCurrentRideRequest, { data: currentRide }] =
-    useLazyCurrentRideRequestQuery();
-
-  const screenWidth = Dimensions.get('window').width;
-
-  // Helper function to get coordinates in [longitude, latitude] format
-  const getCoordinates = (location) =>
-    location ? [location.longitude, location.latitude] : null;
+  const currentRide = useSelector((state: RootState) => state.ride);
 
   const getPickupCoordinates = useCallback(
-    () => getCoordinates(currentRide?.pickupLocation),
+    () => currentRide?.pickup?.coordinates,
     [currentRide]
   );
-
   const getDropoffCoordinates = useCallback(
-    () => getCoordinates(currentRide?.tripLocation),
+    () => currentRide?.dropoff?.coordinates,
     [currentRide]
   );
-
-  const getDriverCoordinates = useCallback(() => {
-    const driverLocation = currentRide?.driver?.location;
-    return driverLocation ? [driverLocation[0], driverLocation[1]] : null;
-  }, [currentRide]);
+  const getDriverCoordinates = useCallback(
+    () => currentRide?.driver?.location || null,
+    [currentRide]
+  );
 
   const updateRoute = useCallback(() => {
     if (!currentRide) return;
-
-    const { status, driver, pickupLocation, tripLocation } = currentRide;
+    const { status, driver, pickup, dropoff } = currentRide;
 
     if (
-      (status === 'accepted' || status === 'started') &&
+      ['accepted', 'started'].includes(status) &&
       driver?.location &&
-      pickupLocation
+      pickup
     ) {
-      // Route from driver to pickup location
       fetchRoute([
         { latitude: driver.location[1], longitude: driver.location[0] },
-        {
-          latitude: pickupLocation.latitude,
-          longitude: pickupLocation.longitude
-        }
+        { latitude: pickup.coordinates[1], longitude: pickup.coordinates[0] }
       ]);
-    } else if (status === 'picked-up' && driver?.location && tripLocation) {
-      // Route from driver to drop-off location
+    } else if (status === 'picked-up' && driver?.location && dropoff) {
       fetchRoute([
         { latitude: driver.location[1], longitude: driver.location[0] },
-        { latitude: tripLocation.latitude, longitude: tripLocation.longitude }
+        { latitude: dropoff.coordinates[1], longitude: dropoff.coordinates[0] }
       ]);
     }
-  }, [currentRide, fetchRoute]);
+  }, [currentRide]);
 
-  // Polling for current ride request every 10 seconds
+  useEffect(() => {
+    if (!currentRide?.rideRequestId || currentRide.status === 'completed') {
+      router.replace('/main');
+    }
+  }, [currentRide, router]);
+
   useEffect(() => {
     const intervalId = setInterval(() => {
-      fetchCurrentRideRequest()
-        .unwrap()
-        .then((response) => {
-          console.log(
-            'Ride request response:',
-            JSON.stringify(response, null, 2)
-          );
-        })
-        .catch((error) => {
-          console.error('Error fetching ride request:', error);
-        });
-    }, 10000);
+      dispatch(fetchRideRequest({}));
+    }, 5000);
     return () => clearInterval(intervalId);
-  }, [fetchCurrentRideRequest]);
+  }, [dispatch]);
 
-  // Update route when current ride status changes
   useEffect(() => {
     updateRoute();
   }, [currentRide, updateRoute]);
 
-  const onCancelRideRequest = () => {
-    router.navigate('/main');
-  };
-
   return (
-    <View style={{ flex: 1 }}>
+    <View style={styles.container}>
       <MapView
         pickup={
           ['accepted', 'started'].includes(currentRide?.status)
@@ -99,7 +78,7 @@ const RideProcess = () => {
         }
         dropoff={getDropoffCoordinates()}
         route={route}
-        myLocationButtonStyle={{ bottom: 300 }}
+        myLocationButtonStyle={styles.myLocationButton}
         points={
           getDriverCoordinates()
             ? [
@@ -113,13 +92,8 @@ const RideProcess = () => {
             : []
         }
       />
-      <View
-        style={{ position: 'absolute', bottom: 0, width: '100%', padding: 20 }}
-      >
-        <RideProcessCard
-          currentRide={currentRide}
-          onCancelRideRequest={onCancelRideRequest}
-        />
+      <View style={styles.dashboardContainer}>
+        <RideRequestDashboard />
       </View>
     </View>
   );
