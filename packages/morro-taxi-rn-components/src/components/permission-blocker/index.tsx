@@ -65,39 +65,36 @@ const PermissionBlocker = ({
   const handleRequestPermissions = async () => {
     let permissionDenied = false;
 
+    if (requireNotification) {
+      let { status: notificationStatus } =
+        await Notifications.getPermissionsAsync();
+      if (notificationStatus !== 'granted') {
+        const { status: newNotificationStatus } =
+          await Notifications.requestPermissionsAsync();
+        notificationStatus = newNotificationStatus;
+        if (notificationStatus !== 'granted') permissionDenied = true;
+      }
+    }
+
     if (requireLocation) {
-      const { status: locationStatus } =
+      let { status: locationStatus } =
         await Location.getForegroundPermissionsAsync();
-      if (locationStatus === 'denied') {
-        permissionDenied = true;
-      } else if (locationStatus !== 'granted') {
+      if (locationStatus !== 'granted') {
         const { status: newLocationStatus } =
           await Location.requestForegroundPermissionsAsync();
-        if (newLocationStatus !== 'granted') permissionDenied = true;
+        locationStatus = newLocationStatus;
+        if (locationStatus !== 'granted') permissionDenied = true;
       }
     }
 
     if (requireBackgroundLocation) {
-      const { status: backgroundStatus } =
+      let { status: backgroundStatus } =
         await Location.getBackgroundPermissionsAsync();
-      if (backgroundStatus === 'denied') {
-        permissionDenied = true;
-      } else if (backgroundStatus !== 'granted') {
+      if (backgroundStatus !== 'granted') {
         const { status: newBackgroundStatus } =
           await Location.requestBackgroundPermissionsAsync();
-        if (newBackgroundStatus !== 'granted') permissionDenied = true;
-      }
-    }
-
-    if (requireNotification) {
-      const { status: notificationStatus } =
-        await Notifications.getPermissionsAsync();
-      if (notificationStatus === 'denied') {
-        permissionDenied = true;
-      } else if (notificationStatus !== 'granted') {
-        const { status: newNotificationStatus } =
-          await Notifications.requestPermissionsAsync();
-        if (newNotificationStatus !== 'granted') permissionDenied = true;
+        backgroundStatus = newBackgroundStatus;
+        if (backgroundStatus !== 'granted') permissionDenied = true;
       }
     }
 

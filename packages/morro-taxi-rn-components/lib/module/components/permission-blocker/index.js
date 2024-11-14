@@ -49,43 +49,40 @@ const PermissionBlocker = ({
   };
   const handleRequestPermissions = async () => {
     let permissionDenied = false;
-    if (requireLocation) {
-      const {
-        status: locationStatus
-      } = await Location.getForegroundPermissionsAsync();
-      if (locationStatus === 'denied') {
-        permissionDenied = true;
-      } else if (locationStatus !== 'granted') {
-        const {
-          status: newLocationStatus
-        } = await Location.requestForegroundPermissionsAsync();
-        if (newLocationStatus !== 'granted') permissionDenied = true;
-      }
-    }
-    if (requireBackgroundLocation) {
-      const {
-        status: backgroundStatus
-      } = await Location.getBackgroundPermissionsAsync();
-      if (backgroundStatus === 'denied') {
-        permissionDenied = true;
-      } else if (backgroundStatus !== 'granted') {
-        const {
-          status: newBackgroundStatus
-        } = await Location.requestBackgroundPermissionsAsync();
-        if (newBackgroundStatus !== 'granted') permissionDenied = true;
-      }
-    }
     if (requireNotification) {
-      const {
+      let {
         status: notificationStatus
       } = await Notifications.getPermissionsAsync();
-      if (notificationStatus === 'denied') {
-        permissionDenied = true;
-      } else if (notificationStatus !== 'granted') {
+      if (notificationStatus !== 'granted') {
         const {
           status: newNotificationStatus
         } = await Notifications.requestPermissionsAsync();
-        if (newNotificationStatus !== 'granted') permissionDenied = true;
+        notificationStatus = newNotificationStatus;
+        if (notificationStatus !== 'granted') permissionDenied = true;
+      }
+    }
+    if (requireLocation) {
+      let {
+        status: locationStatus
+      } = await Location.getForegroundPermissionsAsync();
+      if (locationStatus !== 'granted') {
+        const {
+          status: newLocationStatus
+        } = await Location.requestForegroundPermissionsAsync();
+        locationStatus = newLocationStatus;
+        if (locationStatus !== 'granted') permissionDenied = true;
+      }
+    }
+    if (requireBackgroundLocation) {
+      let {
+        status: backgroundStatus
+      } = await Location.getBackgroundPermissionsAsync();
+      if (backgroundStatus !== 'granted') {
+        const {
+          status: newBackgroundStatus
+        } = await Location.requestBackgroundPermissionsAsync();
+        backgroundStatus = newBackgroundStatus;
+        if (backgroundStatus !== 'granted') permissionDenied = true;
       }
     }
     if (permissionDenied) {

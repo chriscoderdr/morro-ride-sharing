@@ -1,1 +1,1 @@
-{"version":3,"file":"index.d.ts","sourceRoot":"","sources":["../../../../../../src/components/permission-blocker/index.tsx"],"names":[],"mappings":"AAWA,OAAO,EAAE,uBAAuB,EAAE,MAAM,SAAS,CAAC;AAGlD,QAAA,MAAM,iBAAiB,+HASpB,uBAAuB,mDAqHzB,CAAC;AAEF,eAAe,iBAAiB,CAAC"}
+{"version":3,"file":"index.d.ts","sourceRoot":"","sources":["../../../../../../src/components/permission-blocker/index.tsx"],"names":[],"mappings":"AAWA,OAAO,EAAE,uBAAuB,EAAE,MAAM,SAAS,CAAC;AAGlD,QAAA,MAAM,iBAAiB,+HASpB,uBAAuB,mDAkHzB,CAAC;AAEF,eAAe,iBAAiB,CAAC"}
