@@ -16,8 +16,8 @@ export const styles = StyleSheet.create<IPlanRideStyles>({
     padding: 16,
     backgroundColor: '#FFFFFF',
     borderRadius: 8,
-    elevation: 5, // For shadow on Android
-    shadowColor: '#000', // For shadow on iOS
+    elevation: 5,
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 4

@@ -6,30 +6,17 @@ import AnimatedRideRequestCard from '../animated-ride-request-card';
 import RideCard from '../ride-card';
 import { RootState } from '@/src/store';
 import { GenericCard } from 'react-native-morro-taxi-rn-components';
-import { clearRide } from '@/src/store/slices/ride-slice';
-import { useRouter } from 'expo-router';
+import { clearRide, completeRide } from '@/src/store/slices/ride-slice';
 import { clearAllErrors } from '@/src/store/slices/error-slice';
+import { styles } from './styles';
 
 const RideRequestDashboard = () => {
   const currentRide = useSelector((state: RootState) => state.ride);
   const errors = useSelector((state: RootState) => state.error);
-  const router = useRouter();
   const dispatch = useAppDispatch();
 
-  const handleConfirmPickup = (rideRequestId: string) => {
-    // dispatch(pickUpRideRequest({ rideRequestId }));
-  };
-
-  const handleAcceptRide = (rideRequestId: string) => {
-    // dispatch(acceptRideRequest({ rideRequestId }));
-  };
-
-  const handleStartRide = (rideRequestId: string) => {
-    // dispatch(startRideRequest({ rideRequestId }));
-  };
-
-  const handleCompleteTrip = (rideRequestId: string) => {
-    // dispatch(completeRideRequest({ rideRequestId }));
+  const handleCompleteTrip = () => {
+    dispatch(completeRide());
   };
 
   const handleCallRider = (riderPhone: string) => {
@@ -57,34 +44,33 @@ const RideRequestDashboard = () => {
 
   const onCancelRide = () => {
     dispatch(clearRide());
-    router.navigate('/main');
   };
 
   return (
     <View>
       {errors?.errors && errors.errors.length > 0 && (
-        <GenericCard
-          title={'Error'}
-          subtitle={errors.errors[0]}
-          buttonType="secondary"
-          buttonText="Dismiss"
-          onPressButton={() => {
-            dispatch(clearAllErrors());
-          }}
-        />
+        <View style={styles.errorsContainer}>
+          <GenericCard
+            title={'Error'}
+            subtitle={errors.errors[0]}
+            buttonType="secondary"
+            buttonText="Dismiss"
+            onPressButton={() => {
+              dispatch(clearAllErrors());
+            }}
+          />
+        </View>
       )}
-      <View style={{ marginVertical: 10 }} />
+
       {!errors.errors ||
         (errors.errors.length == 0 && currentRide?.status === 'pending' && (
           <AnimatedRideRequestCard key={currentRide.rideRequestId}>
             <RideCard
               ride={currentRide}
               type="pending"
-              onCallRider={handleCallRider}
+              onCallDriver={handleCallRider}
               onCompleteTrip={handleCompleteTrip}
-              onAccept={handleAcceptRide}
-              onPickUpRider={handleConfirmPickup}
-              onStartRide={handleStartRide}
+              onCancelRide={onCancelRide}
             />
           </AnimatedRideRequestCard>
         ))}
@@ -94,11 +80,9 @@ const RideRequestDashboard = () => {
             <RideCard
               ride={currentRide}
               type="accepted"
-              onCallRider={handleCallRider}
+              onCallDriver={handleCallRider}
               onCompleteTrip={handleCompleteTrip}
-              onAccept={handleAcceptRide}
-              onPickUpRider={handleConfirmPickup}
-              onStartRide={handleStartRide}
+              onCancelRide={onCancelRide}
             />
           </AnimatedRideRequestCard>
         ))}
@@ -108,11 +92,9 @@ const RideRequestDashboard = () => {
             <RideCard
               ride={currentRide}
               type="started"
-              onCallRider={handleCallRider}
+              onCallDriver={handleCallRider}
               onCompleteTrip={handleCompleteTrip}
-              onAccept={handleAcceptRide}
-              onPickUpRider={handleConfirmPickup}
-              onStartRide={handleStartRide}
+              onCancelRide={onCancelRide}
             />
           </AnimatedRideRequestCard>
         ))}
@@ -123,11 +105,9 @@ const RideRequestDashboard = () => {
             <RideCard
               ride={currentRide}
               type="picked-up"
-              onCallRider={handleCallRider}
+              onCallDriver={handleCallRider}
               onCompleteTrip={handleCompleteTrip}
-              onAccept={handleAcceptRide}
-              onPickUpRider={handleConfirmPickup}
-              onStartRide={handleStartRide}
+              onCancelRide={onCancelRide}
             />
           </AnimatedRideRequestCard>
         )}
@@ -137,11 +117,9 @@ const RideRequestDashboard = () => {
             <RideCard
               ride={currentRide}
               type="dropped-off"
-              onCallRider={handleCallRider}
+              onCallDriver={handleCallRider}
               onCompleteTrip={handleCompleteTrip}
-              onAccept={handleAcceptRide}
-              onPickUpRider={handleConfirmPickup}
-              onStartRide={handleStartRide}
+              onCancelRide={onCancelRide}
             />
           </AnimatedRideRequestCard>
         ))}

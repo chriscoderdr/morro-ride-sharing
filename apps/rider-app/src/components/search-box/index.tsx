@@ -2,29 +2,11 @@ import { forwardRef, useEffect, useState } from 'react';
 import { TextInput, View } from 'react-native';
 import { InputText } from 'react-native-morro-taxi-rn-components';
 import {
-  GeocodingResponse,
   SearchBoxCore,
-  SearchBoxSuggestion,
-  SessionToken
 } from '@mapbox/search-js-core';
 import config from '@/src/config';
-
-interface ISearchBoxProps {
-  placeholder: string;
-  onSuggestions: (suggestions: SearchBoxSuggestion[]) => void;
-  onFocus?: () => void;
-  userCurrentLocationInfo?: GeocodingResponse;
-  sessionRef?: React.MutableRefObject<SessionToken | null>;
-}
-
-// Debounce function
-function debounce(func: (...args: any[]) => void, delay: number) {
-  let timer: NodeJS.Timeout;
-  return (...args: any[]) => {
-    clearTimeout(timer);
-    timer = setTimeout(() => func(...args), delay);
-  };
-}
+import { debounce } from '@/src/utils/debouce';
+import { ISearchBoxProps } from './props';
 
 export const SearchBox = forwardRef<TextInput, ISearchBoxProps>(
   (
@@ -82,7 +64,6 @@ export const SearchBox = forwardRef<TextInput, ISearchBoxProps>(
       onSuggestions(result.suggestions);
     };
 
-    // Create a debounced version of searchPlace
     const debouncedSearchPlace = debounce(searchPlace, 500);
 
     useEffect(() => {

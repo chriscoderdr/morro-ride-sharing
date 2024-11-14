@@ -23,7 +23,7 @@ export const Setup = () => {
       router.replace('/signup');
     } else {
       if (requestRideId && ride.status != 'completed') {
-        router.replace('/lookup-driver');
+        router.replace('/ride-process');
       } else {
         router.replace('/main');
       }
@@ -48,7 +48,7 @@ export const Setup = () => {
       <Stack.Screen name="signup" options={{ headerShown: false }} />
       <Stack.Screen name="main" options={{ headerShown: false }} />
       <Stack.Screen name="confirm-ride" options={{ headerShown: false }} />
-      <Stack.Screen name="lookup-driver" options={{ headerShown: false }} />
+      <Stack.Screen name="ride-process" options={{ headerShown: false }} />
     </Stack>
   );
 };

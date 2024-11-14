@@ -1,10 +1,15 @@
-import { RideRequest } from '@/src/api/models';
+import { RideState } from '@/src/store/slices/ride-slice';
 
 export interface RideCardProps {
-  rideRequest: RideRequest;
-  type: 'start' | 'inProgress' | 'request';
-  onAccept?: () => void;
-  onStartTrip?: () => void;
-  onPickUpRider?: () => void;
-  onCallRider?: () => void;
+  ride: RideState;
+  type:
+    | 'pending'
+    | 'accepted'
+    | 'declined'
+    | 'started'
+    | 'picked-up'
+    | 'dropped-off';
+  onCompleteTrip?: () => void;
+  onCallDriver?: (driverPhone: string) => void;
+  onCancelRide?: () => void;
 }

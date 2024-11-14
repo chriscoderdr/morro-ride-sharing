@@ -9,6 +9,7 @@ import RideRequestDashboard from '../ride-dashboard';
 import { useAppDispatch } from '@/src/hooks/use-app-dispatch';
 import { RootState } from '@/src/store';
 import { fetchRideRequest } from '@/src/store/slices/ride-slice';
+import { styles } from './styles';
 
 const RideProcess = () => {
   const router = useRouter();
@@ -16,7 +17,6 @@ const RideProcess = () => {
   const { route, fetchRoute } = useRoute();
   const currentRide = useSelector((state: RootState) => state.ride);
 
-  // Helper functions to retrieve coordinates
   const getPickupCoordinates = useCallback(
     () => currentRide?.pickup?.coordinates,
     [currentRide]
@@ -30,7 +30,6 @@ const RideProcess = () => {
     [currentRide]
   );
 
-  // Update route based on ride status and locations
   const updateRoute = useCallback(() => {
     if (!currentRide) return;
     const { status, driver, pickup, dropoff } = currentRide;
@@ -52,7 +51,6 @@ const RideProcess = () => {
     }
   }, [currentRide]);
 
-  // Redirect if no ride request ID or if the ride is completed
   useEffect(() => {
     if (!currentRide?.rideRequestId || currentRide.status === 'completed') {
       if (router.canDismiss() && router.canGoBack()) {
@@ -63,7 +61,6 @@ const RideProcess = () => {
     }
   }, [currentRide, router]);
 
-  // Poll for current ride request every 5 seconds
   useEffect(() => {
     const intervalId = setInterval(() => {
       dispatch(fetchRideRequest({}));
@@ -71,13 +68,12 @@ const RideProcess = () => {
     return () => clearInterval(intervalId);
   }, [dispatch]);
 
-  // Update route when current ride status changes
   useEffect(() => {
     updateRoute();
   }, [currentRide, updateRoute]);
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={styles.container}>
       <MapView
         pickup={
           ['accepted', 'started'].includes(currentRide?.status)
@@ -86,7 +82,7 @@ const RideProcess = () => {
         }
         dropoff={getDropoffCoordinates()}
         route={route}
-        myLocationButtonStyle={{ bottom: 300 }}
+        myLocationButtonStyle={styles.myLocationButton}
         points={
           getDriverCoordinates()
             ? [
@@ -100,9 +96,7 @@ const RideProcess = () => {
             : []
         }
       />
-      <View
-        style={{ position: 'absolute', bottom: 0, width: '100%', padding: 20 }}
-      >
+      <View style={styles.dashboardContainer}>
         <RideRequestDashboard />
       </View>
     </View>

@@ -138,7 +138,7 @@ const authSlice = createSlice({
         state.loading = false;
         state.error = action.error.message || 'Failed to register';
       })
-      .addDefaultCase((state, action) => {
+      .addDefaultCase((state, _action) => {
         state.loading = false;
       });
   }

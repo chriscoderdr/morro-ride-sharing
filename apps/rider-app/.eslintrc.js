@@ -1,5 +1,5 @@
 module.exports = {
-  extends: ['expo', 'eslint:recommended', 'plugin:prettier/recommended'],
+  extends: ['plugin:prettier/recommended'],
   plugins: ['prettier', 'unused-imports'],
   rules: {
     'unused-imports/no-unused-imports': 'error',

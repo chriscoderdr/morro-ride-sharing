@@ -16,6 +16,7 @@ import AnimatedCard from '../animated-ride-request-card';
 import RideConfirmationCard from '../ride-selection';
 import { useAppDispatch } from '@/src/hooks/use-app-dispatch';
 import { RootState } from '@/src/store';
+import { styles } from './styles';
 
 const ConfirmRideLocation = () => {
   const router = useRouter();
@@ -49,7 +50,7 @@ const ConfirmRideLocation = () => {
 
   useEffect(() => {
     if (riderequest?.rideRequestId && riderequest?.status != 'completed') {
-      router.replace('/lookup-driver');
+      router.replace('/ride-process');
     }
   }, [riderequest]);
 
@@ -69,11 +70,7 @@ const ConfirmRideLocation = () => {
           },
           estimatePrice: ''
         });
-
-        console.log(`estimateResponse: ${JSON.stringify(response)}`);
-      } catch (error) {
-        console.log(`Error fetching ride estimate: ${JSON.stringify(error)}`);
-      }
+      } catch (error) {}
     };
 
     fetchEstimate();
@@ -88,8 +85,6 @@ const ConfirmRideLocation = () => {
       return;
     }
     try {
-      console.log(`Creating ride request...`);
-
       dispatch(
         createRideRequest({
           pickupLocation: {
@@ -115,7 +110,7 @@ const ConfirmRideLocation = () => {
   };
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={styles.container}>
       {currentPickup &&
         currentDropoff &&
         currentPickup.coordinates &&
@@ -130,12 +125,10 @@ const ConfirmRideLocation = () => {
               currentDropoff?.coordinates[1]
             ]}
             route={route}
-            myLocationButtonStyle={{ bottom: 300 }}
+            myLocationButtonStyle={styles.locationButton}
           />
         )}
-      <View
-        style={{ position: 'absolute', bottom: 0, width: '100%', padding: 20 }}
-      >
+      <View style={styles.cardsContainer}>
         {!isLoadingEstimate && estimateData && (
           <AnimatedCard>
             <RideConfirmationCard

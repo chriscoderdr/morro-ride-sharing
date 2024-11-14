@@ -1,44 +1,17 @@
 import { Ionicons } from '@expo/vector-icons';
-import React from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { styles } from './styles';
 import { GenericCard } from 'react-native-morro-taxi-rn-components';
-import {
-  clearRide,
-  completeRide,
-  RideState
-} from '@/src/store/slices/ride-slice';
-import { useAppDispatch } from '@/src/hooks/use-app-dispatch';
-
-interface RideCardProps {
-  ride: RideState;
-  type:
-    | 'pending'
-    | 'accepted'
-    | 'declined'
-    | 'started'
-    | 'picked-up'
-    | 'dropped-off';
-  onAccept?: (rideRequestId: string) => void;
-  onStartRide?: (rideRequestId: string) => void;
-  onPickUpRider?: (rideRequestId: string) => void;
-  onCompleteTrip?: (rideRequestId: string) => void;
-  onCallRider?: (riderPhone: string) => void;
-}
+import { RideCardProps } from './props';
 
 const RideCard: React.FC<RideCardProps> = ({
   ride,
   type,
-  onAccept,
-  onStartRide,
-  onPickUpRider,
   onCompleteTrip,
-  onCallRider
+  onCallDriver,
+  onCancelRide
 }) => {
   const {} = ride;
-
-  const dispatch = useAppDispatch();
-
   const getButtonConfig = () => {
     switch (type) {
       case 'pending':
@@ -47,8 +20,8 @@ const RideCard: React.FC<RideCardProps> = ({
           subtitle: 'Currently looking for available drivers',
           buttonText: 'Cancel',
           action: () => {
-            dispatch(clearRide());
-          } // Use this to call onAccept if needed: () => onAccept && onAccept(rideRequestId)
+            onCancelRide && onCancelRide();
+          }
         };
       case 'accepted':
         return {
@@ -71,7 +44,7 @@ const RideCard: React.FC<RideCardProps> = ({
           subtitle: `Your trip is complete\n Pay the driver ₱${ride.estimatePrice}`,
           buttonText: 'Done',
           action: () => {
-            dispatch(completeRide());
+            onCompleteTrip && onCompleteTrip();
           }
         };
       case 'declined':
@@ -79,7 +52,9 @@ const RideCard: React.FC<RideCardProps> = ({
           title: 'Request Declined',
           subtitle: 'The request was declined',
           buttonText: 'OK',
-          action: undefined
+          action: () => {
+            onCancelRide && onCancelRide();
+          }
         };
       default:
         return {
@@ -118,7 +93,7 @@ const RideCard: React.FC<RideCardProps> = ({
                 <TouchableOpacity
                   style={styles.callButton}
                   onPress={() =>
-                    onCallRider && onCallRider(ride.driver.phone || '')
+                    onCallDriver && onCallDriver(ride.driver.phone || '')
                   }
                 >
                   <Ionicons name="call-outline" size={24} color="#007AFF" />

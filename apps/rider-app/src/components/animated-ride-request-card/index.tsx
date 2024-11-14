@@ -1,12 +1,8 @@
 import React, { useEffect, useRef } from 'react';
 import { Animated, ViewStyle } from 'react-native';
+import { AnimatedCardProps } from './props';
 
-interface AnimatedCardProps {
-  children: React.ReactNode;
-  isExiting?: boolean;
-  onExitComplete?: () => void;
-  style?: ViewStyle;
-}
+const animationTime = 300;
 
 const AnimatedCard: React.FC<AnimatedCardProps> = ({
   children,
@@ -22,12 +18,12 @@ const AnimatedCard: React.FC<AnimatedCardProps> = ({
       Animated.parallel([
         Animated.timing(fadeAnim, {
           toValue: 0,
-          duration: 300,
+          duration: animationTime,
           useNativeDriver: true
         }),
         Animated.timing(scaleAnim, {
           toValue: 0.9,
-          duration: 300,
+          duration: animationTime,
           useNativeDriver: true
         })
       ]).start(() => {
@@ -37,12 +33,12 @@ const AnimatedCard: React.FC<AnimatedCardProps> = ({
       Animated.parallel([
         Animated.timing(fadeAnim, {
           toValue: 1,
-          duration: 300,
+          duration: animationTime,
           useNativeDriver: true
         }),
         Animated.timing(scaleAnim, {
           toValue: 1,
-          duration: 300,
+          duration: animationTime,
           useNativeDriver: true
         })
       ]).start();

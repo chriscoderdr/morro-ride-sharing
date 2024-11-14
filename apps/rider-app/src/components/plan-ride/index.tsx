@@ -32,7 +32,6 @@ export const PlanRide = () => {
     useState<GeocodingResponse>(null);
 
   const handleOnPickupSuggestions = (suggestions: SearchBoxSuggestion[]) => {
-    console.log('Pickup Suggestions:', suggestions);
     setPickupSuggestions(suggestions);
     if (suggestions.length === 0) {
       setSelectedPickup(null);
@@ -71,9 +70,6 @@ export const PlanRide = () => {
       let pickup: Place = null;
 
       if (selectedPickup) {
-        console.log(
-          `retrieving coordinates for selected pickup: ${selectedPickup}`
-        );
         const pickupCoordinates =
           await retrieveSuggestionCoordinates(selectedPickup);
         pickup = {
@@ -130,7 +126,7 @@ export const PlanRide = () => {
         setUserCurrentLocationInfo(userLocationInfo);
       };
 
-      fetchData().then().catch(console.error);
+      fetchData().then();
     }
   }, [userLocation.location]);
 
@@ -145,7 +141,6 @@ export const PlanRide = () => {
   useEffect(() => {
     if (searchSessionTokenRef.current === null) {
       searchSessionTokenRef.current = new SessionToken();
-      console.log('Search session token', searchSessionTokenRef.current);
     }
   }, []);
 
@@ -158,11 +153,6 @@ export const PlanRide = () => {
       handlePlanRide();
     }
   }, [selectedDropoff, selectedPickup]);
-
-  useEffect(() => {
-    console.log('Pickup Suggestions:', pickupSuggestions);
-    console.log('Dropoff Suggestions:', dropoffSuggestions);
-  }, [pickupSuggestions, dropoffSuggestions]);
 
   return (
     <View style={styles.container}>
