@@ -2,10 +2,10 @@ import { useAppDispatch } from '@/src/hooks/use-app-dispatch';
 
 import { Alert, Linking, Platform, View } from 'react-native';
 import { useSelector } from 'react-redux';
-import AnimatedRideRequestCard from '../animated-ride-request-card';
+
 import RideCard from '../ride-card';
 import { RootState } from '@/src/store';
-import { GenericCard } from 'react-native-morro-taxi-rn-components';
+import { AnimatedCard, GenericCard } from 'react-native-morro-taxi-rn-components';
 import { clearRide, completeRide } from '@/src/store/slices/ride-slice';
 import { clearAllErrors } from '@/src/store/slices/error-slice';
 import { styles } from './styles';
@@ -64,7 +64,7 @@ const RideRequestDashboard = () => {
 
       {!errors.errors ||
         (errors.errors.length == 0 && currentRide?.status === 'pending' && (
-          <AnimatedRideRequestCard key={currentRide.rideRequestId}>
+          <AnimatedCard key={currentRide.rideRequestId}>
             <RideCard
               ride={currentRide}
               type="pending"
@@ -72,11 +72,11 @@ const RideRequestDashboard = () => {
               onCompleteTrip={handleCompleteTrip}
               onCancelRide={onCancelRide}
             />
-          </AnimatedRideRequestCard>
+          </AnimatedCard>
         ))}
       {!errors.errors ||
         (errors.errors.length == 0 && currentRide?.status === 'accepted' && (
-          <AnimatedRideRequestCard key={currentRide.rideRequestId}>
+          <AnimatedCard key={currentRide.rideRequestId}>
             <RideCard
               ride={currentRide}
               type="accepted"
@@ -84,11 +84,11 @@ const RideRequestDashboard = () => {
               onCompleteTrip={handleCompleteTrip}
               onCancelRide={onCancelRide}
             />
-          </AnimatedRideRequestCard>
+          </AnimatedCard>
         ))}
       {!errors.errors ||
         (errors.errors.length == 0 && currentRide?.status === 'started' && (
-          <AnimatedRideRequestCard key={currentRide.rideRequestId}>
+          <AnimatedCard key={currentRide.rideRequestId}>
             <RideCard
               ride={currentRide}
               type="started"
@@ -96,12 +96,12 @@ const RideRequestDashboard = () => {
               onCompleteTrip={handleCompleteTrip}
               onCancelRide={onCancelRide}
             />
-          </AnimatedRideRequestCard>
+          </AnimatedCard>
         ))}
       {!errors.errors ||
         errors.errors.length == 0 &&
         currentRide?.status === 'picked-up' && (
-          <AnimatedRideRequestCard key={currentRide.rideRequestId}>
+          <AnimatedCard key={currentRide.rideRequestId}>
             <RideCard
               ride={currentRide}
               type="picked-up"
@@ -109,11 +109,11 @@ const RideRequestDashboard = () => {
               onCompleteTrip={handleCompleteTrip}
               onCancelRide={onCancelRide}
             />
-          </AnimatedRideRequestCard>
+          </AnimatedCard>
         )}
       {!errors?.errors ||
         (errors.errors.length == 0 && currentRide?.status === 'dropped-off' && (
-          <AnimatedRideRequestCard key={currentRide.rideRequestId}>
+          <AnimatedCard key={currentRide.rideRequestId}>
             <RideCard
               ride={currentRide}
               type="dropped-off"
@@ -121,7 +121,7 @@ const RideRequestDashboard = () => {
               onCompleteTrip={handleCompleteTrip}
               onCancelRide={onCancelRide}
             />
-          </AnimatedRideRequestCard>
+          </AnimatedCard>
         ))}
     </View>
   );

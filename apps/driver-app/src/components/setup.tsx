@@ -5,8 +5,6 @@ import { useAppDispatch } from '../hooks/use-app-dispatch';
 import { initializePendingRequests } from '../store/middleware/timeout-middleware';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store';
-import { MapService } from 'react-native-morro-taxi-rn-components';
-import config from '../config';
 
 export const Setup = () => {
   const router = useRouter();

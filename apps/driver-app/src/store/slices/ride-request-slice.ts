@@ -8,6 +8,7 @@ import {
 import { RootState } from '@/src/store';
 import { apiSlice } from '@/src/store/slices/api-slice';
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { Alert } from 'react-native';
 
 interface RideRequestState {
   requests: RideRequest[];
@@ -63,8 +64,9 @@ export const acceptRideRequest = createAsyncThunk<
       });
 
       return response;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error accepting ride request:', error);
+      Alert.alert('Error completing ride request:', error);
       return rejectWithValue(error);
     }
   }
@@ -88,8 +90,9 @@ export const startRideRequest = createAsyncThunk<
         })
       );
       return response;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error starting ride request:', error);
+      Alert.alert('Error completing ride request:', error);
       return rejectWithValue(error);
     }
   }
@@ -113,8 +116,9 @@ export const pickUpRideRequest = createAsyncThunk<
         })
       );
       return response;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error picking up ride request:', error);
+      Alert.alert('Error completing ride request:', error);
       return rejectWithValue(error);
     }
   }
@@ -135,13 +139,13 @@ export const completeRideRequest = createAsyncThunk<
         updateRideRequestStatus({ rideRequestId, status: 'dropped-off' })
       );
       return response;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error completing ride request:', error);
+      Alert.alert('Error completing ride request:', error);
       return rejectWithValue(error);
     }
   }
 );
-
 
 export const setRideRequestWithTimeout = createAsyncThunk(
   'rideRequest/setRideRequestWithTimeout',

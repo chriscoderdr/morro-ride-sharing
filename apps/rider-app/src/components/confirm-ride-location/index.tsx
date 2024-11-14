@@ -10,8 +10,8 @@ import {
   selectCurrentDropOff,
   selectCurrentPickup
 } from '@/src/store/slices/ride-slice';
-import { GenericCard, MapView } from 'react-native-morro-taxi-rn-components';
-import AnimatedCard from '../animated-ride-request-card';
+import { AnimatedCard, GenericCard, MapView } from 'react-native-morro-taxi-rn-components';
+
 
 import RideConfirmationCard from '../ride-selection';
 import { useAppDispatch } from '@/src/hooks/use-app-dispatch';

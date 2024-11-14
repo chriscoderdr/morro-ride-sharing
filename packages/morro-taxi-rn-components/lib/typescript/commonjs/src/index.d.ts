@@ -14,7 +14,8 @@ import TestComponent from './components/test-component';
 import MapView from './components/map-view';
 import MapService from './services/map-service';
 import utils from './utils';
-export { Checkbox, GenericCard, InputPhone, InputText, InputTextField, KeyboardDismiss, LoginForm, ObscuredInputText, PermissionBlocker, RoundedButton, ScrollableFormContainer, SignUpForm, TestComponent, MapView, MapService, utils, };
+import AnimatedCard from './components/animated-card';
+export { Checkbox, GenericCard, InputPhone, InputText, InputTextField, KeyboardDismiss, LoginForm, ObscuredInputText, PermissionBlocker, RoundedButton, ScrollableFormContainer, SignUpForm, TestComponent, MapView, MapService, utils, AnimatedCard, };
 export type { ICheckboxProps } from './components/checkbox/props';
 export type { IGenericCardProps } from './components/generic-card/props';
 export type { IInputPhoneProps } from './components/input-phone/props';
@@ -23,4 +24,5 @@ export type { IInputTextProps } from './components/input-text/props';
 export type { IButtonProps } from './components/rounded-button/props';
 export type { IRegisterUser, ISignUpFormProps, } from './components/sign-up-form/props';
 export type { ILoginUser, ILoginFormProps, } from './components/login-form/props';
+export type { AnimatedCardProps } from './components/animated-card/props';
 //# sourceMappingURL=index.d.ts.map

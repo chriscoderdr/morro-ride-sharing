@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { Animated, ViewStyle } from 'react-native';
+import { Animated } from 'react-native';
 import { AnimatedCardProps } from './props';
 
 const animationTime = 300;

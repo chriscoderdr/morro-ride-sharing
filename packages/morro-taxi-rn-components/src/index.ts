@@ -14,6 +14,7 @@ import TestComponent from './components/test-component';
 import MapView from './components/map-view';
 import MapService from './services/map-service';
 import utils from './utils';
+import AnimatedCard from './components/animated-card';
 
 export {
   Checkbox,
@@ -32,6 +33,7 @@ export {
   MapView,
   MapService,
   utils,
+  AnimatedCard,
 };
 
 export type { ICheckboxProps } from './components/checkbox/props';
@@ -48,6 +50,7 @@ export type {
   ILoginUser,
   ILoginFormProps,
 } from './components/login-form/props';
+export type { AnimatedCardProps } from './components/animated-card/props';
 
 // export { default as MorroTaxiRnComponentsView } from './MorroTaxiRnComponentsViewNativeComponent';
 // export * from './MorroTaxiRnComponentsViewNativeComponent';
