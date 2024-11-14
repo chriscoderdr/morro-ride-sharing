@@ -56,33 +56,30 @@ const ConfirmRideLocation = () => {
     }
   }, [riderequest]);
 
-  const loadRideEstimate = async () => {
-    try {
-      const response = await estimateRide({
-        pickupLocation: {
-          address: currentPickup.address,
-          latitude: currentPickup.coordinates[1],
-          longitude: currentPickup.coordinates[0]
-        },
-        dropOffLocation: {
-          address: currentDropoff.address,
-          latitude: currentDropoff.coordinates[1],
-          longitude: currentDropoff.coordinates[0]
-        },
-        estimatePrice: ''
-      });
-      if (
-        response.error &&
-        !(response.error as string)
-          .toLowerCase()
-          .startsWith('no drivers available')
-      ) {
-        Alert.alert('Error', response?.error + '');
+  const loadRideEstimate = () => {
+    const fetchEstimate = async () => {
+      try {
+        const response = await estimateRide({
+          pickupLocation: {
+            address: currentPickup.address,
+            latitude: currentPickup.coordinates[1],
+            longitude: currentPickup.coordinates[0]
+          },
+          dropOffLocation: {
+            address: currentDropoff.address,
+            latitude: currentDropoff.coordinates[1],
+            longitude: currentDropoff.coordinates[0]
+          },
+          estimatePrice: ''
+        });
+
+        console.log(`estimateResponse: ${JSON.stringify(response)}`);
+      } catch (error) {
+        console.log(`Error fetching ride estimate: ${JSON.stringify(error)}`);
       }
-      console.log(`estimateResponse: ${JSON.stringify(response)}`);
-    } catch (error) {
-      console.log(`Error fetching ride estimate: ${JSON.stringify(error)}`);
-    }
+    };
+
+    fetchEstimate();
   };
 
   const onConfirmLocation = async () => {

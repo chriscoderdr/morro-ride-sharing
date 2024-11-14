@@ -70,19 +70,17 @@ const RideRequestDashboard = () => {
 
   return (
     <View>
-      {errors?.errors &&
-        errors.errors.length > 0 &&
-        errors.errors.map((error) => (
-          <GenericCard
-            title={error}
-            subtitle={error.description}
-            buttonType="secondary"
-            buttonText="Dismiss"
-            onPressButton={() => {
-              dispatch(clearAllErrors());
-            }}
-          />
-        ))}
+      {errors?.errors && errors.errors.length > 0 && (
+        <GenericCard
+          title={'Error'}
+          subtitle={errors.errors[0]}
+          buttonType="secondary"
+          buttonText="Dismiss"
+          onPressButton={() => {
+            dispatch(clearAllErrors());
+          }}
+        />
+      )}
       <View style={{ marginVertical: 10 }} />
       {!errors.errors ||
         (errors.errors.length == 0 && currentRide?.status === 'pending' && (

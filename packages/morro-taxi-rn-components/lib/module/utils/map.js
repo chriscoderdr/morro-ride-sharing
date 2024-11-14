@@ -1,0 +1,43 @@
+"use strict";
+
+import { Alert, Linking } from 'react-native';
+const handleZoomToUserLocation = (userLocation, cameraRef) => {
+  if (userLocation && cameraRef.current) {
+    cameraRef.current?.setCamera({
+      centerCoordinate: [userLocation.longitude, userLocation.latitude],
+      zoomLevel: 12,
+      animationDuration: 2000
+    });
+  } else {
+    Alert.alert('Location Error', 'Unable to retrieve user location.');
+  }
+};
+const openNavigationApp = (userLocation, pickup, dropOff) => {
+  if (!pickup || !dropOff) {
+    Alert.alert('Navigation Error', 'No pickup or destination specified');
+    return;
+  }
+  const pickupLat = pickup[1];
+  const pickupLng = pickup[0];
+  const dropOffLat = dropOff[1];
+  const dropOffLng = dropOff[0];
+  const userLat = userLocation?.latitude;
+  const userLng = userLocation?.longitude;
+  console.log(`User Location: ${userLat}, ${userLng} | Pickup: ${pickupLat}, ${pickupLng} | Dropoff: ${dropOffLat}, ${dropOffLng}`);
+  Alert.alert('Choose Navigation App', 'Select an app to navigate', [{
+    text: 'Google Maps',
+    onPress: () => Linking.openURL(`https://www.google.com/maps/dir/?api=1&origin=${userLat},${userLng}&waypoints=${pickupLat},${pickupLng}&destination=${dropOffLat},${dropOffLng}&travelmode=driving`)
+  }, {
+    text: 'Waze',
+    onPress: () => {
+      Linking.openURL(`https://waze.com/ul?ll=${pickupLat},${pickupLng}&navigate=yes`);
+      setTimeout(() => {
+        Linking.openURL(`https://waze.com/ul?ll=${dropOffLat},${dropOffLng}&navigate=yes`);
+      }, 1000);
+    }
+  }], {
+    cancelable: true
+  });
+};
+export { handleZoomToUserLocation, openNavigationApp };
+//# sourceMappingURL=map.js.map

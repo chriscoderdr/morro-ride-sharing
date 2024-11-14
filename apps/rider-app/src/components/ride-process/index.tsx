@@ -50,7 +50,7 @@ const RideProcess = () => {
         { latitude: dropoff.coordinates[1], longitude: dropoff.coordinates[0] }
       ]);
     }
-  }, [currentRide, fetchRoute]);
+  }, [currentRide]);
 
   // Redirect if no ride request ID or if the ride is completed
   useEffect(() => {

@@ -1,0 +1,1 @@
+{"version":3,"names":["Text","jsx","_jsx","TestComponent","children"],"sourceRoot":"../../../../src","sources":["components/test-component/index.tsx"],"mappings":";;AAAA,SAASA,IAAI,QAAQ,cAAc;AAAC,SAAAC,GAAA,IAAAC,IAAA;AAEpC,MAAMC,aAAa,GAAGA,CAAA,KAAM;EACxB,oBAAQD,IAAA,CAACF,IAAI;IAAAI,QAAA,EAAC;EAAiB,CAAM,CAAC;AAC1C,CAAC;AACD,eAAeD,aAAa","ignoreList":[]}
